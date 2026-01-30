@@ -3038,7 +3038,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 console.log(`MIT License
 
-Copyright (c) 2025 ImApo
+Copyright (c) 2026 ImApo
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
