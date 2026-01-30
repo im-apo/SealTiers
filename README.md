@@ -1,6 +1,6 @@
 <div align="center">
 
-# 🦭 SealTiers
+# 🌊 SealTiers
 
 An interactive, modern website for the **SealTiers** community — featuring an interactive PvP tier list, player rankings, and useful resources for competitive Minecraft players.
 
@@ -50,3 +50,4 @@ It includes:
 
 This project is licensed under the MIT License.  
 See the [LICENSE](LICENSE) file for details.
+
