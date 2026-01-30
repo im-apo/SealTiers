@@ -337,7 +337,7 @@ function createTierWithTooltip(gamemode, tier, peakTier, iconSrc) {
     return `
         <div class="tier-wrapper">
             <div class="gamemode-tier-item">
-                <div class="gamemode-tier-icon-container" style="border-color: var(--${tierClass}, #666);">
+                <div class="gamemode-tier-icon-container" style="border-color: var(--${tierClass}, #64748b);">
                     <img class="gamemode-tier-icon" src="${iconSrc}" alt="${gamemode}" 
                          onerror="this.style.display='none';">
                 </div>
@@ -458,7 +458,7 @@ async function loadPlayers() {
         setTimeout(() => {
             if (loadingSubtext) {
                 loadingSubtext.textContent = "Retrying...";
-                loadingSubtext.style.color = "#9ca3af";
+                loadingSubtext.style.color = "#94a3b8";
             }
             loadPlayers();
         }, 3000);
@@ -625,12 +625,12 @@ function updatePaginationControls(totalPages, totalPlayers) {
     gap: 12px;
     margin-top: 30px;
     padding: 20px 0;
-    border-top: 1px solid rgba(80, 80, 80, 0.3);
+    border-top: 1px solid rgba(71, 85, 105, 0.3);
   `;
 
     const pageInfo = document.createElement("span");
     pageInfo.style.cssText = `
-    color: #9ca3af;
+    color: #94a3b8;
     font-size: 0.9rem;
     font-weight: 600;
     margin: 0 16px;
@@ -642,24 +642,24 @@ function updatePaginationControls(totalPages, totalPlayers) {
     prevBtn.disabled = currentPage === 1;
     prevBtn.style.cssText = `
     background: ${
-        currentPage === 1 ? "rgba(60, 60, 60, 0.5)" : "rgba(30, 30, 30, 0.95)"
+        currentPage === 1 ? "rgba(51, 65, 85, 0.5)" : "rgba(15, 23, 42, 0.95)"
     };
-    border: 2px solid rgba(80, 80, 80, 0.6);
+    border: 2px solid rgba(71, 85, 105, 0.6);
     border-radius: 12px;
     padding: 8px 16px;
-    color: ${currentPage === 1 ? "#666" : "#d1d5db"};
+    color: ${currentPage === 1 ? "#64748b" : "#cbd5e1"};
     font-weight: 600;
     cursor: ${currentPage === 1 ? "not-allowed" : "pointer"};
     transition: all 0.3s ease;
   `;
     if (currentPage > 1) {
         prevBtn.addEventListener("mouseover", () => {
-            prevBtn.style.background = "rgba(50, 50, 50, 0.95)";
-            prevBtn.style.borderColor = "#aaa";
+            prevBtn.style.background = "rgba(30, 41, 59, 0.95)";
+            prevBtn.style.borderColor = "#a8b3c7";
         });
         prevBtn.addEventListener("mouseout", () => {
-            prevBtn.style.background = "rgba(30, 30, 30, 0.95)";
-            prevBtn.style.borderColor = "rgba(80, 80, 80, 0.6)";
+            prevBtn.style.background = "rgba(15, 23, 42, 0.95)";
+            prevBtn.style.borderColor = "rgba(71, 85, 105, 0.6)";
         });
     }
 
@@ -704,25 +704,25 @@ function updatePaginationControls(totalPages, totalPlayers) {
     nextBtn.style.cssText = `
     background: ${
         currentPage === totalPages
-            ? "rgba(60, 60, 60, 0.5)"
-            : "rgba(30, 30, 30, 0.95)"
+            ? "rgba(51, 65, 85, 0.5)"
+            : "rgba(15, 23, 42, 0.95)"
     };
-    border: 2px solid rgba(80, 80, 80, 0.6);
+    border: 2px solid rgba(71, 85, 105, 0.6);
     border-radius: 12px;
     padding: 8px 16px;
-    color: ${currentPage === totalPages ? "#666" : "#d1d5db"};
+    color: ${currentPage === totalPages ? "#64748b" : "#cbd5e1"};
     font-weight: 600;
     cursor: ${currentPage === totalPages ? "not-allowed" : "pointer"};
     transition: all 0.3s ease;
   `;
     if (currentPage < totalPages) {
         nextBtn.addEventListener("mouseover", () => {
-            nextBtn.style.background = "rgba(50, 50, 50, 0.95)";
-            nextBtn.style.borderColor = "#aaa";
+            nextBtn.style.background = "rgba(30, 41, 59, 0.95)";
+            nextBtn.style.borderColor = "#a8b3c7";
         });
         nextBtn.addEventListener("mouseout", () => {
-            nextBtn.style.background = "rgba(30, 30, 30, 0.95)";
-            nextBtn.style.borderColor = "rgba(80, 80, 80, 0.6)";
+            nextBtn.style.background = "rgba(15, 23, 42, 0.95)";
+            nextBtn.style.borderColor = "rgba(71, 85, 105, 0.6)";
         });
     }
 
@@ -760,7 +760,7 @@ function updatePaginationControls(totalPages, totalPlayers) {
         if (startPage > 2) {
             const dots = document.createElement("span");
             dots.textContent = "...";
-            dots.style.color = "#666";
+            dots.style.color = "#64748b";
             pageNumbers.appendChild(dots);
         }
     }
@@ -773,7 +773,7 @@ function updatePaginationControls(totalPages, totalPlayers) {
         if (endPage < totalPages - 1) {
             const dots = document.createElement("span");
             dots.textContent = "...";
-            dots.style.color = "#666";
+            dots.style.color = "#64748b";
             pageNumbers.appendChild(dots);
         }
         const lastPage = createPageButton(totalPages);
@@ -793,15 +793,15 @@ function createPageButton(pageNum) {
     btn.style.cssText = `
     background: ${
         pageNum === currentPage
-            ? "linear-gradient(135deg, #333, #111)"
-            : "rgba(30, 30, 30, 0.95)"
+            ? "linear-gradient(135deg, #1f2a44, #0b1220)"
+            : "rgba(15, 23, 42, 0.95)"
     };
     border: 2px solid ${
-        pageNum === currentPage ? "#ccc" : "rgba(80, 80, 80, 0.6)"
+        pageNum === currentPage ? "#cbd5e1" : "rgba(71, 85, 105, 0.6)"
     };
     border-radius: 8px;
     padding: 6px 12px;
-    color: ${pageNum === currentPage ? "#fff" : "#d1d5db"};
+    color: ${pageNum === currentPage ? "#f8fafc" : "#cbd5e1"};
     font-weight: ${pageNum === currentPage ? "700" : "600"};
     cursor: pointer;
     transition: all 0.3s ease;
@@ -810,12 +810,12 @@ function createPageButton(pageNum) {
 
     if (pageNum !== currentPage) {
         btn.addEventListener("mouseover", () => {
-            btn.style.background = "rgba(50, 50, 50, 0.95)";
-            btn.style.borderColor = "#aaa";
+            btn.style.background = "rgba(30, 41, 59, 0.95)";
+            btn.style.borderColor = "#a8b3c7";
         });
         btn.addEventListener("mouseout", () => {
-            btn.style.background = "rgba(30, 30, 30, 0.95)";
-            btn.style.borderColor = "rgba(80, 80, 80, 0.6)";
+            btn.style.background = "rgba(15, 23, 42, 0.95)";
+            btn.style.borderColor = "rgba(71, 85, 105, 0.6)";
         });
     }
 
@@ -1152,10 +1152,10 @@ let gamemodeDisplay = (() => {
             return `
                 <div class="tier-wrapper">
                     <div class="gamemode-tier-item standby-tier" style="opacity: ${STANDBY_TIER_CONFIG.opacity};">
-                        <div class="gamemode-tier-icon-container" style="border-color: #444; border-style: dashed;">
+                        <div class="gamemode-tier-icon-container" style="border-color: #26324d; border-style: dashed;">
                             <img class="gamemode-tier-icon" src="${iconSrc}" alt="${gm}" onerror="this.style.display='none';">
                         </div>
-                        <span class="tier" style="background: #333; color: #666; box-shadow: none;">
+                        <span class="tier" style="background: #1f2a44; color: #64748b; box-shadow: none;">
                             ${STANDBY_TIER_CONFIG.label}
                         </span>
                     </div>
@@ -1389,11 +1389,11 @@ function openPlayerModal(player) {
     const nameMcBtn = document.createElement("button");
     nameMcBtn.className = "action-button";
     nameMcBtn.style.cssText = `
-  background: rgba(30, 30, 30, 0.9);
-  border: 2px solid rgba(120, 120, 120, 0.6);
+  background: rgba(15, 23, 42, 0.9);
+  border: 2px solid rgba(100, 116, 139, 0.6);
   border-radius: 16px;
   padding: 12px 20px;
-  color: #d1d5db;
+  color: #cbd5e1;
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
@@ -1414,16 +1414,16 @@ function openPlayerModal(player) {
         window.open(`https://namemc.com/profile/${player.name}`, "_blank");
     });
     nameMcBtn.addEventListener("mouseenter", () => {
-        nameMcBtn.style.background = "#111";
-        nameMcBtn.style.color = "#fff";
+        nameMcBtn.style.background = "#0b1220";
+        nameMcBtn.style.color = "#f8fafc";
         nameMcBtn.style.transform = "translateY(-2px)";
-        nameMcBtn.style.boxShadow = "0 0 20px rgba(160, 160, 160, 0.7)";
+        nameMcBtn.style.boxShadow = "0 0 20px rgba(148, 163, 184, 0.7)";
     });
     nameMcBtn.addEventListener("mouseleave", () => {
-        nameMcBtn.style.background = "rgba(30, 30, 30, 0.9)";
-        nameMcBtn.style.color = "#d1d5db";
+        nameMcBtn.style.background = "rgba(15, 23, 42, 0.9)";
+        nameMcBtn.style.color = "#cbd5e1";
         nameMcBtn.style.transform = "translateY(0)";
-        nameMcBtn.style.boxShadow = "0 0 15px rgba(50, 50, 50, 0.6)";
+        nameMcBtn.style.boxShadow = "0 0 15px rgba(30, 41, 59, 0.6)";
     });
 
     // Check if player has any tier history
@@ -1438,11 +1438,11 @@ function openPlayerModal(player) {
         const tierHistoryBtn = document.createElement("button");
         tierHistoryBtn.className = "action-button";
         tierHistoryBtn.style.cssText = `
-      background: rgba(30, 30, 30, 0.9);
-      border: 2px solid rgba(120, 120, 120, 0.6);
+      background: rgba(15, 23, 42, 0.9);
+      border: 2px solid rgba(100, 116, 139, 0.6);
       border-radius: 16px;
       padding: 12px 20px;
-      color: #d1d5db;
+      color: #cbd5e1;
       font-size: 14px;
       font-weight: 600;
       cursor: pointer;
@@ -1469,16 +1469,16 @@ function openPlayerModal(player) {
 			}
 		});
         tierHistoryBtn.addEventListener("mouseenter", () => {
-            tierHistoryBtn.style.background = "#111";
-            tierHistoryBtn.style.color = "#fff";
+            tierHistoryBtn.style.background = "#0b1220";
+            tierHistoryBtn.style.color = "#f8fafc";
             tierHistoryBtn.style.transform = "translateY(-2px)";
-            tierHistoryBtn.style.boxShadow = "0 0 20px rgba(160, 160, 160, 0.7)";
+            tierHistoryBtn.style.boxShadow = "0 0 20px rgba(148, 163, 184, 0.7)";
         });
         tierHistoryBtn.addEventListener("mouseleave", () => {
-            tierHistoryBtn.style.background = "rgba(30, 30, 30, 0.9)";
-            tierHistoryBtn.style.color = "#d1d5db";
+            tierHistoryBtn.style.background = "rgba(15, 23, 42, 0.9)";
+            tierHistoryBtn.style.color = "#cbd5e1";
             tierHistoryBtn.style.transform = "translateY(0)";
-            tierHistoryBtn.style.boxShadow = "0 0 15px rgba(50, 50, 50, 0.6)";
+            tierHistoryBtn.style.boxShadow = "0 0 15px rgba(30, 41, 59, 0.6)";
         });
 
         const buttonsContainer = document.createElement("div");
@@ -1515,12 +1515,12 @@ function openPlayerModal(player) {
 
               return `
           <div class="tier-item">
-            <div class="tier-icon-container" style="border-color: var(--${tierClass}, #666);">
+            <div class="tier-icon-container" style="border-color: var(--${tierClass}, #64748b);">
               <img class="tier-icon" src="${iconSrc}" alt="${gm}" 
                    onerror="this.style.display='none';">
             </div>
             <span class="tier-label tier ${tierClass}" style="text-align: center;">${tier}</span>
-            <span style="font-size: 0.7rem; color: #9ca3af; text-align: center;">${gm.toUpperCase()}</span>
+            <span style="font-size: 0.7rem; color: #94a3b8; text-align: center;">${gm.toUpperCase()}</span>
           </div>
         `;
           })
@@ -1804,10 +1804,10 @@ function openTierHistoryModal(player) {
                 <h2 class="player-modal-name" style="margin-bottom: 8px;">
                     <span>${player.name}</span>
                 </h2>
-                <div style="font-size: 1.2rem; color: #9ca3af; font-weight: 600;">Tier History</div>
+                <div style="font-size: 1.2rem; color: #94a3b8; font-weight: 600;">Tier History</div>
             </div>
             
-            <div style="width: 100%; padding: 40px; background: rgba(15, 15, 15, 0.6); border-radius: 20px; border: 1px solid rgba(80, 80, 80, 0.3);">
+            <div style="width: 100%; padding: 40px; background: rgba(2, 6, 23, 0.6); border-radius: 20px; border: 1px solid rgba(71, 85, 105, 0.3);">
                 <div style="display: flex; justify-content: center; margin-bottom: 40px;">
                     <div class="gamemode-selector" style="display: flex; gap: 16px; flex-wrap: wrap; justify-content: center;">
                         ${gamesWithHistory.map(gm => {
@@ -1815,13 +1815,13 @@ function openTierHistoryModal(player) {
                             return `
                                 <button class="gamemode-selector-btn ${gm === firstGamemode ? 'active' : ''}" 
                                         data-gamemode="${gm}"
-                                        style="background: ${gm === firstGamemode ? 'linear-gradient(135deg, #333, #111)' : 'rgba(30, 30, 30, 0.8)'}; 
-                                               border: 2px solid ${gm === firstGamemode ? '#ccc' : 'rgba(80, 80, 80, 0.4)'}; 
+                                        style="background: ${gm === firstGamemode ? 'linear-gradient(135deg, #1f2a44, #0b1220)' : 'rgba(15, 23, 42, 0.8)'}; 
+                                               border: 2px solid ${gm === firstGamemode ? '#cbd5e1' : 'rgba(71, 85, 105, 0.4)'}; 
                                                border-radius: 16px; 
                                                padding: 16px; 
                                                cursor: pointer; 
                                                transition: all 0.3s ease;
-                                               box-shadow: ${gm === firstGamemode ? '0 0 18px rgba(200, 200, 200, 0.7)' : 'none'};">
+                                               box-shadow: ${gm === firstGamemode ? '0 0 18px rgba(203, 213, 225, 0.7)' : 'none'};">
                                     <img src="${iconSrc}" alt="${gm}" style="width: 40px; height: 40px; display: block;" onerror="this.style.display='none';">
                                 </button>
                             `;
@@ -1839,14 +1839,14 @@ function openTierHistoryModal(player) {
         btn.addEventListener('click', (e) => {
             body.querySelectorAll('.gamemode-selector-btn').forEach(b => {
                 b.classList.remove('active');
-                b.style.background = 'rgba(30, 30, 30, 0.8)';
-                b.style.borderColor = 'rgba(80, 80, 80, 0.4)';
+                b.style.background = 'rgba(15, 23, 42, 0.8)';
+                b.style.borderColor = 'rgba(71, 85, 105, 0.4)';
                 b.style.boxShadow = 'none';
             });
             btn.classList.add('active');
-            btn.style.background = 'linear-gradient(135deg, #333, #111)';
-            btn.style.borderColor = '#ccc';
-            btn.style.boxShadow = '0 0 18px rgba(200, 200, 200, 0.7)';
+            btn.style.background = 'linear-gradient(135deg, #1f2a44, #0b1220)';
+            btn.style.borderColor = '#cbd5e1';
+            btn.style.boxShadow = '0 0 18px rgba(203, 213, 225, 0.7)';
             
             const selectedGamemode = btn.dataset.gamemode;
             const chart = body.querySelector('.tier-history-chart');
@@ -1856,14 +1856,14 @@ function openTierHistoryModal(player) {
         // Add hover effects
         btn.addEventListener('mouseenter', () => {
             if (!btn.classList.contains('active')) {
-                btn.style.background = 'rgba(50, 50, 50, 0.9)';
-                btn.style.borderColor = '#999';
+                btn.style.background = 'rgba(30, 41, 59, 0.9)';
+                btn.style.borderColor = '#94a3b8';
             }
         });
         btn.addEventListener('mouseleave', () => {
             if (!btn.classList.contains('active')) {
-                btn.style.background = 'rgba(30, 30, 30, 0.8)';
-                btn.style.borderColor = 'rgba(80, 80, 80, 0.4)';
+                btn.style.background = 'rgba(15, 23, 42, 0.8)';
+                btn.style.borderColor = 'rgba(71, 85, 105, 0.4)';
             }
         });
     });
@@ -1921,7 +1921,7 @@ class PlayerBioSystem {
         if (!bio) {
             return `
                 <div style="
-                    background: rgba(20, 20, 20, 0.6);
+                    background: rgba(15, 23, 42, 0.6);
                     border-radius: 12px;
                     padding: 16px;
                     text-align: center;
@@ -1935,13 +1935,13 @@ class PlayerBioSystem {
 
         return `
             <div style="
-                background: rgba(20, 20, 20, 0.6);
+                background: rgba(15, 23, 42, 0.6);
                 border-radius: 12px;
                 padding: 16px;
-                border: 1px solid rgba(80, 80, 80, 0.3);
+                border: 1px solid rgba(71, 85, 105, 0.3);
             ">
                 ${bio.description ? `
-                    <div style="color: #e5e5e5; margin-bottom: 12px; line-height: 1.6;">
+                    <div style="color: #e2e8f0; margin-bottom: 12px; line-height: 1.6;">
                         ${bio.description}
                     </div>
                 ` : ''}
@@ -1995,13 +1995,13 @@ class PlayerBioSystem {
                 ` : ''}
 
                 ${bio.favGamemode ? `
-                    <div style="margin-top: 12px; color: #9ca3af; font-size: 0.85rem;">
+                    <div style="margin-top: 12px; color: #94a3b8; font-size: 0.85rem;">
                         <strong>Favorite Gamemode:</strong> ${bio.favGamemode}
                     </div>
                 ` : ''}
 
                 ${bio.playstyle ? `
-                    <div style="margin-top: 8px; color: #9ca3af; font-size: 0.85rem;">
+                    <div style="margin-top: 8px; color: #94a3b8; font-size: 0.85rem;">
                         <strong>Playstyle:</strong> ${bio.playstyle}
                     </div>
                 ` : ''}
@@ -2088,7 +2088,7 @@ class PlayerComparison {
 
         return `
             <div style="padding: 20px;">
-                <h2 style="text-align: center; margin-bottom: 24px; color: #e5e5e5;">
+                <h2 style="text-align: center; margin-bottom: 24px; color: #e2e8f0;">
                     Player Comparison
                 </h2>
 
@@ -2101,10 +2101,10 @@ class PlayerComparison {
                     align-items: center;
                 ">
                     <div style="text-align: center;">
-                        <div style="font-size: 1.2rem; font-weight: 700; color: ${p1Points > p2Points ? '#10b981' : '#e5e5e5'};">
+                        <div style="font-size: 1.2rem; font-weight: 700; color: ${p1Points > p2Points ? '#10b981' : '#e2e8f0'};">
                             ${p1Name}
                         </div>
-                        <div style="font-size: 2rem; font-weight: 800; color: ${p1Points > p2Points ? '#10b981' : '#9ca3af'}; margin-top: 8px;">
+                        <div style="font-size: 2rem; font-weight: 800; color: ${p1Points > p2Points ? '#10b981' : '#94a3b8'}; margin-top: 8px;">
                             ${p1Points}
                         </div>
                         <div style="font-size: 0.85rem; color: #64748b;">points</div>
@@ -2113,10 +2113,10 @@ class PlayerComparison {
                     <div style="font-size: 1.5rem; color: #64748b;">VS</div>
 
                     <div style="text-align: center;">
-                        <div style="font-size: 1.2rem; font-weight: 700; color: ${p2Points > p1Points ? '#10b981' : '#e5e5e5'};">
+                        <div style="font-size: 1.2rem; font-weight: 700; color: ${p2Points > p1Points ? '#10b981' : '#e2e8f0'};">
                             ${p2Name}
                         </div>
-                        <div style="font-size: 2rem; font-weight: 800; color: ${p2Points > p1Points ? '#10b981' : '#9ca3af'}; margin-top: 8px;">
+                        <div style="font-size: 2rem; font-weight: 800; color: ${p2Points > p1Points ? '#10b981' : '#94a3b8'}; margin-top: 8px;">
                             ${p2Points}
                         </div>
                         <div style="font-size: 0.85rem; color: #64748b;">points</div>
@@ -2125,12 +2125,12 @@ class PlayerComparison {
 
                 <!-- Gamemode Comparison -->
                 <div style="
-                    background: rgba(20, 20, 20, 0.6);
+                    background: rgba(15, 23, 42, 0.6);
                     border-radius: 12px;
                     padding: 20px;
-                    border: 1px solid rgba(80, 80, 80, 0.3);
+                    border: 1px solid rgba(71, 85, 105, 0.3);
                 ">
-                    <h3 style="color: #9ca3af; margin-bottom: 16px; font-size: 1rem; text-transform: uppercase;">
+                    <h3 style="color: #94a3b8; margin-bottom: 16px; font-size: 1rem; text-transform: uppercase;">
                         Gamemode Breakdown
                     </h3>
                     ${Object.entries(comparison.gamemodes).map(([gm, data]) => `
@@ -2140,7 +2140,7 @@ class PlayerComparison {
                             gap: 12px;
                             padding: 12px;
                             margin-bottom: 8px;
-                            background: rgba(30, 30, 30, 0.6);
+                            background: rgba(15, 23, 42, 0.6);
                             border-radius: 8px;
                             align-items: center;
                         ">
@@ -2467,10 +2467,10 @@ function renderPlayersWithFilter(filteredList) {
                 return `
                     <div class="tier-wrapper">
                         <div class="gamemode-tier-item standby-tier" style="opacity: ${STANDBY_TIER_CONFIG.opacity};">
-                            <div class="gamemode-tier-icon-container" style="border-color: #444; border-style: dashed;">
+                            <div class="gamemode-tier-icon-container" style="border-color: #26324d; border-style: dashed;">
                                 <img class="gamemode-tier-icon" src="${iconSrc}" alt="${gm}" onerror="this.style.display='none';">
                             </div>
-                            <span class="tier" style="background: #333; color: #666; box-shadow: none;">
+                            <span class="tier" style="background: #1f2a44; color: #64748b; box-shadow: none;">
                                 ${STANDBY_TIER_CONFIG.label}
                             </span>
                         </div>
@@ -2725,8 +2725,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // Focus effects
     searchBox.addEventListener('focus', () => {
         if (searchWrapper) {
-            searchWrapper.style.borderColor = '#aaa';
-            searchWrapper.style.boxShadow = '0 0 20px rgba(170, 170, 170, 0.3)';
+            searchWrapper.style.borderColor = '#a8b3c7';
+            searchWrapper.style.boxShadow = '0 0 20px rgba(148, 163, 184, 0.3)';
         }
         
         if (searchBox.value.trim()) {
@@ -2737,7 +2737,7 @@ document.addEventListener('DOMContentLoaded', () => {
     
     searchBox.addEventListener('blur', () => {
         if (searchWrapper) {
-            searchWrapper.style.borderColor = 'rgba(80, 80, 80, 0.4)';
+            searchWrapper.style.borderColor = 'rgba(71, 85, 105, 0.4)';
             searchWrapper.style.boxShadow = 'none';
         }
         
@@ -2803,7 +2803,7 @@ document.addEventListener('DOMContentLoaded', () => {
             ">
                 <span style="font-size: 1.2rem;">${s.icon}</span>
                 <div style="flex: 1;">
-                    <div style="color: #e5e5e5; font-weight: 600;">${s.label}</div>
+                    <div style="color: #e2e8f0; font-weight: 600;">${s.label}</div>
                     ${s.type === 'filter' ? `<div style="color: #64748b; font-size: 0.85rem;">Click to add filter</div>` : ''}
                 </div>
             </div>
@@ -2814,7 +2814,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Add click handlers
         suggestionsBox.querySelectorAll('.suggestion-item').forEach(item => {
             item.addEventListener('mouseenter', () => {
-                item.style.background = 'rgba(50, 50, 50, 0.6)';
+                item.style.background = 'rgba(30, 41, 59, 0.6)';
             });
             item.addEventListener('mouseleave', () => {
                 item.style.background = 'transparent';
@@ -2977,5 +2977,5 @@ SOFTWARE.`);
 
 console.log(`-----------------------------------------------------------------------------------
 If Website appears to be Down Contact ImApo Immediately
-discord: cxnine._ Axis Discord Server: https://discord.gg/e39z2S4Edg
+discord: cxnine._ Axis Discord Server: https://discord.gg/zMqy5QbevP
 -----------------------------------------------------------------------------------`);
