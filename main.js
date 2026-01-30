@@ -312,7 +312,7 @@ const kitInfo = {
     nethsword: {
         title: "Netherite Sword Kit",
         description:
-            "Pure sword combat (But Netherite!) minimalist setup focusing on fundamental melee mechanics. Clean inventory allowing focus on combos, strafing, and movement without distraction.\n\nWhen a tier testing queue opens for this kit, be sure to join right away to secure your test spot. LT3 tests and below have a 3-day cooldown, while HT3 and higher come with a 7-day cooldown, so plan accordingly! The Official Neth Sword Tierlist Discord is linked here: https://discord.gg/YF9ScxHvEZ",
+            "Pure sword combat (But Netherite!) minimalist setup focusing on fundamental melee mechanics. Clean inventory allowing focus on combos, strafing, and movement without distraction.\n\nWhen a tier testing queue opens for this kit, be sure to join right away to secure your test spot. LT3 tests and below have a 3-day cooldown, while HT3 and higher come with a 7-day cooldown, so plan accordingly!",
         image: fixAssetPath("assets/kits/NethSword.png"),
     },
     mace: {
@@ -636,20 +636,13 @@ function calculatePoints(player) {
 }
 
 document.getElementById("copyIpBtn").addEventListener("click", () => {
-    navigator.clipboard.writeText("fadedmc.net");
+    navigator.clipboard.writeText("We Are Not Officially linked with any server.");
     const popup = document.getElementById("copyPopup");
     popup.style.display = "block";
     setTimeout(() => (popup.style.display = "none"), 2000);
 });
 document.getElementById("discordBtn").addEventListener("click", () => {
-    window.open("https://discord.gg/e39z2S4Edg", "_blank");
-});
-
-document.getElementById("stellarTiersBtn").addEventListener("click", () => {
-    window.location.href = "StellarTiers/";
-});
-document.getElementById("extiersBtn").addEventListener("click", () => {
-    window.location.href = "https://extiers.com/ranking/overall";
+    window.open("https://discord.gg/zMqy5QbevP", "_blank");
 });
 
 function getBadge(points) {
