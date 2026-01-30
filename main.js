@@ -46,34 +46,6 @@ document.addEventListener("DOMContentLoaded", () => {
   initializeFromURL();
 });
 
-const ACTIVITY_TYPES = {
-    TIER_CHANGE: {
-        icon: '📈',
-        color: '#3b82f6',
-        template: (data) => `${data.player} moved from ${data.oldTier} to ${data.newTier} in ${data.gamemode}`
-    },
-    NEW_PLAYER: {
-        icon: '✨',
-        color: '#10b981',
-        template: (data) => `${data.player} joined the tierlist!`
-    },
-    PEAK_TIER: {
-        icon: '🏆',
-        color: '#f59e0b',
-        template: (data) => `${data.player} achieved a new peak tier: ${data.tier} in ${data.gamemode}`
-    },
-    BADGE_UPGRADE: {
-        icon: '⭐',
-        color: '#8b5cf6',
-        template: (data) => `${data.player} reached ${data.badge} rank!`
-    },
-    MILESTONE: {
-        icon: '🎉',
-        color: '#ec4899',
-        template: (data) => data.message
-    }
-};
-
 const ASSET_BASE = "/StellarTiers/";
 const fixAssetPath = (path) => path.startsWith("assets/") ? ASSET_BASE + path : path;
 
@@ -2858,38 +2830,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-// Example function to track tier changes - CALL THIS when tiers are updated
-function trackTierChange(playerName, oldTier, newTier, gamemode) {
-    activityFeed.addActivity('TIER_CHANGE', {
-        player: playerName,
-        oldTier,
-        newTier,
-        gamemode
-    });
-}
-
-// Example function to add new player activity
-function trackNewPlayer(playerName) {
-    activityFeed.addActivity('NEW_PLAYER', {
-        player: playerName
-    });
-}
-
-// Check milestones when players load
-function checkMilestones() {
-    const totalPlayers = players.length;
-    const milestones = [50, 100, 150, 200, 250, 300, 500, 750, 1000];
-    
-    // Check if we've hit any milestone
-    milestones.forEach(milestone => {
-        if (totalPlayers === milestone) {
-            activityFeed.addActivity('MILESTONE', {
-                message: `🎉 ${milestone} players on the tierlist!`
-            });
-        }
-    });
-}
-
 // Run milestone check after players load
 const originalLoadPlayers = loadPlayers;
 loadPlayers = async function() {
@@ -2905,7 +2845,7 @@ loadPlayers = async function() {
 function setPlayerBioExample() {
     // Example usage:
     playerBioSystem.setBio('ImApo', {
-        description: 'Competitive PvP player specializing in Crystal combat. Known for aggressive playstyle and quick reflexes.',
+        description: 'Competitive PvP player specializing in Sword combat. Known for aggressive playstyle and quick reflexes.',
         socials: {
             youtube: 'https://youtube.com/@exampleplayer',
             twitch: 'https://twitch.tv/exampleplayer',
@@ -2919,24 +2859,6 @@ function setPlayerBioExample() {
     console.log('✅ Bio set for ExamplePlayer');
 }
 
-// Add some example activities on first load
-function addExampleActivities() {
-    const hasActivities = activityFeed.getRecent(1).length > 0;
-    
-    if (!hasActivities && players.length > 0) {
-        // Add some example activities
-        activityFeed.addActivity('MILESTONE', {
-            message: `🎉 ${players.length} players on the tierlist!`
-        });
-        
-        // Add tier change example for top player
-        if (players[0]) {
-            activityFeed.addActivity('NEW_PLAYER', {
-                player: players[0].name
-            });
-        }
-    }
-}
 
 // Run example activities on load
 setTimeout(addExampleActivities, 1000);
@@ -3023,9 +2945,6 @@ document.getElementById("kitInfoBtn").addEventListener("click", () => {
 document.getElementById("closeKitInfo").addEventListener("click", () => {
     document.getElementById("kitInfoModal").style.display = "none";
 });
-
-// Initialize activityFeed globally at the top level
-const activityFeed = new ActivityFeed();
 
 document.addEventListener("DOMContentLoaded", () => {
     window.loadStartTime = Date.now();
