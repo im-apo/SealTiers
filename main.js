@@ -2837,7 +2837,6 @@ document.addEventListener('DOMContentLoaded', () => {
 const originalLoadPlayers = loadPlayers;
 loadPlayers = async function() {
     await originalLoadPlayers();
-    checkMilestones();
 };
 
 // ============================================
