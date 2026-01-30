@@ -1,57 +1,52 @@
 <div align="center">
 
-  # 🧭 Axis Team Website
+# 🦭 SealTiers
 
-An interactive, modern website for the **Axis Team** community — featuring a **forum-style homepage**, **PvP player rankings**, **media highlights**, and **resources** for competitive Minecraft players.
+An interactive, modern website for the **SealTiers** community — featuring an interactive PvP tier list, player rankings, and useful resources for competitive Minecraft players.
 
-<a href="https://im-apo.github.io/StellarTiers/">
-  <img src="logo.png" alt="Axis">
+<a href="https://im-apo.github.io/SealTiers/">
+  <img src="logo.png" alt="SealTiers">
 </a>
 
-[![MIT License](https://img.shields.io/github/license/im-apo/StellarTiers?&logo=github)](LICENSE) [![CodeFactor](https://www.codefactor.io/repository/github/im-apo/stellartiers/badge)](https://www.codefactor.io/repository/github/im-apo/stellartiers)
+[![MIT License](https://img.shields.io/github/license/im-apo/SealTiers?&logo=github)](LICENSE)
+[![CodeFactor](https://www.codefactor.io/repository/github/im-apo/sealtiers/badge)](https://www.codefactor.io/repository/github/im-apo/sealtiers)
 
 </div>
----
-
-## 🏠 Project Overview
-
-The Axis Team Website serves as the **central hub** for the community, combining:
-- 🗣️ **Community Forum (Home Page)** – Discuss updates, post threads, and connect with other players.  
-- 🏆 **Rankings Page** – Interactive tierlist showcasing Minecraft PvP players across Crystal, Sword, UHC, and more.  
-- 🎥 **Media Page** – Watch PvP highlights, montages, and team content.  
-- 📦 **Resources Page** – Download community-made texture packs and guides.
 
 ---
-## LICENSE
 
-All files are licensed under the MIT license.
-[![MIT License](https://img.shields.io/github/license/im-apo/StellarTiers?&logo=github)](LICENSE)
+## 🏠 Overview
+
+SealTiers is a central hub for viewing and comparing Minecraft PvP skill levels across multiple gamemodes.
+
+It includes:
+- 🏆 **Interactive Rankings** – Dynamic tier list for Crystal, Sword, UHC, SMP, and more  
+- 🔍 **Player Search & Filters** – Quickly find players and view their stats  
+- 📊 **Tier History & Progress** – See how a player’s rank changes over time  
+- 📦 **Community Resources** – Packs, guides, and other useful PvP content  
 
 ---
 
 ## 🚀 Features
 
-- 🎨 **Modern Dark UI** with gradients, blur effects, and smooth animations.  
-- 💬 **Thread System (Modal)** – View posts in an interactive modal pop-up.  
-- 🔍 **Forum Search Bar** – Quickly filter threads and community discussions.  
-- 🧭 **Responsive Navbar** – Auto-hides on scroll for a clean browsing experience.  
-- ⚡ **Loading Animation** – Branded loading screen with spinner and logo.  
-- 📱 **Responsive Layout** – Works across desktop, tablet, and mobile.  
+- 🎨 Clean seal-themed dark blue UI  
+- ⚡ Fast, dynamic leaderboard updates  
+- 🔄 Gamemode switching with instant filtering  
+- 🧑 Player profiles with detailed tier breakdowns  
+- 📈 Tier history timeline and peak tier display  
+- 📱 Fully responsive layout for desktop and mobile  
 
 ---
 
 ## 🧩 Tech Stack
 
-- **HTML5** — Semantic structure  
-- **CSS3** — Custom gradients, shadows, and responsive design  
-- **JavaScript (Vanilla)** — UI interactivity (modals, navbar, animations, and linking to backend)  
+- **HTML5** – Structure  
+- **CSS3** – Custom theming, gradients, responsive layout  
+- **Vanilla JavaScript** – Leaderboard logic, filtering, modals, and interactivity  
 
 ---
 
+## 📄 License
 
-
-
-
-
-
-
+This project is licensed under the MIT License.  
+See the [LICENSE](LICENSE) file for details.
