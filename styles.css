@@ -54,8 +54,7 @@ body::before {
     width: 100%;
     height: 100%;
     background-color: #020617;
-    background-image: url(https://www.transparenttextures.com/patterns/cartographer.png);
-    repeat;
+    background-image: url(https://imgs.search.brave.com/X2RQCYoEvh2JawJse4Rb0xfam0SZ0gxAQKQjS9LhzSM/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly93d3cu/aGlja2VycGhvdG8u/Y29tL2ltYWdlcy82/MDAvY3V0ZV93aGl0/ZV9jb2F0X3QzNTM5/LmpwZw);
     opacity: .25;
     z-index: -1
 }
@@ -283,7 +282,7 @@ body::before {
     width: 100%;
     height: 100%;
     background-color: #020617;
-    background-image: url(https://www.transparenttextures.com/patterns/cartographer.png);
+    background-image: url(https://imgs.search.brave.com/X2RQCYoEvh2JawJse4Rb0xfam0SZ0gxAQKQjS9LhzSM/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly93d3cu/aGlja2VycGhvdG8u/Y29tL2ltYWdlcy82/MDAvY3V0ZV93aGl0/ZV9jb2F0X3QzNTM5/LmpwZw);
     opacity: .25;
     z-index: -1
 }
@@ -2793,3 +2792,4 @@ body {
         }
 
 </style>
+
