@@ -5,11 +5,11 @@
 }
 
 :root {
-    --grad-1: #0a0a0a;
-    --grad-2: #1a1a1a;
-    --grad-3: #2a2a2a;
+    --grad-1: #020617;
+    --grad-2: #0f172a;
+    --grad-3: #16233f;
 
-    --text-color: #e5e5e5;
+    --text-color: #e2e8f0;
     --fg: var(--text-color);
     --muted: #7f93ad;
     --accent: #7fa1c3;
@@ -20,7 +20,7 @@ body.light {
     --grad-1: #eef2f7;
     --grad-2: #dbe3ee;
     --grad-3: #c7d3e3;
---text-color: #111;
+    --text-color: #0b1220;
 
     --fg: var(--text-color);
     --muted: #4b5f78;
@@ -53,7 +53,7 @@ body::before {
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: #000;
+    background-color: #020617;
     background-image: url(https://www.transparenttextures.com/patterns/cartographer.png);
     repeat;
     opacity: .25;
@@ -100,7 +100,7 @@ body::before {
 .header h1 {
     font-size: 2.5rem;
     font-weight: 800;
-    background: linear-gradient(135deg, #f5f5f5, #cfcfcf);
+    background: linear-gradient(135deg, #f8fafc, #cfcfcf);
     -webkit-background-clip: text;
     -webkit-text-fill-color: #fff0;
     background-clip: text;
@@ -182,15 +182,15 @@ body::before {
 }
 
 .footer strong {
-    color: #e5e5e5;
-    background: linear-gradient(135deg, #f5f5f5, #cfcfcf);
+    color: #e2e8f0;
+    background: linear-gradient(135deg, #f8fafc, #cfcfcf);
     -webkit-background-clip: text;
     -webkit-text-fill-color: #fff0;
     background-clip: text
 }
 
 #pageSizeSelector:hover {
-    border-color: #999;
+    border-color: #cbd5e1;
     box-shadow: 0 0 20px rgb(160 160 160 / .4)
 }
 
@@ -201,13 +201,13 @@ body::before {
 }
 
 #pageSizeSelector option {
-    background: #1a1a1a;
-    color: #e5e5e5;
+    background: #0f172a;
+    color: #e2e8f0;
     padding: 4px 8px
 }
 
 .action-button:hover {
-    background: #111;
+    background: #0b1220;
     color: #fff;
     transform: translateY(-2px);
     box-shadow: 0 0 20px rgb(160 160 160 / .7)
@@ -234,7 +234,7 @@ body::before {
 }
 
 #searchContainer:hover {
-    border-color: #999;
+    border-color: #cbd5e1;
     box-shadow: 0 0 20px rgb(160 160 160 / .4)
 }
 
@@ -248,7 +248,7 @@ body::before {
 }
 
 #searchBox::placeholder {
-    color: #7a7a7a
+    color: #94a3b8
 }
 
 .gamemode-switcher {
@@ -264,7 +264,7 @@ body::before {
     left: 0;
     width: 100%;
     height: 100%;
-    background: linear-gradient(135deg, #0a0a0a, #1a1a1a 60%, #2a2a2a 100%);
+    background: linear-gradient(135deg, #020617, #0f172a 60%, #16233f 100%);
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -282,7 +282,7 @@ body::before {
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: #000;
+    background-color: #020617;
     background-image: url(https://www.transparenttextures.com/patterns/cartographer.png);
     opacity: .25;
     z-index: -1
@@ -306,7 +306,7 @@ body::before {
 .loading-text {
     margin-top: 24px;
     font-size: 1.4rem;
-    color: #e5e5e5;
+    color: #e2e8f0;
     font-weight: 600;
     text-align: center
 }
@@ -343,7 +343,7 @@ body::before {
 
 .arrow-btn:hover {
     background: rgb(50 50 50 / .95);
-    border-color: #aaa;
+    border-color: #cbd5e1;
     box-shadow: 0 0 10px rgb(200 200 200 / .5)
 }
 
@@ -373,13 +373,13 @@ body::before {
 
 .page-btn:hover {
     background: rgb(50 50 50 / .95);
-    border-color: #aaa;
+    border-color: #cbd5e1;
     box-shadow: 0 0 12px rgb(180 180 180 / .4)
 }
 
 .page-btn.active {
-    background: linear-gradient(135deg, #333, #111);
-    border-color: #ccc;
+    background: linear-gradient(135deg, #1e293b, #0b1220);
+    border-color: #e2e8f0;
     color: #fff;
     font-weight: 700;
     box-shadow: 0 0 18px rgb(200 200 200 / .7)
@@ -419,14 +419,14 @@ body::before {
 
 .gamemode-tab:hover {
     background: rgb(50 50 50 / .95);
-    border-color: #aaa;
+    border-color: #cbd5e1;
     transform: translateY(-2px);
     box-shadow: 0 0 12px rgb(180 180 180 / .4)
 }
 
 .gamemode-tab.active {
-    background: linear-gradient(135deg, #333, #111);
-    border-color: #ccc;
+    background: linear-gradient(135deg, #1e293b, #0b1220);
+    border-color: #e2e8f0;
     color: #fff;
     font-weight: 700;
     box-shadow: 0 0 18px rgb(200 200 200 / .7)
@@ -467,7 +467,7 @@ body::before {
     border-bottom: 2px solid rgb(255 255 255 / .1);
     margin-bottom: 20px;
     font-weight: 700;
-    color: #e5e5e5;
+    color: #e2e8f0;
     font-size: 16px
 }
 
@@ -577,7 +577,7 @@ body::before {
     background-clip: text;
 }
 .player-details:has(.points-badge.expert) .player-points .points-number {
-    background: linear-gradient(135deg, color-mix(in srgb, var(--accent) 85%, #ffffff 15%), color-mix(in srgb, var(--accent) 85%, #000000 15%));
+    background: linear-gradient(135deg, color-mix(in srgb, var(--accent) 85%, #ffffff 15%), color-mix(in srgb, var(--accent) 85%, #020617 15%));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -652,7 +652,7 @@ body::before {
 }
 
 .points-badge.expert {
-    background: linear-gradient(135deg, color-mix(in srgb, var(--accent) 85%, #ffffff 15%), color-mix(in srgb, var(--accent) 85%, #000000 15%));
+    background: linear-gradient(135deg, color-mix(in srgb, var(--accent) 85%, #ffffff 15%), color-mix(in srgb, var(--accent) 85%, #020617 15%));
     box-shadow: 0 0 12px rgba(0, 128, 255, 0.6);
     color: #fff;
 }
@@ -691,10 +691,10 @@ body::before {
     overflow: hidden;
     font-weight: bold;
     text-transform: uppercase;
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+    text-shadow: 0 1px 2px rgba(2, 6, 23, 0.4);
     transition: all 0.25s ease-in-out;
     color: #fff;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 4px 12px rgba(2, 6, 23, 0.2);
     background-size: 200% 200%;
     animation: gradientShift 6s ease infinite;
 }
@@ -758,7 +758,7 @@ body::before {
 .tier.rht6 {
     background: linear-gradient(135deg, #d4af37, #f6e27a, #ffd700);
     box-shadow: 0 0 14px rgba(255, 215, 0, 0.6);
-    color: #222;
+    color: #111c33;
 }
 
 .tier.lt5,
@@ -771,7 +771,7 @@ body::before {
 .tier.rht5 {
     background: linear-gradient(135deg, #fbbf24, #f59e0b, #fcd34d);
     box-shadow: 0 0 14px rgba(255, 204, 51, 0.6);
-    color: #222;
+    color: #111c33;
 }
 
 .tier.lt4,
@@ -784,7 +784,7 @@ body::before {
 .tier.rht4 {
     background: linear-gradient(135deg, #34d399, #5eead4, #99f6e4);
     box-shadow: 0 0 14px rgba(102, 255, 204, 0.6);
-    color: #000;
+    color: #020617;
 }
 
 .tier.lt3,
@@ -797,7 +797,7 @@ body::before {
 .tier.rht3 {
     background: linear-gradient(135deg, #60a5fa, #93c5fd, #bfdbfe);
     box-shadow: 0 0 14px rgba(150, 200, 255, 0.6);
-    color: #000;
+    color: #020617;
 }
 
 .tier.lt2,
@@ -810,7 +810,7 @@ body::before {
 .tier.rht2 {
     background: linear-gradient(135deg, #8b5cf6, #c084fc, #e879f9);
     box-shadow: 0 0 14px rgba(224, 121, 249, 0.6);
-    color: #000;
+    color: #020617;
 }
 
 .tier.lt1,
@@ -823,14 +823,14 @@ body::before {
 .tier.rht1 {
     background: linear-gradient(135deg, #f472b6, #ec4899, #e879f9);
     box-shadow: 0 0 14px rgba(236, 72, 153, 0.6);
-    color: #000;
+    color: #020617;
 }
 
 .tier.lt0,
 .tier.rlt0 {
     background: linear-gradient(135deg, #ffb6c1, #ffd700, #98fb98, #add8e6, #dda0dd);
     box-shadow: 0 0 14px rgba(255, 182, 193, 0.6);
-    color: #000;
+    color: #020617;
 }
 
 .tier.ht0,
@@ -942,14 +942,14 @@ body::before {
     border-bottom: 2px solid rgb(255 255 255 / .1);
     margin-bottom: 20px;
     font-weight: 700;
-    color: #e5e5e5;
+    color: #e2e8f0;
     font-size: 16px
 }
 
 .context-menu {
     position: absolute;
-    background: #1e1e1e;
-    border: 1px solid #333;
+    background: #0f172a;
+    border: 1px solid #1e293b;
     border-radius: 6px;
     padding: 6px 0;
     display: none;
@@ -962,21 +962,21 @@ body::before {
 .context-label {
     font-weight: 700;
     font-size: 13px;
-    color: #aaa;
+    color: #cbd5e1;
     padding: 6px 12px;
-    border-bottom: 1px solid #333
+    border-bottom: 1px solid #1e293b
 }
 
 .context-item {
     padding: 8px 12px;
     font-size: 14px;
-    color: #ddd;
+    color: #f1f5f9;
     cursor: pointer;
     transition: background 0.2s
 }
 
 .context-item:hover {
-    background: #333;
+    background: #1e293b;
     color: #fff
 }
 
@@ -987,7 +987,7 @@ body::before {
     position: relative;
     max-width: 500px;
     margin: auto;
-    color: #e5e5e5;
+    color: #e2e8f0;
     box-shadow: 0 0 25px rgb(0 0 0 / .8)
 }
 
@@ -999,7 +999,7 @@ body::before {
     font-weight: 700;
     background: none;
     border: none;
-    color: #aaa;
+    color: #cbd5e1;
     cursor: pointer;
     transition: color 0.2s
 }
@@ -1013,7 +1013,7 @@ body::before {
     font-size: 1.8rem;
     font-weight: 800;
     margin-bottom: 12px;
-    background: linear-gradient(135deg, #ddd, #aaa);
+    background: linear-gradient(135deg, #f1f5f9, #cbd5e1);
     -webkit-background-clip: text;
     -webkit-text-fill-color: #fff0
 }
@@ -1033,7 +1033,7 @@ body::before {
 
 .tier-info-modal .tier-table th {
     text-align: left;
-    color: #bbb;
+    color: #e2e8f0;
     font-weight: 600;
     padding: 6px 4px;
     border-bottom: 1px solid rgb(120 120 120 / .4)
@@ -1061,7 +1061,7 @@ body::before {
 
 .tier-info-modal .retired-tier-table th {
     text-align: left;
-    color: #bbb;
+    color: #e2e8f0;
     font-weight: 600;
     padding: 6px 4px;
     border-bottom: 1px solid rgb(120 120 120 / .4)
@@ -1094,8 +1094,8 @@ body::before {
     top: -50px;
     left: 50%;
     transform: translateX(-50%);
-    background: #2a2a2a;
-    color: #f5f5f5;
+    background: #16233f;
+    color: #f8fafc;
     padding: 8px 16px;
     border-radius: 12px;
     font-size: .9rem;
@@ -1110,7 +1110,7 @@ body::before {
     text-align: center;
     padding: 60px;
     font-size: 1.3rem;
-    color: #e5e5e5;
+    color: #e2e8f0;
     font-weight: 600
 }
 
@@ -1119,7 +1119,7 @@ body::before {
     display: inline-block;
     width: 24px;
     height: 24px;
-    border: 3px solid #e5e5e5;
+    border: 3px solid #e2e8f0;
     border-top: 3px solid #fff0;
     border-radius: 50%;
     animation: spin 1s linear infinite;
@@ -1192,7 +1192,7 @@ body::before {
 }
 
 .rank.true-overall.silver {
-    background: linear-gradient(45deg, #c0c0c0, #e5e5e5);
+    background: linear-gradient(45deg, #c0c0c0, #e2e8f0);
     -webkit-background-clip: text;
     -webkit-text-fill-color: #fff0;
     background-clip: text
@@ -1229,7 +1229,7 @@ body::before {
     align-items: center;
     border: 1px solid rgb(80 80 80 / .4);
     backdrop-filter: blur(20px);
-    color: #f5f5f5
+    color: #f8fafc
 }
 
 .player-modal-header {
@@ -1301,7 +1301,7 @@ body::before {
     background-clip: text;
 }
 .player-modal-points:has(.points-badge.expert) .points-number {
-    background: linear-gradient(135deg, color-mix(in srgb, var(--accent) 85%, #ffffff 15%), color-mix(in srgb, var(--accent) 85%, #000000 15%));
+    background: linear-gradient(135deg, color-mix(in srgb, var(--accent) 85%, #ffffff 15%), color-mix(in srgb, var(--accent) 85%, #020617 15%));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -1374,7 +1374,7 @@ body::before {
 
 .player-modal-name .player-region {
     color: #fff !important;
-    background: var(--region-bg, #666);
+    background: var(--region-bg, #64748b);
     display: inline-flex !important;
     align-items: center !important;
     justify-content: center !important;
@@ -1390,13 +1390,13 @@ body::before {
 }
 
 .region-filter-modal {
-    background: #1a1a1a;
+    background: #0f172a;
     border-radius: 8px;
     padding: 20px 16px;
     position: relative;
     width: 280px;
     margin: auto;
-    border: 2px solid #888;
+    border: 2px solid #94a3b8;
     box-shadow: 0 8px 32px rgb(0 0 0 / .8)
 }
 
@@ -1406,7 +1406,7 @@ body::before {
     right: 12px;
     background: none;
     border: none;
-    color: #999;
+    color: #cbd5e1;
     font-size: 20px;
     cursor: pointer;
     transition: color 0.2s
@@ -1427,16 +1427,16 @@ body::before {
     align-items: center;
     gap: 12px;
     padding: 8px 12px;
-    background: #2a2a2a;
+    background: #16233f;
     border-radius: 4px;
     cursor: pointer;
     transition: all 0.2s ease;
-    border: 1px solid #333
+    border: 1px solid #1e293b
 }
 
 .region-checkbox-item:hover {
-    background: #333;
-    border-color: #444
+    background: #1e293b;
+    border-color: #334155
 }
 
 .region-checkbox-item input[type="checkbox"] {
@@ -1446,7 +1446,7 @@ body::before {
 .checkbox-custom {
     width: 16px;
     height: 16px;
-    border: 2px solid #555;
+    border: 2px solid #475569;
     border-radius: 3px;
     background: #fff0;
     transition: all 0.2s ease;
@@ -1455,8 +1455,8 @@ body::before {
 }
 
 .region-checkbox-item input[type="checkbox"]:checked+.checkbox-custom {
-    background: #888;
-    border-color: #888
+    background: #94a3b8;
+    border-color: #94a3b8
 }
 
 .region-checkbox-item input[type="checkbox"]:checked+.checkbox-custom::after {
@@ -1471,7 +1471,7 @@ body::before {
 }
 
 .region-name {
-    color: #ccc;
+    color: #e2e8f0;
     font-size: 13px;
     font-weight: 600;
     letter-spacing: .5px;
@@ -1484,14 +1484,14 @@ body::before {
 }
 
 .gamemode-tab[data-gamemode="overall"].filtered {
-    background: linear-gradient(135deg, color-mix(in srgb, var(--accent) 85%, #ffffff 15%), color-mix(in srgb, var(--accent) 85%, #000000 15%)) !important;
+    background: linear-gradient(135deg, color-mix(in srgb, var(--accent) 85%, #ffffff 15%), color-mix(in srgb, var(--accent) 85%, #020617 15%)) !important;
     border-color: rgb(var(--accent-rgb) / 0.55) !important;
     color: #fff !important;
     box-shadow: 0 0 18px rgb(var(--accent-rgb) / .45) !important
 }
 
 .gamemode-tab[data-gamemode="overall"].filtered:hover {
-    background: linear-gradient(135deg, color-mix(in srgb, var(--accent) 80%, #ffffff 20%), color-mix(in srgb, var(--accent) 80%, #000000 20%)) !important;
+    background: linear-gradient(135deg, color-mix(in srgb, var(--accent) 80%, #ffffff 20%), color-mix(in srgb, var(--accent) 80%, #020617 20%)) !important;
     box-shadow: 0 0 22px rgb(var(--accent-rgb) / .60) !important
 }
 
@@ -1568,7 +1568,7 @@ body::before {
 }
 
 .player-modal-name .player-region.unknown {
-    background: #444 !important
+    background: #334155 !important
 }
 
 .player-modal-name .player-region.unknown:hover {
@@ -1592,7 +1592,7 @@ body::before {
     font-size: 3rem;
     font-weight: 900;
     margin-bottom: 25px;
-    background: linear-gradient(135deg, #f5f5f5, #cfcfcf);
+    background: linear-gradient(135deg, #f8fafc, #cfcfcf);
     -webkit-background-clip: text;
     -webkit-text-fill-color: #fff0;
     background-clip: text;
@@ -1649,12 +1649,12 @@ body::before {
 
 .tier-column-header.tier-1 {
     background: linear-gradient(135deg, #C9B200, #CC9200);
-    color: #000
+    color: #020617
 }
 
 .tier-column-header.tier-2 {
     background: linear-gradient(135deg, #94a3b8, #64748b);
-    color: #000
+    color: #020617
 }
 
 .tier-column-header.tier-3 {
@@ -1730,7 +1730,7 @@ body::before {
 }
 
 .tier-column-player-name.high-tier {
-    color: #f5f5f5;
+    color: #f8fafc;
     font-weight: 700
 }
 
@@ -1774,7 +1774,7 @@ body::before {
 }
 
 .rank-2-name {
-    background: linear-gradient(45deg, #c0c0c0, #d3d3d3, #e5e5e5, #a9a9a9, #808080);
+    background: linear-gradient(45deg, #c0c0c0, #d3d3d3, #e2e8f0, #a9a9a9, #94a3b8);
     background-size: 200% 200%;
     -webkit-background-clip: text;
     -webkit-text-fill-color: #fff0;
@@ -1838,9 +1838,9 @@ body::before {
 }
 
 :root .modal-content {
-    background: #1e1e1e;
-    color: #f5f5f5;
-    border: 1px solid #333
+    background: #0f172a;
+    color: #f8fafc;
+    border: 1px solid #1e293b
 }
 
 .tier-column-player .player-region {
@@ -1952,9 +1952,9 @@ body::before {
 }
 
 .standby-tier:hover {
-    background: rgba(20, 20, 20, 0.6) !important;
+    background: rgba(15, 23, 42, 0.6) !important;
     transform: none !important;
-    border-color: rgba(80, 80, 80, 0.3) !important;
+    border-color: rgba(148, 163, 184, 0.3) !important;
 }
 
 .standby-tier .tier {
@@ -1999,7 +1999,7 @@ body::before {
 }
 
 .player-region.unknown {
-    background: #444
+    background: #334155
 }
 
 .player-region.unknown:hover {
@@ -2044,7 +2044,7 @@ body {
     align-items: center;
     gap: 12px;
     text-decoration: none;
-    color: #e5e5e5;
+    color: #e2e8f0;
     font-weight: 700;
     font-size: 1.3rem;
     transition: all 0.3s ease
@@ -2055,7 +2055,7 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-    background: rgba(20, 20, 20, 0.5);
+    background: rgba(15, 23, 42, 0.5);
     border-radius: 5px;
 }
 
@@ -2066,7 +2066,7 @@ body {
 }
 
 ::-webkit-scrollbar-thumb:hover {
-    background: rgba(120, 120, 120, 0.8);
+    background: rgba(148, 163, 184, 0.8);
 }
 
 .navbar-logo:hover {
@@ -2105,14 +2105,14 @@ body {
 
 .navbar-tab:hover {
     background: rgb(50 50 50 / .9);
-    border-color: #999;
+    border-color: #cbd5e1;
     transform: translateY(-2px);
     box-shadow: 0 0 15px rgb(160 160 160 / .5)
 }
 
 .navbar-tab.active {
-    background: linear-gradient(135deg, #333, #111);
-    border-color: #ccc;
+    background: linear-gradient(135deg, #1e293b, #0b1220);
+    border-color: #e2e8f0;
     color: #fff;
     box-shadow: 0 0 18px rgb(200 200 200 / .7)
 }
@@ -2133,8 +2133,8 @@ body {
     bottom: calc(100% + 8px);
     left: 50%;
     transform: translateX(-50%);
-    background: rgba(20, 20, 20, 0.98);
-    border: 2px solid rgba(120, 120, 120, 0.6);
+    background: rgba(15, 23, 42, 0.98);
+    border: 2px solid rgba(148, 163, 184, 0.6);
     border-radius: 12px;
     padding: 12px 16px;
     white-space: nowrap;
@@ -2143,7 +2143,7 @@ body {
     visibility: hidden;
     transition: opacity 0.3s ease, visibility 0.3s ease;
     z-index: 10000;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.8);
+    box-shadow: 0 8px 24px rgba(2, 6, 23, 0.8);
     backdrop-filter: blur(10px);
 }
 
@@ -2159,7 +2159,7 @@ body {
     left: 50%;
     transform: translateX(-50%);
     border: 6px solid transparent;
-    border-top-color: rgba(120, 120, 120, 0.6);
+    border-top-color: rgba(148, 163, 184, 0.6);
 }
 
 .peak-tier-content {
@@ -2220,9 +2220,9 @@ body {
 .tier-history-section {
     margin-top: 24px;
     padding: 20px;
-    background: rgba(15, 15, 15, 0.6);
+    background: rgba(15, 23, 42, 0.6);
     border-radius: 16px;
-    border: 1px solid rgba(80, 80, 80, 0.3);
+    border: 1px solid rgba(148, 163, 184, 0.3);
 }
 
 .tier-history-header {
@@ -2249,8 +2249,8 @@ body {
 }
 
 .gamemode-selector-btn {
-    background: rgba(30, 30, 30, 0.8);
-    border: 2px solid rgba(80, 80, 80, 0.4);
+    background: rgba(30, 41, 59, 0.8);
+    border: 2px solid rgba(148, 163, 184, 0.4);
     border-radius: 8px;
     padding: 6px 12px;
     color: #d1d5db;
@@ -2261,13 +2261,13 @@ body {
 }
 
 .gamemode-selector-btn:hover {
-    background: rgba(50, 50, 50, 0.9);
-    border-color: #999;
+    background: rgba(71, 85, 105, 0.9);
+    border-color: #cbd5e1;
 }
 
 .gamemode-selector-btn.active {
-    background: linear-gradient(135deg, #333, #111);
-    border-color: #ccc;
+    background: linear-gradient(135deg, #1e293b, #0b1220);
+    border-color: #e2e8f0;
     color: #fff;
 }
 
@@ -2275,9 +2275,9 @@ body {
 .tier-history-section {
     margin-top: 24px;
     padding: 20px;
-    background: rgba(15, 15, 15, 0.6);
+    background: rgba(15, 23, 42, 0.6);
     border-radius: 16px;
-    border: 1px solid rgba(80, 80, 80, 0.3);
+    border: 1px solid rgba(148, 163, 184, 0.3);
 }
 
 .tier-history-header {
@@ -2304,8 +2304,8 @@ body {
 }
 
 .gamemode-selector-btn {
-    background: rgba(30, 30, 30, 0.8);
-    border: 2px solid rgba(80, 80, 80, 0.4);
+    background: rgba(30, 41, 59, 0.8);
+    border: 2px solid rgba(148, 163, 184, 0.4);
     border-radius: 8px;
     padding: 6px 12px;
     color: #d1d5db;
@@ -2316,13 +2316,13 @@ body {
 }
 
 .gamemode-selector-btn:hover {
-    background: rgba(50, 50, 50, 0.9);
-    border-color: #999;
+    background: rgba(71, 85, 105, 0.9);
+    border-color: #cbd5e1;
 }
 
 .gamemode-selector-btn.active {
-    background: linear-gradient(135deg, #333, #111);
-    border-color: #ccc;
+    background: linear-gradient(135deg, #1e293b, #0b1220);
+    border-color: #e2e8f0;
     color: #fff;
 }
 
@@ -2330,9 +2330,9 @@ body {
 .tier-history-section {
     margin-top: 24px;
     padding: 20px;
-    background: rgba(15, 15, 15, 0.6);
+    background: rgba(15, 23, 42, 0.6);
     border-radius: 16px;
-    border: 1px solid rgba(80, 80, 80, 0.3);
+    border: 1px solid rgba(148, 163, 184, 0.3);
 }
 
 .tier-history-header {
@@ -2360,8 +2360,8 @@ body {
 }
 
 .gamemode-selector-btn {
-    background: rgba(30, 30, 30, 0.8);
-    border: 2px solid rgba(80, 80, 80, 0.4);
+    background: rgba(30, 41, 59, 0.8);
+    border: 2px solid rgba(148, 163, 184, 0.4);
     border-radius: 8px;
     padding: 8px 14px;
     color: #d1d5db;
@@ -2374,13 +2374,13 @@ body {
 }
 
 .gamemode-selector-btn:hover {
-    background: rgba(50, 50, 50, 0.9);
-    border-color: #999;
+    background: rgba(71, 85, 105, 0.9);
+    border-color: #cbd5e1;
 }
 
 .gamemode-selector-btn.active {
-    background: linear-gradient(135deg, #333, #111);
-    border-color: #ccc;
+    background: linear-gradient(135deg, #1e293b, #0b1220);
+    border-color: #e2e8f0;
     color: #fff;
 }
 
@@ -2472,7 +2472,7 @@ body {
     left: 40px;
     right: 40px;
     height: 3px;
-    background: linear-gradient(90deg, rgba(120, 120, 120, 0.2), rgba(120, 120, 120, 0.4), rgba(120, 120, 120, 0.2));
+    background: linear-gradient(90deg, rgba(148, 163, 184, 0.2), rgba(148, 163, 184, 0.4), rgba(148, 163, 184, 0.2));
     z-index: 1;
     border-radius: 2px;
 }
@@ -2518,7 +2518,7 @@ body {
             width: 60px;
             height: 60px;
             border-radius: 50%;
-            background: linear-gradient(135deg, color-mix(in srgb, var(--accent) 85%, #ffffff 15%), color-mix(in srgb, var(--accent) 85%, #000000 15%));
+            background: linear-gradient(135deg, color-mix(in srgb, var(--accent) 85%, #ffffff 15%), color-mix(in srgb, var(--accent) 85%, #020617 15%));
             border: 3px solid rgb(var(--accent-rgb) / 0.45);
             color: white;
             font-size: 24px;
@@ -2539,7 +2539,7 @@ body {
         .activity-feed-modal {
             position: fixed;
             inset: 0;
-            background: rgba(0, 0, 0, 0.8);
+            background: rgba(2, 6, 23, 0.8);
             display: none;
             align-items: center;
             justify-content: center;
@@ -2551,15 +2551,15 @@ body {
         }
 
         .activity-feed-content {
-            background: rgba(20, 20, 20, 0.98);
+            background: rgba(15, 23, 42, 0.98);
             border-radius: 24px;
             padding: 32px;
             max-width: 600px;
             width: 90vw;
             max-height: 80vh;
             overflow-y: auto;
-            border: 2px solid rgba(80, 80, 80, 0.5);
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.9);
+            border: 2px solid rgba(148, 163, 184, 0.5);
+            box-shadow: 0 20px 60px rgba(2, 6, 23, 0.9);
         }
 
         .activity-feed-header {
@@ -2568,13 +2568,13 @@ body {
             align-items: center;
             margin-bottom: 24px;
             padding-bottom: 16px;
-            border-bottom: 2px solid rgba(80, 80, 80, 0.3);
+            border-bottom: 2px solid rgba(148, 163, 184, 0.3);
         }
 
         .activity-feed-title {
             font-size: 1.8rem;
             font-weight: 800;
-            background: linear-gradient(135deg, color-mix(in srgb, var(--accent) 85%, #ffffff 15%), color-mix(in srgb, var(--accent) 85%, #000000 15%));
+            background: linear-gradient(135deg, color-mix(in srgb, var(--accent) 85%, #ffffff 15%), color-mix(in srgb, var(--accent) 85%, #020617 15%));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
@@ -2586,13 +2586,13 @@ body {
         }
 
         .activity-item:hover {
-            background: rgba(40, 40, 40, 0.8) !important;
+            background: rgba(51, 65, 85, 0.8) !important;
             transform: translateX(4px);
         }
 
         /* Player Comparison Styles */
         .compare-players-button {
-            background: rgba(30, 30, 30, 0.9);
+            background: rgba(30, 41, 59, 0.9);
             border: 2px solid rgba(139, 92, 246, 0.6);
             border-radius: 16px;
             padding: 12px 20px;
@@ -2609,7 +2609,7 @@ body {
         }
 
         .compare-players-button:hover {
-            background: #111;
+            background: #0b1220;
             border-color: #8b5cf6;
             color: #fff;
             transform: translateY(-2px);
@@ -2619,7 +2619,7 @@ body {
         .comparison-modal {
             position: fixed;
             inset: 0;
-            background: rgba(0, 0, 0, 0.8);
+            background: rgba(2, 6, 23, 0.8);
             display: none;
             align-items: center;
             justify-content: center;
@@ -2631,14 +2631,14 @@ body {
         }
 
         .comparison-content {
-            background: rgba(20, 20, 20, 0.98);
+            background: rgba(15, 23, 42, 0.98);
             border-radius: 24px;
             padding: 32px;
             max-width: 900px;
             width: 90vw;
             max-height: 85vh;
             overflow-y: auto;
-            border: 2px solid rgba(80, 80, 80, 0.5);
+            border: 2px solid rgba(148, 163, 184, 0.5);
             position: relative;
         }
 
@@ -2650,8 +2650,8 @@ body {
         }
 
         .player-select-box {
-            background: rgba(30, 30, 30, 0.8);
-            border: 2px solid rgba(80, 80, 80, 0.4);
+            background: rgba(30, 41, 59, 0.8);
+            border: 2px solid rgba(148, 163, 184, 0.4);
             border-radius: 12px;
             padding: 16px;
         }
@@ -2663,11 +2663,11 @@ body {
 
         .player-select-input {
             width: 100%;
-            background: rgba(20, 20, 20, 0.9);
-            border: 2px solid rgba(80, 80, 80, 0.5);
+            background: rgba(15, 23, 42, 0.9);
+            border: 2px solid rgba(148, 163, 184, 0.5);
             border-radius: 8px;
             padding: 10px;
-            color: #e5e5e5;
+            color: #e2e8f0;
             font-size: 14px;
             outline: none;
         }
@@ -2706,8 +2706,8 @@ body {
             top: 100%;
             left: 0;
             right: 0;
-            background: rgba(20, 20, 20, 0.98);
-            border: 2px solid rgba(80, 80, 80, 0.5);
+            background: rgba(15, 23, 42, 0.98);
+            border: 2px solid rgba(148, 163, 184, 0.5);
             border-top: none;
             border-radius: 0 0 12px 12px;
             max-height: 300px;
@@ -2724,11 +2724,11 @@ body {
             padding: 12px;
             cursor: pointer;
             transition: background 0.2s ease;
-            border-bottom: 1px solid rgba(80, 80, 80, 0.2);
+            border-bottom: 1px solid rgba(148, 163, 184, 0.2);
         }
 
         .suggestion-item:hover {
-            background: rgba(40, 40, 40, 0.8);
+            background: rgba(51, 65, 85, 0.8);
         }
 
         .suggestion-type {
@@ -2742,9 +2742,9 @@ body {
         .bio-section {
             margin-top: 20px;
             padding: 20px;
-            background: rgba(15, 15, 15, 0.6);
+            background: rgba(15, 23, 42, 0.6);
             border-radius: 16px;
-            border: 1px solid rgba(80, 80, 80, 0.3);
+            border: 1px solid rgba(148, 163, 184, 0.3);
         }
 
         .bio-section-title {
@@ -2754,7 +2754,7 @@ body {
             text-transform: uppercase;
             letter-spacing: 0.5px;
             margin-bottom: 12px;
-            border-bottom: 1px solid rgba(80, 80, 80, 0.3);
+            border-bottom: 1px solid rgba(148, 163, 184, 0.3);
             padding-bottom: 4px;
         }
 
