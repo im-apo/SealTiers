@@ -22,13 +22,13 @@
     <meta name="keywords" content="minecraft, pvp, tierlist, crystal pvp, sword pvp, uhc, competitive minecraft, rankings, seal">
     <meta name="author" content="ImApo">
     <!-- Theme and Branding -->
-    <meta name="theme-color" content="#1a1a1a">
+    <meta name="theme-color" content="#0f1a2b">
     <!-- Canonical URL -->
     <link rel="canonical" href="https://im-apo.github.io/SealTiers/">
     <link rel="icon" href="/SealTiers/logo.png">
     <link href="https://fonts.googleapis.com/css2?family=Roboto+Slab&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@800&display=swap" rel="stylesheet">
-	<link rel="stylesheet" href="/SealTiers/styles.css">
+	<link rel="stylesheet" href="styles_FIXED.css">
     <meta property="og:type" content="website">
     <meta name="color-scheme" content="dark">
     <title>Seal Tierlist - Rankings</title>
@@ -78,8 +78,8 @@
             <div class="search-container" style="position: relative; width: 100%; max-width: 600px; margin: 24px auto 0;">
                 <div class="search-wrapper" id="searchWrapper" style="
                     position: relative;
-                    background: rgba(20, 20, 20, 0.95);
-                    border: 2px solid rgba(80, 80, 80, 0.4);
+                    background: rgba(15, 23, 42, 0.95);
+                    border: 2px solid rgba(71, 85, 105, 0.4);
                     border-radius: 16px;
                     padding: 12px 48px 12px 16px;
                     display: flex;
@@ -144,8 +144,8 @@
                     top: calc(100% + 8px);
                     left: 0;
                     right: 0;
-                    background: rgba(20, 20, 20, 0.98);
-                    border: 2px solid rgba(80, 80, 80, 0.4);
+                    background: rgba(15, 23, 42, 0.98);
+                    border: 2px solid rgba(71, 85, 105, 0.4);
                     border-radius: 12px;
                     padding: 8px;
                     max-height: 400px;
@@ -175,8 +175,8 @@
             <div style="display: flex; align-items: center; gap: 12px; margin-top: 16px; justify-content: center;">
                 <label style="color: #9ca3af; font-size: 0.9rem; font-weight: 600;">Players per page:</label>
                 <select id="pageSizeSelector" style="
-        background: rgba(18, 18, 18, 0.9);
-        border: 2px solid rgba(80, 80, 80, 0.5);
+        background: rgba(15, 23, 42, 0.9);
+        border: 2px solid rgba(71, 85, 105, 0.5);
         border-radius: 12px;
         padding: 6px 12px;
         color: #e5e5e5;
@@ -416,7 +416,7 @@
             <h2 class="modal-title" id="kitInfoTitle">Kit Info</h2>
             <div class="modal-desc" id="kitInfoDesc"></div>
             <div id="kitInfoImage" style="text-align: center; margin: 20px 0;">
-                <img src="" alt="Kit Screenshot" style="max-width: 100%; border-radius: 12px; border: 2px solid rgba(120, 120, 120, 0.4);">
+                <img src="" alt="Kit Screenshot" style="max-width: 100%; border-radius: 12px; border: 2px solid rgba(148, 163, 184, 0.4);">
             </div>
         </div>
     </div>
@@ -578,15 +578,15 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(0, 0, 0, 0.8);
+    background: rgba(15, 23, 42, 0.8);
     z-index: 10000;
     justify-content: center;
     align-items: center;
     padding: 20px;
 ">
     <div style="
-        background: rgba(20, 20, 20, 0.98);
-        border: 2px solid rgba(80, 80, 80, 0.6);
+        background: rgba(15, 23, 42, 0.98);
+        border: 2px solid rgba(71, 85, 105, 0.6);
         border-radius: 20px;
         padding: 32px;
         max-width: 600px;
@@ -598,7 +598,7 @@
         
         <div style="color: #d1d5db; line-height: 1.8;">
             <h3 style="color: #9ca3af; margin: 20px 0 12px; font-size: 1.1rem;">Tier Filters</h3>
-            <div style="background: rgba(30, 30, 30, 0.6); padding: 12px; border-radius: 8px; margin-bottom: 12px;">
+            <div style="background: rgba(30, 41, 59, 0.6); padding: 12px; border-radius: 8px; margin-bottom: 12px;">
                 <code style="color: #6B7C8A;">#ht</code> - All High Tiers<br>
                 <code style="color: #6B7C8A;">#lt</code> - All Low Tiers<br>
                 <code style="color: #6B7C8A;">#rt</code> - All Retired Tiers<br>
@@ -607,29 +607,29 @@
             </div>
             
             <h3 style="color: #9ca3af; margin: 20px 0 12px; font-size: 1.1rem;">Region Filters</h3>
-            <div style="background: rgba(30, 30, 30, 0.6); padding: 12px; border-radius: 8px; margin-bottom: 12px;">
+            <div style="background: rgba(30, 41, 59, 0.6); padding: 12px; border-radius: 8px; margin-bottom: 12px;">
                 <code style="color: #6B7C8A;">@na</code> <code style="color: #6B7C8A;">@eu</code> <code style="color: #6B7C8A;">@as</code> <code style="color: #6B7C8A;">@sa</code> - Filter by region
             </div>
             
             <h3 style="color: #9ca3af; margin: 20px 0 12px; font-size: 1.1rem;">Points Filters</h3>
-            <div style="background: rgba(30, 30, 30, 0.6); padding: 12px; border-radius: 8px; margin-bottom: 12px;">
+            <div style="background: rgba(30, 41, 59, 0.6); padding: 12px; border-radius: 8px; margin-bottom: 12px;">
                 <code style="color: #6B7C8A;">&gt;100</code> - More than 100 points<br>
                 <code style="color: #6B7C8A;">&lt;500</code> - Less than 500 points<br>
                 <code style="color: #6B7C8A;">100-500</code> - Between 100 and 500 points
             </div>
             
             <h3 style="color: #9ca3af; margin: 20px 0 12px; font-size: 1.1rem;">Badge Filters</h3>
-            <div style="background: rgba(30, 30, 30, 0.6); padding: 12px; border-radius: 8px; margin-bottom: 12px;">
+            <div style="background: rgba(30, 41, 59, 0.6); padding: 12px; border-radius: 8px; margin-bottom: 12px;">
                 <code style="color: #6B7C8A;">!legendary</code> <code style="color: #6B7C8A;">!master</code> <code style="color: #6B7C8A;">!expert</code>
             </div>
             
             <h3 style="color: #9ca3af; margin: 20px 0 12px; font-size: 1.1rem;">Gamemode Filters</h3>
-            <div style="background: rgba(30, 30, 30, 0.6); padding: 12px; border-radius: 8px; margin-bottom: 12px;">
+            <div style="background: rgba(30, 41, 59, 0.6); padding: 12px; border-radius: 8px; margin-bottom: 12px;">
                 <code style="color: #6B7C8A;">:crystal</code> <code style="color: #6B7C8A;">:sword</code> <code style="color: #6B7C8A;">:uhc</code> - Has tier in gamemode
             </div>
             
             <h3 style="color: #9ca3af; margin: 20px 0 12px; font-size: 1.1rem;">Combine Filters</h3>
-            <div style="background: rgba(30, 30, 30, 0.6); padding: 12px; border-radius: 8px;">
+            <div style="background: rgba(30, 41, 59, 0.6); padding: 12px; border-radius: 8px;">
                 <code style="color: #e5e5e5;">apo #ht @na &gt;100</code><br>
                 <span style="color: #64748b; font-size: 0.9rem;">Search for "apo" with high tier, from NA, with &gt;100 points</span>
             </div>
@@ -637,8 +637,8 @@
         
         <button id="closeSearchHelp" style="
             margin-top: 24px;
-            background: rgba(80, 80, 80, 0.3);
-            border: 2px solid rgba(120, 120, 120, 0.5);
+            background: rgba(71, 85, 105, 0.3);
+            border: 2px solid rgba(148, 163, 184, 0.5);
             border-radius: 12px;
             padding: 12px 24px;
             color: #e5e5e5;
@@ -651,7 +651,7 @@
 </div>
 
 <!-- Load enhanced features -->
-<script src="/SealTiers/main.js"></script>
+<script src="main_FIXED.js"></script>
 </body>
 
 </html>
