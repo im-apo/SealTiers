@@ -22,7 +22,7 @@ const STANDBY_TIER_CONFIG = {
 const ALL_GAMEMODES = {
     main: ['crystal', 'sword', 'uhc', 'potion', 'nethpot', 'smp', 'axe', 'mace', 'diasmp'],
     sub: ['speed', 'elytra', 'cart', 'ogvanilla'],
-    limited: ['nethuhc', 'nethsword', 'ltm']
+    limited: ['nethuhc', 'nethsword']
 };
 
 // Redirect invalid gamemode URLs safely
