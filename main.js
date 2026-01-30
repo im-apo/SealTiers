@@ -482,6 +482,9 @@ document.getElementById("copyIpBtn").addEventListener("click", () => {
 document.getElementById("discordBtn").addEventListener("click", () => {
     window.open("https://discord.gg/zMqy5QbevP", "_blank");
 });
+document.getElementById("apolloBtn").addEventListener("click", () => {
+    window.location.href = "https://im-apo.github.io/ApolloRPG/";
+});
 
 function getBadge(points) {
 	if (points >= 900)
