@@ -46,19 +46,15 @@ body {
 }
 
 
-body::before {
-    content: "";
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: #020617;
-    background-image: url(https://www.transparenttextures.com/patterns/cartographer.png);
-    repeat;
-    opacity: .25;
-    z-index: -1
+body::before{
+  content:"";
+  position:fixed;
+  inset:0;
+  background: linear-gradient(135deg, rgba(6,18,38,.35), rgba(12,32,58,.45));
+  opacity: 1;
+  z-index:-1;
 }
+
 
 .container {
     max-width: 1700px;
@@ -144,11 +140,11 @@ body::before {
 }
 
 .action-button {
-    background: rgb(30 30 30 / .9);
-    border: 2px solid rgb(120 120 120 / .6);
+    background: rgb(15 23 42 / .78);
+    border: 1px solid rgb(var(--accent-rgb) / .30);
     border-radius: 16px;
     padding: 12px 20px;
-    color: #d1d5db;
+    color: var(--fg);
     font-size: 14px;
     font-weight: 600;
     cursor: pointer;
@@ -160,7 +156,7 @@ body::before {
     gap: 8px;
     position: relative;
     text-decoration: none;
-    box-shadow: 0 0 15px rgb(50 50 50 / .6)
+    box-shadow: 0 0 15px rgb(var(--accent-rgb) / .18);
 }
 
 .footer {
@@ -169,16 +165,16 @@ body::before {
     left: 0;
     right: 0;
     width: 100%;
-    background: rgb(15 15 15 / .95);
+    background: rgb(15 23 42 / .88);
     backdrop-filter: blur(20px);
-    border-top: 1px solid rgb(80 80 80 / .5);
+    border-top: 1px solid rgb(var(--accent-rgb) / .22);
     padding: 12px 0;
     text-align: center;
     font-size: .9rem;
     font-weight: 600;
     color: var(--muted);
-    box-shadow: 0 -4px 20px rgb(0 0 0 / .6);
-    z-index: 1000
+    box-shadow: 0 -4px 20px rgb(2 6 23 / .55);
+    z-index: 1000;
 }
 
 .footer strong {
@@ -207,10 +203,11 @@ body::before {
 }
 
 .action-button:hover {
-    background: #0b1220;
+    background: rgb(15 23 42 / .92);
+    border-color: rgb(var(--accent-rgb) / .55);
     color: #fff;
     transform: translateY(-2px);
-    box-shadow: 0 0 20px rgb(160 160 160 / .7)
+    box-shadow: 0 0 18px rgb(var(--accent-rgb) / .28);
 }
 
 .action-button svg {
@@ -329,16 +326,16 @@ body::before {
 }
 
 .arrow-btn {
-    background: rgb(30 30 30 / .95);
-    border: 2px solid rgb(80 80 80 / .6);
+    background: rgb(15 23 42 / .75);
+    border: 1px solid rgb(var(--accent-rgb) / .25);
     border-radius: 50%;
     width: 40px;
     height: 40px;
-    color: #d1d5db;
+    color: var(--fg);
     font-size: 18px;
     font-weight: 700;
     cursor: pointer;
-    transition: all 0.2s ease
+    transition: all 0.2s ease;
 }
 
 .arrow-btn:hover {
@@ -360,15 +357,15 @@ body::before {
 }
 
 .page-btn {
-    background: rgb(30 30 30 / .95);
-    border: 2px solid rgb(80 80 80 / .6);
+    background: rgb(15 23 42 / .75);
+    border: 1px solid rgb(var(--accent-rgb) / .25);
     border-radius: 12px;
     padding: 8px 14px;
     margin: 0 6px;
     cursor: pointer;
-    color: #d1d5db;
+    color: var(--fg);
     font-weight: 600;
-    transition: all 0.3s ease
+    transition: all 0.3s ease;
 }
 
 .page-btn:hover {
@@ -401,12 +398,11 @@ body::before {
 }
 
 .gamemode-tab {
-    background: rgb(30 30 30 / .95);
-    border: 2px solid rgb(80 80 80 / .6);
+    background: rgb(15 23 42 / .75);
+    border: 1px solid rgb(var(--accent-rgb) / .25);
     border-radius: 12px;
     padding: 8px 14px;
-    color: #d1d5db;
-    font-weight: 600;
+    color: var(--fg);
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s ease;
@@ -414,7 +410,7 @@ body::before {
     user-select: none;
     display: flex;
     align-items: center;
-    gap: 10px
+    gap: 10px;
 }
 
 .gamemode-tab:hover {
@@ -451,12 +447,12 @@ body::before {
 }
 
 .leaderboard {
-    background: rgb(15 15 15 / .95);
+    background: rgb(15 23 42 / .85);
     border-radius: 24px;
     padding: 40px;
     backdrop-filter: blur(20px);
-    border: 1px solid rgb(80 80 80 / .5);
-    box-shadow: 0 0 25px rgb(0 0 0 / .9)
+    border: 1px solid rgb(var(--accent-rgb) / .22);
+    box-shadow: 0 0 25px rgb(2 6 23 / .65);
 }
 
 .leaderboard-header {
@@ -492,9 +488,9 @@ body::before {
 }
 
 .player-row:hover {
-    background: rgb(40 40 40 / .9);
-    box-shadow: 0 0 14px rgb(200 200 200 / .25);
-    transform: translateX(8px)
+    background: rgb(255 255 255 / .06);
+    box-shadow: 0 0 14px rgb(var(--accent-rgb) / .18);
+    transform: translateX(8px);
 }
 
 .rank {
@@ -2013,12 +2009,12 @@ body::before {
     left: 0;
     right: 0;
     z-index: 10000;
-    background: rgb(15 15 15 / .95);
+    background: rgb(15 23 42 / .88);
     backdrop-filter: blur(20px);
-    border-bottom: 2px solid rgb(80 80 80 / .5);
-    box-shadow: 0 4px 20px rgb(0 0 0 / .6);
+    border-bottom: 1px solid rgb(var(--accent-rgb) / .22);
+    box-shadow: 0 4px 20px rgb(2 6 23 / .55);
     margin-bottom: 0;
-    transition: transform 0.3s ease
+    transition: transform 0.3s ease;
 }
 
 .top-navbar.hidden {
