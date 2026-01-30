@@ -74,97 +74,6 @@ const ACTIVITY_TYPES = {
     }
 };
 
-class ActivityFeed {
-    constructor() {
-        this.activities = [];
-        this.maxActivities = 50;
-        this.loadFromStorage();
-    }
-
-    addActivity(type, data) {
-        const activity = {
-            id: Date.now() + Math.random(),
-            type,
-            data,
-            timestamp: Date.now()
-        };
-
-        this.activities.unshift(activity);
-        
-        // Keep only recent activities
-        if (this.activities.length > this.maxActivities) {
-            this.activities = this.activities.slice(0, this.maxActivities);
-        }
-
-        this.saveToStorage();
-        return activity;
-    }
-
-    getRecent(limit = 10) {
-        return this.activities.slice(0, limit);
-    }
-
-    saveToStorage() {
-        try {
-            localStorage.setItem('tierlist_activity_feed', JSON.stringify(this.activities));
-        } catch (e) {
-            console.warn('Could not save activity feed:', e);
-        }
-    }
-
-    loadFromStorage() {
-        try {
-            const stored = localStorage.getItem('tierlist_activity_feed');
-            if (stored) {
-                this.activities = JSON.parse(stored);
-            }
-        } catch (e) {
-            console.warn('Could not load activity feed:', e);
-        }
-    }
-
-    renderActivity(activity) {
-        const config = ACTIVITY_TYPES[activity.type];
-        const timeAgo = this.getTimeAgo(activity.timestamp);
-        
-        return `
-            <div class="activity-item" style="
-                display: flex;
-                gap: 12px;
-                padding: 12px;
-                background: rgba(30, 30, 30, 0.6);
-                border-radius: 10px;
-                border-left: 3px solid ${config.color};
-                transition: all 0.2s ease;
-            ">
-                <div style="
-                    font-size: 24px;
-                    flex-shrink: 0;
-                    filter: drop-shadow(0 0 4px ${config.color});
-                ">${config.icon}</div>
-                <div style="flex: 1;">
-                    <div style="color: #e5e5e5; font-weight: 600; margin-bottom: 4px;">
-                        ${config.template(activity.data)}
-                    </div>
-                    <div style="color: #9ca3af; font-size: 0.75rem;">
-                        ${timeAgo}
-                    </div>
-                </div>
-            </div>
-        `;
-    }
-
-    getTimeAgo(timestamp) {
-        const seconds = Math.floor((Date.now() - timestamp) / 1000);
-        
-        if (seconds < 60) return 'Just now';
-        if (seconds < 3600) return `${Math.floor(seconds / 60)}m ago`;
-        if (seconds < 86400) return `${Math.floor(seconds / 3600)}h ago`;
-        if (seconds < 604800) return `${Math.floor(seconds / 86400)}d ago`;
-        return new Date(timestamp).toLocaleDateString();
-    }
-}
-
 const ASSET_BASE = "/StellarTiers/";
 const fixAssetPath = (path) => path.startsWith("assets/") ? ASSET_BASE + path : path;
 
@@ -209,49 +118,6 @@ let displayedPlayers = 0;
 const INITIAL_LOAD = 15; // Load 15 players initially
 const LOAD_MORE_COUNT = 10; // Load 10 more when scrolling
 let filteredPlayers = []; // Store filtered players globally
-
-// Add after the activity feed modal opens
-document.getElementById('activityFeedBtn').addEventListener('click', () => {
-    const modal = document.getElementById('activityFeedModal');
-    modal.classList.add('active');
-    renderActivityFeed();
-    
-    // Add clear button if it doesn't exist
-    if (!document.getElementById('clearActivityBtn')) {
-        const clearBtn = document.createElement('button');
-        clearBtn.id = 'clearActivityBtn';
-        clearBtn.textContent = '🗑️ Clear Activity Feed';
-        clearBtn.style.cssText = `
-            margin: 16px auto;
-            padding: 8px 16px;
-            background: rgba(239, 68, 68, 0.2);
-            border: 2px solid #ef4444;
-            border-radius: 8px;
-            color: #ef4444;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.3s ease;
-        `;
-        clearBtn.addEventListener('click', () => {
-            if (confirm('Clear all activity feed entries?')) {
-                localStorage.removeItem('tierlist_activity_feed');
-                activityFeed.activities = [];
-                renderActivityFeed();
-            }
-        });
-        clearBtn.addEventListener('mouseenter', () => {
-            clearBtn.style.background = 'rgba(239, 68, 68, 0.4)';
-        });
-        clearBtn.addEventListener('mouseleave', () => {
-            clearBtn.style.background = 'rgba(239, 68, 68, 0.2)';
-        });
-        
-        document.getElementById('activityList').parentElement.insertBefore(
-            clearBtn, 
-            document.getElementById('activityList')
-        );
-    }
-});
 
 // Kit information data
 const kitInfo = {
@@ -2721,68 +2587,9 @@ function renderPlayersWithFilter(filteredList) {
 // USAGE EXAMPLES & INTEGRATION
 // ============================================================================
 
-// Example: Add activity when tier changes
-function onTierChange(playerName, oldTier, newTier, gamemode) {
-    activityFeed.addActivity('TIER_CHANGE', {
-        player: playerName,
-        oldTier,
-        newTier,
-        gamemode
-    });
-}
-
-// Example: Check achievements when player profile is viewed
-function onPlayerProfileView(player) {
-    const earned = achievementSystem.checkAchievements(player);
-    
-    earned.forEach(achievement => {
-        activityFeed.addActivity('PEAK_TIER', {
-            player: player.name,
-            tier: achievement.name,
-            gamemode: 'achievement'
-        });
-    });
-}
-
 // Example: Set player bio (admin function)
 function setPlayerBio(playerName, bio) {
     playerBioSystem.setBio(playerName, bio);
-}
-
-document.getElementById('activityFeedBtn').addEventListener('click', () => {
-    const modal = document.getElementById('activityFeedModal');
-    modal.classList.add('active');
-    renderActivityFeed();
-});
-
-document.getElementById('closeActivityFeed').addEventListener('click', () => {
-    document.getElementById('activityFeedModal').classList.remove('active');
-});
-
-// Close modals when clicking outside
-document.getElementById('activityFeedModal').addEventListener('click', (e) => {
-    if (e.target === document.getElementById('activityFeedModal')) {
-        document.getElementById('activityFeedModal').classList.remove('active');
-    }
-});
-
-// Render activity feed
-function renderActivityFeed() {
-    const container = document.getElementById('activityList');
-    const activities = activityFeed.getRecent(20);
-    
-    if (activities.length === 0) {
-        container.innerHTML = `
-            <div style="text-align: center; color: #64748b; padding: 40px;">
-                No recent activity
-            </div>
-        `;
-        return;
-    }
-    
-    container.innerHTML = activities.map(activity => 
-        activityFeed.renderActivity(activity)
-    ).join('');
 }
 
 // Player comparison modal handlers
