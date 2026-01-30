@@ -76,7 +76,7 @@ body::before {
 }
 
 .header {
-    background: rgb(20 20 20 / .9);
+    background: rgb(156 163 175 / .9);
     backdrop-filter: blur(20px);
     border-radius: 24px;
     padding: 22px 12px;
@@ -884,7 +884,7 @@ body::before {
     align-items: center;
     gap: 4px;
     padding: 6px;
-    background: rgb(20 20 20 / .6);
+    background: rgb(156 163 175 / .6);
     border-radius: 10px;
     border: 1px solid rgb(80 80 80 / .3);
     transition: all 0.2s ease;
@@ -981,7 +981,7 @@ body::before {
 }
 
 .tier-info-modal {
-    background: rgb(20 20 20 / .96);
+    background: rgb(156 163 175 / .96);
     border-radius: 16px;
     padding: 24px;
     position: relative;
@@ -1341,7 +1341,7 @@ body::before {
     gap: 12px;
     justify-content: center;
     padding: 16px;
-    background: rgb(20 20 20 / .6);
+    background: rgb(156 163 175 / .6);
     border-radius: 16px;
     border: 1px solid rgb(80 80 80 / .2)
 }
@@ -1617,7 +1617,7 @@ body::before {
 }
 
 .tier-column {
-    background: rgb(20 20 20 / .8);
+    background: rgb(156 163 175 / .8);
     border: 2px solid rgb(80 80 80 / .4);
     border-radius: 16px;
     padding: 16px;
