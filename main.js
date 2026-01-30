@@ -2977,5 +2977,5 @@ SOFTWARE.`);
 
 console.log(`-----------------------------------------------------------------------------------
 If Website appears to be Down Contact ImApo Immediately
-discord: cxnine._ Axis Discord Server: https://discord.gg/zMqy5QbevP
+discord: cxnine._ Axis Discord Server: https://discord.gg/e39z2S4Edg
 -----------------------------------------------------------------------------------`);
