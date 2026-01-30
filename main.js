@@ -2862,10 +2862,6 @@ function setPlayerBioExample() {
     console.log('✅ Bio set for ExamplePlayer');
 }
 
-
-// Run example activities on load
-setTimeout(addExampleActivities, 1000);
-
 // =======================
 // Context Menu
 // =======================
