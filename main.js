@@ -5,10 +5,10 @@ if (sessionStorage.redirect) {
 }
 
 if (
-  location.pathname.startsWith('/StellarTiers/rankings') &&
-  !/^\/StellarTiers\/rankings\/(overall|crystal|smp|diasmp|sword|axe|uhc|potion|nethpot|mace|speed|elytra|cart|ogvanilla|nethuhc|nethsword|ltm)?\/?$/.test(location.pathname)
+  location.pathname.startsWith('/SealTiers/rankings') &&
+  !/^\/SealTiers\/rankings\/(overall|crystal|smp|diasmp|sword|axe|uhc|potion|nethpot|mace|speed|elytra|cart|ogvanilla|nethuhc|nethsword|ltm)?\/?$/.test(location.pathname)
 ) {
-  location.replace('/StellarTiers/rankings/overall');
+  location.replace('/SealTiers/rankings/overall');
 }
 
 
@@ -34,19 +34,19 @@ document.addEventListener("DOMContentLoaded", () => {
     'nethuhc', 'nethsword', 'ltm'
   ];
 
-  const match = path.match(/\/StellarTiers\/rankings\/([^\/]+)/);
+  const match = path.match(/\/SealTiers\/rankings\/([^\/]+)/);
   const gamemode = match ? match[1] : null;
 
   // Only redirect if we’re inside /rankings but gamemode is invalid
-  if (path.startsWith('/StellarTiers/rankings') && !validGamemodes.includes(gamemode)) {
-    history.replaceState(null, '', '/StellarTiers/rankings/overall');
+  if (path.startsWith('/SealTiers/rankings') && !validGamemodes.includes(gamemode)) {
+    history.replaceState(null, '', '/SealTiers/rankings/overall');
   }
 
   // Then initialize app normally
   initializeFromURL();
 });
 
-const ASSET_BASE = "/StellarTiers/";
+const ASSET_BASE = "/SealTiers/";
 const fixAssetPath = (path) => path.startsWith("assets/") ? ASSET_BASE + path : path;
 
 
@@ -260,7 +260,7 @@ function getGamemodeFromURL() {
 
 // Update the URL without reloading the page
 function updateURL(gamemode) {
-    const newPath = `/StellarTiers/rankings/${gamemode}`;
+    const newPath = `/SealTiers/rankings/${gamemode}`;
     window.history.pushState({ gamemode }, '', newPath);
 }
 
