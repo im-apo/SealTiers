@@ -2013,13 +2013,22 @@ class PlayerBioSystem {
 const playerBioSystem = new PlayerBioSystem();
 
 playerBioSystem.setBio('ImApo', {
-    description: 'Creator and developer of the Axis Tierlist. Competitive PvP player with an aggressive playstyle.',
+    description: 'Creator and developer of the Seal Tiers. Casual PvP player with an aggressive playstyle.',
     socials: {
         youtube: 'https://www.youtube.com/@Im-Apo',
-        discord: 'cxnine._'
+        discord: 'im_apo_'
+    },
+    favGamemode: 'UHC',
+    playstyle: 'Aggressive'
+});
+playerBioSystem.setBio('Meraliu', {
+    description: 'Owner of the SAT discord server/team (seals and cats) - I also really like seals. 🦭',
+    socials: {
+        youtube: 'https://www.youtube.com/@ImMeraliu',
+        discord: 'meraliu'
     },
     favGamemode: 'Diamond SMP',
-    playstyle: 'Aggressive'
+    playstyle: 'Seal'
 });
 
 
