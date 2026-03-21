@@ -22,7 +22,7 @@ const STANDBY_TIER_CONFIG = {
 const ALL_GAMEMODES = {
     main: ['crystal', 'sword', 'uhc', 'potion', 'nethpot', 'smp', 'axe', 'mace', 'diasmp'],
     sub: ['speed', 'elytra', 'cart', 'ogvanilla'],
-    limited: ['nethuhc', 'nethsword']
+    limited: ['nethuhc', 'nethsword', 'moddia']
 };
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -30,7 +30,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const validGamemodes = [
     'overall', 'crystal', 'smp', 'diasmp', 'sword', 'axe', 'uhc', 'potion',
     'nethpot', 'mace', 'speed', 'elytra', 'cart', 'ogvanilla',
-    'nethuhc', 'nethsword', 'ltm'
+    'nethuhc', 'nethsword', 'moddia', 'ltm'
   ];
 
   const match = path.match(/\/SealTiers\/rankings\/([^\/]+)/);
@@ -222,6 +222,12 @@ const kitInfo = {
             "Classic vanilla Minecraft combat with traditional techniques and straightforward gameplay. Focuses on fundamental combat skills without specialized mechanics or modern additions.\n\nWhen a tier testing queue opens for this kit, be sure to join right away to secure your test spot. LT3 tests and below have a 3-day cooldown, while HT3 and higher come with a 7-day cooldown, so plan accordingly!",
         image: fixAssetPath("assets/kits/OgVanilla.png"),
     },
+	moddia: {
+        title: "Modern Diamond Kit",
+        description:
+            "Suit up in full diamond armour and dominate the battlefield with raw power and precision. Master the fundamentals of diamond-tier combat, from sword technique to strategic positioning, in this classic yet formidable kit.\n\nWhen a tier testing queue opens for this kit, be sure to join right away to secure your test spot. LT3 tests and below have a 3-day cooldown, while HT3 and higher come with a 7-day cooldown, so plan accordingly!",
+        image: fixAssetPath("assets/kits/ModernDiamond.png"),
+    }
 };
 
 function calculatePeakTier(currentTier, peakTier) {
@@ -263,7 +269,7 @@ function initializeFromURL() {
     const validGamemodes = [
         'overall', 'crystal', 'smp', 'diasmp', 'sword', 'axe', 'uhc', 'potion',
         'nethpot', 'mace', 'speed', 'elytra', 'cart', 'ogvanilla', 'nethuhc',
-        'nethsword', 'ltm'
+        'nethsword', 'moddia' 'ltm'
     ];
     
     if (validGamemodes.includes(gamemodeFromURL)) {
