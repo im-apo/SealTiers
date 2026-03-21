@@ -25,7 +25,6 @@ const ALL_GAMEMODES = {
     limited: ['nethuhc', 'nethsword']
 };
 
-// Redirect invalid gamemode URLs safely
 document.addEventListener("DOMContentLoaded", () => {
   const path = location.pathname;
   const validGamemodes = [
@@ -37,12 +36,11 @@ document.addEventListener("DOMContentLoaded", () => {
   const match = path.match(/\/SealTiers\/rankings\/([^\/]+)/);
   const gamemode = match ? match[1] : null;
 
-  // Only redirect if we’re inside /rankings but gamemode is invalid
+
   if (path.startsWith('/SealTiers/rankings') && !validGamemodes.includes(gamemode)) {
     history.replaceState(null, '', '/SealTiers/rankings/overall');
   }
 
-  // Then initialize app normally
   initializeFromURL();
 });
 
@@ -91,7 +89,6 @@ const INITIAL_LOAD = 15; // Load 15 players initially
 const LOAD_MORE_COUNT = 10; // Load 10 more when scrolling
 let filteredPlayers = []; // Store filtered players globally
 
-// Kit information data
 const kitInfo = {
     crystal: {
         title: "Crystal PvP Kit",
@@ -230,7 +227,6 @@ const kitInfo = {
 function calculatePeakTier(currentTier, peakTier) {
     if (!peakTier || !currentTier) return null;
     
-    // Lower rank number = better tier (HT1 is better than LT1)
     const tierRank = {
         'HT0': 0, 'LT0': 1, 'RHT0': 0, 'RLT0': 1,
         'HT1': 2, 'LT1': 3, 'RHT1': 2, 'RLT1': 3,
@@ -244,11 +240,9 @@ function calculatePeakTier(currentTier, peakTier) {
     const currentRank = tierRank[currentTier] ?? 999;
     const peakRank = tierRank[peakTier] ?? 999;
     
-    // Peak tier has LOWER rank number (better), so show tooltip
     if (peakRank < currentRank) {
         return { isPeak: false, peakTier: peakTier, showTooltip: true };
     }
-    // Current is at peak or better
     return { isPeak: true, peakTier: currentTier, showTooltip: false };
 }
 
@@ -258,17 +252,14 @@ function getGamemodeFromURL() {
     return match ? match[1] : 'overall';
 }
 
-// Update the URL without reloading the page
 function updateURL(gamemode) {
     const newPath = `/SealTiers/rankings/${gamemode}`;
     window.history.pushState({ gamemode }, '', newPath);
 }
 
-// Initialize the page based on URL on first load
 function initializeFromURL() {
     const gamemodeFromURL = getGamemodeFromURL();
     
-    // All valid gamemodes from your site
     const validGamemodes = [
         'overall', 'crystal', 'smp', 'diasmp', 'sword', 'axe', 'uhc', 'potion',
         'nethpot', 'mace', 'speed', 'elytra', 'cart', 'ogvanilla', 'nethuhc',
@@ -278,7 +269,6 @@ function initializeFromURL() {
     if (validGamemodes.includes(gamemodeFromURL)) {
         currentGamemode = gamemodeFromURL;
     } else {
-        // Redirect to overall if invalid gamemode
         updateURL('overall');
         currentGamemode = 'overall';
     }
@@ -543,7 +533,6 @@ function updateOverallTabAppearance() {
     });
 }
 
-// Add this after your loadPlayers function
 window.addEventListener("online", () => {
     const loadingScreen = document.getElementById("loadingScreen");
     const loadingSubtext = document.getElementById("loadingSubtext");
@@ -2640,7 +2629,6 @@ document.getElementById('executeCompare').addEventListener('click', () => {
     }
 });
 
-// ENHANCED openPlayerModal - Wrap your existing function
 const originalOpenPlayerModal = typeof openPlayerModal !== 'undefined' ? openPlayerModal : null;
 
 if (originalOpenPlayerModal) {
