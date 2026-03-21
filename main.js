@@ -269,7 +269,7 @@ function initializeFromURL() {
     const validGamemodes = [
         'overall', 'crystal', 'smp', 'diasmp', 'sword', 'axe', 'uhc', 'potion',
         'nethpot', 'mace', 'speed', 'elytra', 'cart', 'ogvanilla', 'nethuhc',
-        'nethsword', 'moddia' 'ltm'
+        'nethsword', 'moddia', 'ltm'
     ];
     
     if (validGamemodes.includes(gamemodeFromURL)) {
