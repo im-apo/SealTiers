@@ -35,7 +35,6 @@ body {
   color: #e5e7eb;
   min-height: 100vh;
 
-  /* Seal photo background + blue gradient overlay */
   background-image:
     linear-gradient(135deg, rgba(6, 18, 38, 0.78), rgba(12, 32, 58, 0.88)),
     url("https://imgs.search.brave.com/X2RQCYoEvh2JawJse4Rb0xfam0SZ0gxAQKQjS9LhzSM/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly93d3cu/aGlja2VycGhvdG8u/Y29tL2ltYWdlcy82/MDAvY3V0ZV93aGl0/ZV9jb2F0X3QzNTM5/LmpwZw");
@@ -2118,7 +2117,6 @@ body {
     height: 18px
 }
 
-/* Peak Tier Tooltip Styles */
 .tier-wrapper {
     position: relative;
     display: inline-block;
@@ -2212,7 +2210,6 @@ body {
     color: #6b7280;
 }
 
-/* Tier History Chart Styles */
 .tier-history-section {
     margin-top: 24px;
     padding: 20px;
@@ -2267,7 +2264,6 @@ body {
     color: #fff;
 }
 
-/* Tier History Chart Styles */
 .tier-history-section {
     margin-top: 24px;
     padding: 20px;
@@ -2322,7 +2318,6 @@ body {
     color: #fff;
 }
 
-/* Tier History Chart Styles */
 .tier-history-section {
     margin-top: 24px;
     padding: 20px;
@@ -2586,7 +2581,6 @@ body {
             transform: translateX(4px);
         }
 
-        /* Player Comparison Styles */
         .compare-players-button {
             background: rgba(30, 41, 59, 0.9);
             border: 2px solid rgba(139, 92, 246, 0.6);
@@ -2696,7 +2690,6 @@ body {
             cursor: not-allowed;
         }
 
-        /* Enhanced Search Styles */
         .search-suggestions {
             position: absolute;
             top: 100%;
@@ -2734,7 +2727,6 @@ body {
             margin-bottom: 4px;
         }
 
-        /* Bio Section Styles */
         .bio-section {
             margin-top: 20px;
             padding: 20px;
@@ -2754,7 +2746,6 @@ body {
             padding-bottom: 4px;
         }
 
-        /* Tier Search Badge */
         .tier-search-badge {
             display: inline-flex;
             align-items: center;
@@ -2768,7 +2759,6 @@ body {
             margin-left: 8px;
         }
 
-        /* Responsive adjustments */
         @media (max-width: 768px) {
             .activity-feed-button {
                 bottom: 70px;
