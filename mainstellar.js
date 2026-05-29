@@ -447,13 +447,7 @@ document.getElementById("copyIpBtn").addEventListener("click", () => {
 });
 document.getElementById("backToMainBtn").addEventListener("click", () => {
     window.location.href =
-        "https://im-apo.github.io/StellarTiers/rankings/overall";
-});
-document.getElementById("extiersBtn").addEventListener("click", () => {
-    window.location.href = "https://extiers.com/ranking/overall";
-});
-document.getElementById("discordBtn").addEventListener("click", () => {
-    window.open("https://discord.gg/WYkYjEcVq3", "_blank");
+        "https://im-apo.github.io/SealTiers/rankings/overall";
 });
 document.getElementById("closeModal").addEventListener("click", () => {
     document.getElementById("playerModal").style.display = "none";
