@@ -401,7 +401,7 @@ function openPlayerModal(player) {
         isValidRegion
             ? `<span class="player-region ${player.region.toLowerCase()}">${player.region.toUpperCase()}</span>`
             : ""
-    }</h2><div class="player-modal-points">${totalPoints}points <span class="points-badge ${
+    }</h2><div class="player-modal-points">${totalPoints} points <span class="points-badge ${
         badge.class
     }">${badge.label}</span></div></div>`;
     const nameMcBtn = document.createElement("button");
