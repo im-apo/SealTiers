@@ -439,12 +439,6 @@ function openPlayerModal(player) {
     modalBody.appendChild(tiersSection);
     modal.style.display = "flex";
 }
-document.getElementById("copyIpBtn").addEventListener("click", () => {
-    navigator.clipboard.writeText("play.stellarsmp.fun");
-    const popup = document.getElementById("copyPopup");
-    popup.style.display = "block";
-    setTimeout(() => (popup.style.display = "none"), 2000);
-});
 document.getElementById("backToMainBtn").addEventListener("click", () => {
     window.location.href =
         "https://im-apo.github.io/SealTiers/rankings/overall";
