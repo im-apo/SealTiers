@@ -1,14 +1,14 @@
 const tierPoints = {
-    HT1: 75,
-    LT1: 60,
-    HT2: 50,
-    LT2: 40,
-    HT3: 30,
-    LT3: 20,
-    HT4: 15,
-    LT4: 10,
-    HT5: 5,
-    LT5: 3,
+    HT1: 60,
+    LT1: 45,
+    HT2: 30,
+    LT2: 20,
+    HT3: 10,
+    LT3: 6,
+    HT4: 4,
+    LT4: 3,
+    HT5: 2,
+    LT5: 1,
 };
 let players = [];
 let currentGamemode = "overall";
@@ -71,11 +71,11 @@ function calculatePoints(player) {
     return total;
 }
 function getBadge(points) {
-    if (points >= 350) return { label: "Legendary", class: "legendary" };
-    if (points >= 200) return { label: "Master", class: "master" };
-    if (points >= 100) return { label: "Expert", class: "expert" };
-    if (points >= 75) return { label: "Advanced", class: "advanced" };
-    if (points >= 35) return { label: "Intermediate", class: "intermediate" };
+    if (points >= 250) return { label: "Legendary", class: "legendary" };
+    if (points >= 150) return { label: "Master", class: "master" };
+    if (points >= 75) return { label: "Expert", class: "expert" };
+    if (points >= 45) return { label: "Advanced", class: "advanced" };
+    if (points >= 20) return { label: "Intermediate", class: "intermediate" };
     return { label: "Novice", class: "novice" };
 }
 function updatePaginationControls(totalPages, totalPlayers) {
@@ -243,7 +243,7 @@ function renderPlayers() {
         uhc: "../assets/gamemode-icons/Uhc.svg",
         potion: "../assets/gamemode-icons/Potion.svg",
         nethpot: "../assets/gamemode-icons/Nethpot.svg",
-        smp: "../assets/gamemode-icons/.svg",
+        smp: "../assets/gamemode-icons/Smp.svg",
         axe: "../assets/gamemode-icons/Axe.svg",
         mace: "../assets/gamemode-icons/Mace.svg",
         diasmp: "../assets/gamemode-icons/Diasmp.svg",
@@ -326,16 +326,16 @@ function renderPlayers() {
             "position: relative; display: flex; align-items: center; justify-content: center;";
         if (displayRank === 1) {
             placementBadge =
-                '<img src="assets/icons/Placement1.svg" alt="1st Place" style="position: absolute; width: 80px; height: 40px; z-index: 1; left: 50%; top: 50%; transform: translate(-50%, -50%);" onerror="this.style.display=\'none\';" />';
+                '<img src="../assets/icons/Placement1.svg" alt="1st Place" style="position: absolute; width: 80px; height: 40px; z-index: 1; left: 50%; top: 50%; transform: translate(-50%, -50%);" onerror="this.style.display=\'none\';" />';
         } else if (displayRank === 2) {
             placementBadge =
-                '<img src="assets/icons/Placement2.svg" alt="2nd Place" style="position: absolute; width: 80px; height: 40px; z-index: 1; left: 50%; top: 50%; transform: translate(-50%, -50%);" onerror="this.style.display=\'none\';" />';
+                '<img src="../assets/icons/Placement2.svg" alt="2nd Place" style="position: absolute; width: 80px; height: 40px; z-index: 1; left: 50%; top: 50%; transform: translate(-50%, -50%);" onerror="this.style.display=\'none\';" />';
         } else if (displayRank === 3) {
             placementBadge =
-                '<img src="assets/icons/Placement3.svg" alt="3rd Place" style="position: absolute; width: 80px; height: 40px; z-index: 1; left: 50%; top: 50%; transform: translate(-50%, -50%);" onerror="this.style.display=\'none\';" />';
+                '<img src="../assets/icons/Placement3.svg" alt="3rd Place" style="position: absolute; width: 80px; height: 40px; z-index: 1; left: 50%; top: 50%; transform: translate(-50%, -50%);" onerror="this.style.display=\'none\';" />';
         } else {
             placementBadge =
-                '<img src="assets/icons/PlacementOther.svg" alt="Rank" style="position: absolute; width: 80px; height: 40px; z-index: 1; left: 50%; top: 50%; transform: translate(-50%, -50%);" onerror="this.style.display=\'none\';" />';
+                '<img src="../assets/icons/PlacementOther.svg" alt="Rank" style="position: absolute; width: 80px; height: 40px; z-index: 1; left: 50%; top: 50%; transform: translate(-50%, -50%);" onerror="this.style.display=\'none\';" />';
         }
         row.innerHTML = ` <div class="rank ${rankClass}" style="${badgeContainerStyle}">${placementBadge}<span style="${rankStyle}">${displayRank}</span></div><div class="player-info"><img class="player-avatar" src="${
             p.avatar
