@@ -349,7 +349,7 @@ function renderPlayers() {
                 : ""
         }</span><span class="player-points">${
             p.points
-        }pts <span class="points-badge ${badge.class}">${
+        } points <span class="points-badge ${badge.class}">${
             badge.label
         }</span></span></div></div><div class="gamemode-tiers">${gamemodeDisplay}</div>`;
         row.addEventListener("click", () => openPlayerModal(p));
