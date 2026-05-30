@@ -2982,3 +2982,43 @@ console.log(`-------------------------------------------------------------------
 If Website appears to be Down Contact ImApo Immediately
 discord: cxnine._ Axis Discord Server: https://discord.gg/zMqy5QbevP
 -----------------------------------------------------------------------------------`);
+// ============================================================================
+// PROTECTION SYSTEM
+// ============================================================================
+
+// Disable right-click EXCEPT on player rows and the overall tab
+document.addEventListener('contextmenu', function(e) { 
+    const isPlayerRow = e.target.closest('.player-row');
+    const isOverallTab = e.target.closest('.gamemode-tab[data-gamemode="overall"]');
+    
+    // If it's NOT a player row and NOT the overall tab, block the right click
+    if (!isPlayerRow && !isOverallTab) {
+        e.preventDefault(); 
+    }
+});
+
+// Block F12, Ctrl+Shift+I/J/C, Ctrl+U, Ctrl+S, Ctrl+A, Ctrl+P
+document.addEventListener('keydown', function(e) {
+    var blocked = false;
+    if (e.key === 'F12') blocked = true;
+    if (e.ctrlKey && e.shiftKey && ['I','J','C','i','j','c'].includes(e.key)) blocked = true;
+    if (e.ctrlKey && ['u','U','s','S','a','A','p','P'].includes(e.key)) blocked = true;
+    
+    if (blocked) { 
+        e.preventDefault(); 
+        e.stopPropagation(); 
+        return false; 
+    }
+}, true);
+
+// Clear console periodically to deter inspection
+setInterval(function() {
+    console.clear();
+    console.log('%c🔒 ApolloMC — Protected & All Rights Reserved', 'color:#ff003c;font-size:14px;font-weight:bold;');
+}, 1500);
+
+// Disable drag-select on entire page
+document.addEventListener('selectstart', function(e) { 
+    e.preventDefault(); 
+    return false; 
+});
