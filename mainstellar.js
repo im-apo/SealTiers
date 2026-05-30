@@ -396,7 +396,6 @@ function renderPlayers() {
         sword: "../assets/gamemode-icons/Sword.svg",
         uhc: "../assets/gamemode-icons/Uhc.svg",
         potion: "../assets/gamemode-icons/Potion.svg",
-        pot: "../assets/gamemode-icons/Potion.svg",
         nethpot: "../assets/gamemode-icons/Nethpot.svg",
         smp: "../assets/gamemode-icons/Smp.svg",
         axe: "../assets/gamemode-icons/Axe.svg",
