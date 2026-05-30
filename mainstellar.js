@@ -228,18 +228,17 @@ function createPageButton(pageNum) {
     return btn;
 }
 function renderTierColumns(filteredPlayers, container) {
-
-    // 2. Check if ANY player has a Tier 0 or Tier 6 in this gamemode
+    // 1. Check if ANY player has a Tier 0 or Tier 6 in this specific gamemode
     let hasTier0 = false;
     let hasTier6 = false;
 
     filteredPlayers.forEach(p => {
-        const t = getTierCode(p); // Use the helper here
+        const t = p.tiers && p.tiers[currentGamemode];
         if (t && t.endsWith('0')) hasTier0 = true;
         if (t && t.endsWith('6')) hasTier6 = true;
     });
 
-    // 3. Build the columns list dynamically. 
+    // 2. Build the columns list dynamically. 
     const tierGroups = {};
     if (hasTier0) tierGroups["Tier 0"] = [];
     tierGroups["Tier 1"] = [];
@@ -249,7 +248,7 @@ function renderTierColumns(filteredPlayers, container) {
     tierGroups["Tier 5"] = [];
     if (hasTier6) tierGroups["Tier 6"] = [];
 
-    // 4. Update the mapping to support 0 and 6
+    // 3. Mapping for tier strings to column group names
     const tierMapping = {
         HT0: "Tier 0", LT0: "Tier 0", RHT0: "Tier 0", RLT0: "Tier 0",
         HT1: "Tier 1", LT1: "Tier 1", RHT1: "Tier 1", RLT1: "Tier 1",
@@ -260,7 +259,7 @@ function renderTierColumns(filteredPlayers, container) {
         HT6: "Tier 6", LT6: "Tier 6", RHT6: "Tier 6", RLT6: "Tier 6",
     };
 
-    // 5. Icons configuration (Tier 0 uses tier_1 gold, Tier 6 uses tier_45 black)
+    // 4. Icons configuration (Tier 0 uses tier_1 gold, Tier 6 uses tier_45 black)
     const tierIcons = {
         "Tier 0": "../assets/icons/tier_1.svg",   // Uses Gold Trophy (Same as T1)
         "Tier 1": "../assets/icons/tier_1.svg",
@@ -271,9 +270,9 @@ function renderTierColumns(filteredPlayers, container) {
         "Tier 6": "../assets/icons/tier_45.svg",  // Uses Black Trophy (Same as T5)
     };
 
-    // Populate groups
+    // Populate groups using standard currentGamemode lookup
     filteredPlayers.forEach((player) => {
-        const tierCode = getTierCode(player); // Use the helper here too!
+        const tierCode = player.tiers && player.tiers[currentGamemode];
         const tierGroup = tierMapping[tierCode];
         if (tierGroup) {
             player.currentTierCode = tierCode;
