@@ -367,6 +367,49 @@
                 gap: 4px;
             }
 
+            .player-details:has(.points-badge.pointoverlord) .player-points .points-number,
+                .player-modal-points:has(.points-badge.pointoverlord) .points-number {
+                    background: linear-gradient(135deg, #fbbf24, #f59e0b, #fcd34d);
+                    -webkit-background-clip: text;
+                    -webkit-text-fill-color: transparent;
+                    background-clip: text;
+                }
+                .player-details:has(.points-badge.legendary) .player-points .points-number,
+                .player-modal-points:has(.points-badge.legendary) .points-number {
+                    background: linear-gradient(135deg, #fbbf24, #9333ea);
+                    -webkit-background-clip: text;
+                    -webkit-text-fill-color: transparent;
+                    background-clip: text;
+                }
+                .player-details:has(.points-badge.master) .player-points .points-number,
+                .player-modal-points:has(.points-badge.master) .points-number {
+                    background: linear-gradient(135deg, #8b5cf6, #6d28d9);
+                    -webkit-background-clip: text;
+                    -webkit-text-fill-color: transparent;
+                    background-clip: text;
+                }
+                .player-details:has(.points-badge.expert) .player-points .points-number,
+                .player-modal-points:has(.points-badge.expert) .points-number {
+                    background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+                    -webkit-background-clip: text;
+                    -webkit-text-fill-color: transparent;
+                    background-clip: text;
+                }
+                .player-details:has(.points-badge.advanced) .player-points .points-number,
+                .player-modal-points:has(.points-badge.advanced) .points-number {
+                    background: linear-gradient(135deg, #10b981, #059669);
+                    -webkit-background-clip: text;
+                    -webkit-text-fill-color: transparent;
+                    background-clip: text;
+                }
+                .player-details:has(.points-badge.intermediate) .player-points .points-number,
+                .player-modal-points:has(.points-badge.intermediate) .points-number {
+                    background: linear-gradient(135deg, #f97316, #ea580c);
+                    -webkit-background-clip: text;
+                    -webkit-text-fill-color: transparent;
+                    background-clip: text;
+                }
+
             .player-name {
                 font-weight: 700;
                 font-size: 1.2rem;
@@ -382,17 +425,80 @@
             }
 
             .points-badge {
-                display: inline-block;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                padding: 4px 8px;
+                border-radius: 8px;
+                font-size: 0.8rem;
+                position: relative;
+                overflow: hidden;
+                font-weight: 600;
+                text-transform: uppercase;
+                vertical-align: middle;
+                margin-bottom: 2px;
+                margin-top: 2px;
+            }
+            
+            .points-badge.pointoverlord {
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
                 padding: 4px 8px;
                 border-radius: 8px;
                 font-size: 0.8rem;
                 font-weight: 600;
                 text-transform: uppercase;
+                position: relative;
+                overflow: hidden;
+                background: linear-gradient(135deg, #fbbf24, #f59e0b, #fcd34d);
+                box-shadow: 0 0 14px rgba(255, 204, 51, 0.6);
+                color: #fff;
             }
-
+            .points-badge.pointoverlord::after {
+                content: "";
+                position: absolute;
+                top: 0;
+                left: -75%;
+                width: 50%;
+                height: 100%;
+                background: linear-gradient(120deg, rgba(203,213,225,0) 0%, rgba(203,213,225,0.6) 50%, rgba(203,213,225,0) 100%);
+                transform: skewX(-25deg);
+                animation: shine 4s ease-in-out infinite;
+            }
+            @keyframes shine {
+                0% { left: -75%; }
+                10% { left: 125%; }
+                100% { left: 125%; }
+            }
+            
             .points-badge.legendary {
                 background: linear-gradient(135deg, #fbbf24, #9333ea);
                 box-shadow: 0 0 12px rgba(251, 191, 36, 0.6);
+                color: #fff;
+            }
+            .points-badge.legendary::after,
+            .points-badge.master::after,
+            .points-badge.expert::after,
+            .points-badge.pointoverlord::after {
+                content: "";
+                position: absolute;
+                top: 0;
+                left: -75%;
+                width: 50%;
+                height: 100%;
+                background: linear-gradient(120deg, rgba(203,213,225,0) 0%, rgba(203,213,225,0.6) 50%, rgba(203,213,225,0) 100%);
+                transform: skewX(-25deg);
+                animation: shine 4s ease-in-out infinite;
+            }
+            .points-badge.master {
+                background: linear-gradient(135deg, #8b5cf6, #6d28d9);
+                box-shadow: 0 0 12px rgba(127, 0, 255, 0.6);
+                color: #fff;
+            }
+            .points-badge.expert {
+                background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+                box-shadow: 0 0 12px rgba(0, 128, 255, 0.6);
                 color: #fff;
             }
 
@@ -400,54 +506,6 @@
                 width: 20px;
                 height: 20px;
                 object-fit: contain;
-            }
-
-            .points-badge.master {
-                background: linear-gradient(135deg, #8b5cf6, #6d28d9);
-                box-shadow: 0 0 12px rgba(127, 0, 255, 0.6);
-                color: #fff;
-            }
-
-            .points-badge.expert {
-                background: linear-gradient(135deg, #3b82f6, #1d4ed8);
-                box-shadow: 0 0 12px rgba(0, 128, 255, 0.6);
-                color: #fff;
-            }
-
-            .points-badge.advanced {
-                background: linear-gradient(135deg, #10b981, #059669);
-                box-shadow: 0 0 12px rgba(51, 255, 153, 0.6);
-                color: #fff;
-            }
-
-            .points-badge.intermediate {
-                background: linear-gradient(135deg, #f97316, #ea580c);
-                box-shadow: 0 0 12px rgba(255, 153, 51, 0.6);
-                color: #fff;
-            }
-
-            .points-badge.novice {
-                background: linear-gradient(135deg, #6b7280, #4b5563);
-                box-shadow: 0 0 12px rgba(255, 255, 255, 0.6);
-                color: #fff;
-            }
-
-            .tier {
-                padding: 5px 12px;
-                display: inline-block;
-                color: #fff;
-                border-radius: 8px;
-                font-size: 0.8rem;
-                font-weight: bold;
-                text-transform: uppercase;
-                text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
-                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            }
-
-            .tier:hover {
-                box-shadow: 0 0 12px rgba(255, 255, 255, 0.4);
-                transform: scale(1.05);
-                transition: all 0.2s ease-in-out;
             }
 
             .gamemode-tiers {
@@ -534,54 +592,175 @@
                 font-weight: 600;
             }
 
+            .tier {
+                padding: 5px 12px;
+                display: inline-block;
+                color: #fff;
+                border-radius: 8px;
+                font-size: 0.8rem;
+                font-weight: bold;
+                text-transform: uppercase;
+                text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+                position: relative;
+                overflow: hidden;
+                transition: all 0.25s ease-in-out;
+            }
+            
+            .tier:hover {
+                transform: scale(1.05);
+                box-shadow: 0 0 15px rgba(203, 213, 225, 0.6);
+            }
+            
+            .tier.lt6 {
+                background: linear-gradient(135deg, #5b3a29, #8b5a2b, #d4af37);
+                box-shadow: 0 0 14px rgba(212, 175, 55, 0.5);
+            }
+            .tier.ht6 {
+                background: linear-gradient(135deg, #d4af37, #f6e27a, #ffd700);
+                box-shadow: 0 0 14px rgba(255, 215, 0, 0.6);
+                color: #020617;
+            }
             .tier.lt5 {
-                background: linear-gradient(135deg, #d97706, #b45309);
-                color: #fff;
+                background: linear-gradient(135deg, #b91c1c, #d97706, #f97316);
+                box-shadow: 0 0 14px rgba(255, 102, 0, 0.5);
             }
-
             .tier.ht5 {
-                background: linear-gradient(135deg, #fbbf24, #f59e0b);
-                color: #000;
+                background: linear-gradient(135deg, #fbbf24, #f59e0b, #fcd34d);
+                box-shadow: 0 0 14px rgba(255, 204, 51, 0.6);
+                color: #020617;
             }
-
             .tier.lt4 {
-                background: linear-gradient(135deg, #059669, #064e3b);
-                color: #fff;
+                background: linear-gradient(135deg, #004d40, #0f766e, #10b981);
+                box-shadow: 0 0 14px rgba(51, 255, 153, 0.5);
             }
-
             .tier.ht4 {
-                background: linear-gradient(135deg, #10b981, #059669);
-                color: #000;
+                background: linear-gradient(135deg, #34d399, #5eead4, #99f6e4);
+                box-shadow: 0 0 14px rgba(102, 255, 204, 0.6);
+                color: #020617;
             }
-
             .tier.lt3 {
-                background: linear-gradient(135deg, #2563eb, #1e3a8a);
-                color: #fff;
+                background: linear-gradient(135deg, #1e3a8a, #3b82f6, #60a5fa);
+                box-shadow: 0 0 14px rgba(0, 128, 255, 0.5);
             }
-
             .tier.ht3 {
-                background: linear-gradient(135deg, #3b82f6, #1d4ed8);
-                color: #000;
+                background: linear-gradient(135deg, #60a5fa, #93c5fd, #bfdbfe);
+                box-shadow: 0 0 14px rgba(150, 200, 255, 0.6);
+                color: #020617;
             }
-
             .tier.lt2 {
-                background: linear-gradient(135deg, #9333ea, #581c87);
-                color: #fff;
+                background: linear-gradient(135deg, #581c87, #7e22ce, #a855f7, #c084fc);
+                box-shadow: 0 0 14px rgba(168, 85, 247, 0.6);
             }
-
             .tier.ht2 {
-                background: linear-gradient(135deg, #8b5cf6, #6d28d9);
-                color: #000;
+                background: linear-gradient(135deg, #8b5cf6, #c084fc, #e879f9);
+                box-shadow: 0 0 14px rgba(224, 121, 249, 0.6);
+                color: #020617;
             }
-
             .tier.lt1 {
-                background: linear-gradient(135deg, #f43f5e, #be123c);
-                color: #fff;
+                background: linear-gradient(135deg, #be123c, #ec4899, #f43f5e);
+                box-shadow: 0 0 14px rgba(255, 51, 102, 0.6);
             }
-
             .tier.ht1 {
-                background: linear-gradient(135deg, #ec4899, #db2777);
-                color: #000;
+                background: linear-gradient(135deg, #f472b6, #ec4899, #e879f9);
+                box-shadow: 0 0 14px rgba(236, 72, 153, 0.6);
+                color: #020617;
+            }
+            .tier.lt0 {
+                background: linear-gradient(135deg, #ffb6c1, #ffd700, #98fb98, #add8e6, #dda0dd);
+                box-shadow: 0 0 14px rgba(255, 182, 193, 0.6);
+                color: #020617;
+            }
+            .tier.ht0 {
+                background: linear-gradient(135deg, #ff0000, #ff7f00, #ffff00, #00ff00, #00bfff, #4b0082, #ee82ee);
+                box-shadow: 0 0 16px rgba(255, 128, 0, 0.7);
+            }
+            
+            /* Retired tiers */
+            .tier.rlt6 {
+                background: linear-gradient(135deg, #5b3a29, #8b5a2b, #d4af37);
+                box-shadow: 0 0 14px rgba(212, 175, 55, 0.5);
+            }
+            .tier.rht6 {
+                background: linear-gradient(135deg, #d4af37, #f6e27a, #ffd700);
+                box-shadow: 0 0 14px rgba(255, 215, 0, 0.6);
+                color: #020617;
+            }
+            .tier.rlt5 {
+                background: linear-gradient(135deg, #b91c1c, #d97706, #f97316);
+                box-shadow: 0 0 14px rgba(255, 102, 0, 0.5);
+            }
+            .tier.rht5 {
+                background: linear-gradient(135deg, #fbbf24, #f59e0b, #fcd34d);
+                box-shadow: 0 0 14px rgba(255, 204, 51, 0.6);
+                color: #020617;
+            }
+            .tier.rlt4 {
+                background: linear-gradient(135deg, #004d40, #0f766e, #10b981);
+                box-shadow: 0 0 14px rgba(51, 255, 153, 0.5);
+            }
+            .tier.rht4 {
+                background: linear-gradient(135deg, #34d399, #5eead4, #99f6e4);
+                box-shadow: 0 0 14px rgba(102, 255, 204, 0.6);
+                color: #020617;
+            }
+            .tier.rlt3 {
+                background: linear-gradient(135deg, #1e3a8a, #3b82f6, #60a5fa);
+                box-shadow: 0 0 14px rgba(0, 128, 255, 0.5);
+            }
+            .tier.rht3 {
+                background: linear-gradient(135deg, #60a5fa, #93c5fd, #bfdbfe);
+                box-shadow: 0 0 14px rgba(150, 200, 255, 0.6);
+                color: #020617;
+            }
+            .tier.rlt2 {
+                background: linear-gradient(135deg, #581c87, #7e22ce, #a855f7, #c084fc);
+                box-shadow: 0 0 14px rgba(168, 85, 247, 0.6);
+            }
+            .tier.rht2 {
+                background: linear-gradient(135deg, #8b5cf6, #c084fc, #e879f9);
+                box-shadow: 0 0 14px rgba(224, 121, 249, 0.6);
+                color: #020617;
+            }
+            .tier.rlt1 {
+                background: linear-gradient(135deg, #be123c, #ec4899, #f43f5e);
+                box-shadow: 0 0 14px rgba(255, 51, 102, 0.6);
+            }
+            .tier.rht1 {
+                background: linear-gradient(135deg, #f472b6, #ec4899, #e879f9);
+                box-shadow: 0 0 14px rgba(236, 72, 153, 0.6);
+                color: #020617;
+            }
+            .tier.rlt0 {
+                background: linear-gradient(135deg, #ffb6c1, #ffd700, #98fb98, #add8e6, #dda0dd);
+                box-shadow: 0 0 14px rgba(255, 182, 193, 0.6);
+                color: #020617;
+            }
+            .tier.rht0 {
+                background: linear-gradient(135deg, #ff0000, #ff7f00, #ffff00, #00ff00, #00bfff, #4b0082, #ee82ee);
+                box-shadow: 0 0 16px rgba(255, 128, 0, 0.7);
+            }
+            
+            /* Shine on top tiers */
+            .tier.lt0::after, .tier.ht0::after,
+            .tier.rlt0::after, .tier.rht0::after,
+            .tier.rlt1::after, .tier.rht1::after,
+            .tier.rlt2::after, .tier.rht2::after {
+                content: "";
+                position: absolute;
+                top: 0;
+                left: -75%;
+                width: 50%;
+                height: 100%;
+                background: linear-gradient(120deg, rgba(203,213,225,0) 0%, rgba(203,213,225,0.6) 50%, rgba(203,213,225,0) 100%);
+                transform: skewX(-25deg);
+                animation: shine 4s ease-in-out infinite;
+            }
+            
+            @keyframes shine {
+                0%   { left: -75%; }
+                10%  { left: 125%; }
+                100% { left: 125%; }
             }
 
             .modal {
