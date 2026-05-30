@@ -228,18 +228,18 @@ function createPageButton(pageNum) {
     return btn;
 }
 function renderTierColumns(filteredPlayers, container) {
-    // 1. Check if ANY player has a Tier 0 or Tier 6 in this gamemode
+
+    // 2. Check if ANY player has a Tier 0 or Tier 6 in this gamemode
     let hasTier0 = false;
     let hasTier6 = false;
 
     filteredPlayers.forEach(p => {
-        const t = p.tiers && p.tiers[currentGamemode];
+        const t = getTierCode(p); // Use the helper here
         if (t && t.endsWith('0')) hasTier0 = true;
         if (t && t.endsWith('6')) hasTier6 = true;
     });
 
-    // 2. Build the columns list dynamically. 
-    // Tiers 1-5 always show. Tier 0 and 6 only show if detected above.
+    // 3. Build the columns list dynamically. 
     const tierGroups = {};
     if (hasTier0) tierGroups["Tier 0"] = [];
     tierGroups["Tier 1"] = [];
@@ -249,7 +249,7 @@ function renderTierColumns(filteredPlayers, container) {
     tierGroups["Tier 5"] = [];
     if (hasTier6) tierGroups["Tier 6"] = [];
 
-    // 3. Update the mapping to support 0 and 6
+    // 4. Update the mapping to support 0 and 6
     const tierMapping = {
         HT0: "Tier 0", LT0: "Tier 0", RHT0: "Tier 0", RLT0: "Tier 0",
         HT1: "Tier 1", LT1: "Tier 1", RHT1: "Tier 1", RLT1: "Tier 1",
@@ -260,20 +260,20 @@ function renderTierColumns(filteredPlayers, container) {
         HT6: "Tier 6", LT6: "Tier 6", RHT6: "Tier 6", RLT6: "Tier 6",
     };
 
-    // 4. Update the icons (make sure you have tier_0.svg and tier_6.svg in your assets if you want them to display an image!)
+    // 5. Icons configuration (Tier 0 uses tier_1 gold, Tier 6 uses tier_45 black)
     const tierIcons = {
-        "Tier 0": "../assets/icons/tier_0.svg",
+        "Tier 0": "../assets/icons/tier_1.svg",   // Uses Gold Trophy (Same as T1)
         "Tier 1": "../assets/icons/tier_1.svg",
         "Tier 2": "../assets/icons/tier_2.svg",
         "Tier 3": "../assets/icons/tier_3.svg",
         "Tier 4": "../assets/icons/tier_45.svg",
         "Tier 5": "../assets/icons/tier_45.svg",
-        "Tier 6": "../assets/icons/tier_6.svg",
+        "Tier 6": "../assets/icons/tier_45.svg",  // Uses Black Trophy (Same as T5)
     };
 
     // Populate groups
     filteredPlayers.forEach((player) => {
-        const tierCode = player.tiers && player.tiers[currentGamemode];
+        const tierCode = getTierCode(player); // Use the helper here too!
         const tierGroup = tierMapping[tierCode];
         if (tierGroup) {
             player.currentTierCode = tierCode;
