@@ -387,6 +387,14 @@ function renderPlayers() {
         updatePaginationControls(0, 0);
         return;
     }
+    const leaderboardHeader = document.getElementById("leaderboardHeader");
+    if (leaderboardHeader) {
+        if (currentGamemode !== "overall") {
+            leaderboardHeader.style.display = "none"; // Hide on specific gamemodes
+        } else {
+            leaderboardHeader.style.display = "";     // Show on overall tab
+        }
+    }
     if (currentGamemode !== "overall") {
         renderTierColumns(filtered, container);
         return;
