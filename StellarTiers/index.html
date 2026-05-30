@@ -367,49 +367,6 @@
                 gap: 4px;
             }
 
-            .player-details:has(.points-badge.pointoverlord) .player-points .points-number,
-                .player-modal-points:has(.points-badge.pointoverlord) .points-number {
-                    background: linear-gradient(135deg, #fbbf24, #f59e0b, #fcd34d);
-                    -webkit-background-clip: text;
-                    -webkit-text-fill-color: transparent;
-                    background-clip: text;
-                }
-                .player-details:has(.points-badge.legendary) .player-points .points-number,
-                .player-modal-points:has(.points-badge.legendary) .points-number {
-                    background: linear-gradient(135deg, #fbbf24, #9333ea);
-                    -webkit-background-clip: text;
-                    -webkit-text-fill-color: transparent;
-                    background-clip: text;
-                }
-                .player-details:has(.points-badge.master) .player-points .points-number,
-                .player-modal-points:has(.points-badge.master) .points-number {
-                    background: linear-gradient(135deg, #8b5cf6, #6d28d9);
-                    -webkit-background-clip: text;
-                    -webkit-text-fill-color: transparent;
-                    background-clip: text;
-                }
-                .player-details:has(.points-badge.expert) .player-points .points-number,
-                .player-modal-points:has(.points-badge.expert) .points-number {
-                    background: linear-gradient(135deg, #3b82f6, #1d4ed8);
-                    -webkit-background-clip: text;
-                    -webkit-text-fill-color: transparent;
-                    background-clip: text;
-                }
-                .player-details:has(.points-badge.advanced) .player-points .points-number,
-                .player-modal-points:has(.points-badge.advanced) .points-number {
-                    background: linear-gradient(135deg, #10b981, #059669);
-                    -webkit-background-clip: text;
-                    -webkit-text-fill-color: transparent;
-                    background-clip: text;
-                }
-                .player-details:has(.points-badge.intermediate) .player-points .points-number,
-                .player-modal-points:has(.points-badge.intermediate) .points-number {
-                    background: linear-gradient(135deg, #f97316, #ea580c);
-                    -webkit-background-clip: text;
-                    -webkit-text-fill-color: transparent;
-                    background-clip: text;
-                }
-
             .player-name {
                 font-weight: 700;
                 font-size: 1.2rem;
@@ -424,6 +381,7 @@
                 gap: 8px;
             }
 
+            /* ===== BASE BADGE ===== */
             .points-badge {
                 display: inline-flex;
                 align-items: center;
@@ -440,56 +398,16 @@
                 margin-top: 2px;
             }
             
+            /* ===== BADGE VARIANTS ===== */
             .points-badge.pointoverlord {
-                display: inline-flex;
-                align-items: center;
-                justify-content: center;
-                padding: 4px 8px;
-                border-radius: 8px;
-                font-size: 0.8rem;
-                font-weight: 600;
-                text-transform: uppercase;
-                position: relative;
-                overflow: hidden;
                 background: linear-gradient(135deg, #fbbf24, #f59e0b, #fcd34d);
                 box-shadow: 0 0 14px rgba(255, 204, 51, 0.6);
                 color: #fff;
             }
-            .points-badge.pointoverlord::after {
-                content: "";
-                position: absolute;
-                top: 0;
-                left: -75%;
-                width: 50%;
-                height: 100%;
-                background: linear-gradient(120deg, rgba(203,213,225,0) 0%, rgba(203,213,225,0.6) 50%, rgba(203,213,225,0) 100%);
-                transform: skewX(-25deg);
-                animation: shine 4s ease-in-out infinite;
-            }
-            @keyframes shine {
-                0% { left: -75%; }
-                10% { left: 125%; }
-                100% { left: 125%; }
-            }
-            
             .points-badge.legendary {
                 background: linear-gradient(135deg, #fbbf24, #9333ea);
                 box-shadow: 0 0 12px rgba(251, 191, 36, 0.6);
                 color: #fff;
-            }
-            .points-badge.legendary::after,
-            .points-badge.master::after,
-            .points-badge.expert::after,
-            .points-badge.pointoverlord::after {
-                content: "";
-                position: absolute;
-                top: 0;
-                left: -75%;
-                width: 50%;
-                height: 100%;
-                background: linear-gradient(120deg, rgba(203,213,225,0) 0%, rgba(203,213,225,0.6) 50%, rgba(203,213,225,0) 100%);
-                transform: skewX(-25deg);
-                animation: shine 4s ease-in-out infinite;
             }
             .points-badge.master {
                 background: linear-gradient(135deg, #8b5cf6, #6d28d9);
@@ -501,7 +419,89 @@
                 box-shadow: 0 0 12px rgba(0, 128, 255, 0.6);
                 color: #fff;
             }
-
+            .points-badge.advanced {
+                background: linear-gradient(135deg, #10b981, #059669);
+                box-shadow: 0 0 12px rgba(51, 255, 153, 0.6);
+                color: #fff;
+            }
+            .points-badge.intermediate {
+                background: linear-gradient(135deg, #f97316, #ea580c);
+                box-shadow: 0 0 12px rgba(255, 153, 51, 0.6);
+                color: #fff;
+            }
+            .points-badge.novice {
+                background: linear-gradient(135deg, #6b7280, #4b5563);
+                box-shadow: 0 0 12px rgba(203, 213, 225, 0.6);
+                color: #fff;
+            }
+            
+            /* ===== SHINE on top badges ===== */
+            .points-badge.pointoverlord::after,
+            .points-badge.legendary::after,
+            .points-badge.master::after,
+            .points-badge.expert::after {
+                content: "";
+                position: absolute;
+                top: 0;
+                left: -75%;
+                width: 50%;
+                height: 100%;
+                background: linear-gradient(120deg, rgba(203,213,225,0) 0%, rgba(203,213,225,0.6) 50%, rgba(203,213,225,0) 100%);
+                transform: skewX(-25deg);
+                animation: shine 4s ease-in-out infinite;
+            }
+            
+            /* ===== GRADIENT TEXT on points number ===== */
+            .player-details:has(.points-badge.pointoverlord) .player-points .points-number,
+            .player-modal-points:has(.points-badge.pointoverlord) .points-number {
+                background: linear-gradient(135deg, #fbbf24, #f59e0b, #fcd34d);
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                background-clip: text;
+            }
+            .player-details:has(.points-badge.legendary) .player-points .points-number,
+            .player-modal-points:has(.points-badge.legendary) .points-number {
+                background: linear-gradient(135deg, #fbbf24, #9333ea);
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                background-clip: text;
+            }
+            .player-details:has(.points-badge.master) .player-points .points-number,
+            .player-modal-points:has(.points-badge.master) .points-number {
+                background: linear-gradient(135deg, #8b5cf6, #6d28d9);
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                background-clip: text;
+            }
+            .player-details:has(.points-badge.expert) .player-points .points-number,
+            .player-modal-points:has(.points-badge.expert) .points-number {
+                background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                background-clip: text;
+            }
+            .player-details:has(.points-badge.advanced) .player-points .points-number,
+            .player-modal-points:has(.points-badge.advanced) .points-number {
+                background: linear-gradient(135deg, #10b981, #059669);
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                background-clip: text;
+            }
+            .player-details:has(.points-badge.intermediate) .player-points .points-number,
+            .player-modal-points:has(.points-badge.intermediate) .points-number {
+                background: linear-gradient(135deg, #f97316, #ea580c);
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                background-clip: text;
+            }
+            
+            /* ===== SHINE keyframe (skip if already defined) ===== */
+            @keyframes shine {
+                0%   { left: -75%; }
+                10%  { left: 125%; }
+                100% { left: 125%; }
+            }
+            
             .button-icon {
                 width: 20px;
                 height: 20px;
