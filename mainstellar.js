@@ -227,6 +227,138 @@ function createPageButton(pageNum) {
     });
     return btn;
 }
+function renderTierColumns(filteredPlayers, container) {
+    // 1. Check if ANY player has a Tier 0 or Tier 6 in this gamemode
+    let hasTier0 = false;
+    let hasTier6 = false;
+
+    filteredPlayers.forEach(p => {
+        const t = p.tiers && p.tiers[currentGamemode];
+        if (t && t.endsWith('0')) hasTier0 = true;
+        if (t && t.endsWith('6')) hasTier6 = true;
+    });
+
+    // 2. Build the columns list dynamically. 
+    // Tiers 1-5 always show. Tier 0 and 6 only show if detected above.
+    const tierGroups = {};
+    if (hasTier0) tierGroups["Tier 0"] = [];
+    tierGroups["Tier 1"] = [];
+    tierGroups["Tier 2"] = [];
+    tierGroups["Tier 3"] = [];
+    tierGroups["Tier 4"] = [];
+    tierGroups["Tier 5"] = [];
+    if (hasTier6) tierGroups["Tier 6"] = [];
+
+    // 3. Update the mapping to support 0 and 6
+    const tierMapping = {
+        HT0: "Tier 0", LT0: "Tier 0", RHT0: "Tier 0", RLT0: "Tier 0",
+        HT1: "Tier 1", LT1: "Tier 1", RHT1: "Tier 1", RLT1: "Tier 1",
+        HT2: "Tier 2", LT2: "Tier 2", RHT2: "Tier 2", RLT2: "Tier 2",
+        HT3: "Tier 3", LT3: "Tier 3", RHT3: "Tier 3", RLT3: "Tier 3",
+        HT4: "Tier 4", LT4: "Tier 4", RHT4: "Tier 4", RLT4: "Tier 4",
+        HT5: "Tier 5", LT5: "Tier 5", RHT5: "Tier 5", RLT5: "Tier 5",
+        HT6: "Tier 6", LT6: "Tier 6", RHT6: "Tier 6", RLT6: "Tier 6",
+    };
+
+    // 4. Update the icons (make sure you have tier_0.svg and tier_6.svg in your assets if you want them to display an image!)
+    const tierIcons = {
+        "Tier 0": "../assets/icons/tier_0.svg",
+        "Tier 1": "../assets/icons/tier_1.svg",
+        "Tier 2": "../assets/icons/tier_2.svg",
+        "Tier 3": "../assets/icons/tier_3.svg",
+        "Tier 4": "../assets/icons/tier_45.svg",
+        "Tier 5": "../assets/icons/tier_45.svg",
+        "Tier 6": "../assets/icons/tier_6.svg",
+    };
+
+    // Populate groups
+    filteredPlayers.forEach((player) => {
+        const tierCode = player.tiers && player.tiers[currentGamemode];
+        const tierGroup = tierMapping[tierCode];
+        if (tierGroup) {
+            player.currentTierCode = tierCode;
+            tierGroups[tierGroup].push(player);
+        }
+    });
+
+    const columnsContainer = document.createElement("div");
+    columnsContainer.className = "tier-columns-container";
+
+    Object.entries(tierGroups).forEach(([tierName, players]) => {
+        const column = document.createElement("div");
+        column.className = "tier-column";
+
+        const header = document.createElement("div");
+        
+        // Extract the number (e.g. "0", "1", "6") so the CSS matches correctly
+        const tierNum = tierName.split(' ')[1]; 
+        header.className = `tier-column-header tier-${tierNum}`;
+
+        const tierIcon = tierIcons[tierName];
+        if (tierIcon) {
+            header.innerHTML = `<img src="${tierIcon}" alt="${tierName}" onerror="this.style.display='none';"> ${tierName}`;
+        } else {
+            header.textContent = tierName;
+        }
+
+        column.appendChild(header);
+
+        if (!players || players.length === 0) {
+            const emptyState = document.createElement("div");
+            emptyState.style.cssText = `
+                text-align: center;
+                padding: 20px;
+                color: #64748b;
+                font-size: 0.9rem;
+                font-style: italic;
+            `;
+            emptyState.textContent = "No players in this tier";
+            column.appendChild(emptyState);
+        } else {
+            players.forEach((player) => {
+                const tierCode = player.currentTierCode || "";
+                const isHighTier = /HT/.test(tierCode);
+                const isRetired = /^R/.test(tierCode);
+
+                const playerDiv = document.createElement("div");
+                playerDiv.classList.add("tier-column-player");
+                playerDiv.classList.add(isHighTier ? "tier-column-player-high" : "tier-column-player-low");
+                if (isRetired) playerDiv.classList.add("tier-column-player-retired");
+
+                const tierIndicatorHTML = isRetired
+                    ? `<img src="../assets/icons/retired_icon.svg" class="retired-indicator-icon" alt="Retired" onerror="this.style.display='none';">`
+                    : "";
+
+                const htltIndicatorHTML = isHighTier
+                    ? `<img src="../assets/icons/ht_icon.svg" class="tier-indicator-icon" alt="HT" onerror="this.style.display='none';">`
+                    : `<img src="../assets/icons/lt_icon.svg" class="tier-indicator-icon" alt="LT" onerror="this.style.display='none';">`;
+
+                playerDiv.innerHTML = `
+                    <img src="${player.avatar}" alt="${player.name}" class="player-avatar-small" onerror="this.style.display='none';">
+                    <div class="tier-column-player-info">
+                        <span class="tier-column-player-name ${isHighTier ? "high-tier" : "low-tier"}">
+                            ${player.name}
+                            <span class="player-region ${player.region ? player.region.toLowerCase() : "unknown"}">
+                                ${player.region ? player.region.toUpperCase() : "UNKNOWN"}
+                            </span>
+                        </span>
+                    </div>
+                    <div class="tier-column-player-icons">
+                        ${tierIndicatorHTML}
+                        ${htltIndicatorHTML}
+                    </div>
+                `;
+
+                playerDiv.addEventListener("click", () => openPlayerModal(player));
+                column.appendChild(playerDiv);
+            });
+        }
+        columnsContainer.appendChild(column);
+    });
+
+    container.innerHTML = "";
+    container.appendChild(columnsContainer);
+}
 function renderPlayers() {
     const searchValue = document
         .getElementById("searchBox")
@@ -255,11 +387,16 @@ function renderPlayers() {
         updatePaginationControls(0, 0);
         return;
     }
+    if (currentGamemode !== "overall") {
+        renderTierColumns(filtered, container);
+        return;
+    }
     const gamemodeIcons = {
         crystal: "../assets/gamemode-icons/Crystal.svg",
         sword: "../assets/gamemode-icons/Sword.svg",
         uhc: "../assets/gamemode-icons/Uhc.svg",
         potion: "../assets/gamemode-icons/Potion.svg",
+        pot: "../assets/gamemode-icons/Potion.svg",
         nethpot: "../assets/gamemode-icons/Nethpot.svg",
         smp: "../assets/gamemode-icons/Smp.svg",
         axe: "../assets/gamemode-icons/Axe.svg",
