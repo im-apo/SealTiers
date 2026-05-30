@@ -292,9 +292,22 @@
                 box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
             }
 
-            /* Structural Variations inside Player Item Card */
+    /* Structural Variations inside Player Item Card */
             .tier-column-player-high {
                 border-left: 3px solid var(--accent);
+                background: rgba(45, 58, 80, 0.55); /* Slightly lighter/more visible blue than base dark mode */
+            }
+
+            body.light .tier-column-player-high {
+                background: rgba(255, 255, 255, 0.85); /* Slightly brighter/lighter white than base light mode */
+            }
+
+            .tier-column-player-high:hover {
+                background: rgba(53, 68, 94, 0.75); /* Keeps hover proportional for high tier dark mode */
+            }
+
+            body.light .tier-column-player-high:hover {
+                background: #ffffff; /* Perfectly clean white for high tier light mode hover */
             }
 
             .tier-column-player-low {
@@ -303,6 +316,17 @@
 
             .tier-column-player-retired {
                 opacity: 0.55;
+            }
+
+            /* Custom Red Glowing States for Retired Players on Hover */
+            .tier-column-player-retired:hover {
+                border-color: rgba(239, 68, 68, 0.5) !important; /* Soft crimson border */
+                box-shadow: 0 4px 14px rgba(239, 68, 68, 0.3) !important; /* Red glass glow */
+            }
+
+            body.light .tier-column-player-retired:hover {
+                border-color: rgba(220, 38, 38, 0.4) !important; /* Slightly darker red for visibility */
+                box-shadow: 0 4px 12px rgba(220, 38, 38, 0.15) !important;
             }
 
             .player-avatar-small {
