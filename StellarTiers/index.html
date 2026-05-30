@@ -164,6 +164,199 @@
                 transform: translateY(-2px);
                 box-shadow: 0 0 20px rgba(168, 85, 247, 0.7);
             }
+         /* ============================================================================
+            TIER COLUMNS LAYOUT STYLES (MATCHED TO COLOR PALETTE)
+            ============================================================================ */
+            .tier-columns-container {
+                display: flex;
+                gap: 16px;
+                overflow-x: auto;
+                padding: 10px 4px 20px 4px;
+                align-items: flex-start;
+                width: 100%;
+                scrollbar-width: thin;
+                scrollbar-color: rgba(148, 163, 184, 0.2) transparent;
+            }
+
+            /* Tier Column Base Container */
+            .tier-column {
+                flex: 1;
+                min-width: 260px;
+                max-width: 340px;
+                background: rgba(15, 23, 42, 0.35);
+                border: 1px solid rgba(148, 163, 184, 0.1);
+                border-radius: 16px;
+                padding: 14px;
+                display: flex;
+                flex-direction: column;
+                gap: 10px;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+                backdrop-filter: blur(8px);
+            }
+
+            body.light .tier-column {
+                background: rgba(255, 255, 255, 0.45);
+                border-color: rgba(0, 0, 0, 0.06);
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            }
+
+            /* Tier Header Configurations */
+            .tier-column-header {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                font-weight: 800;
+                font-size: 0.9rem;
+                text-transform: uppercase;
+                letter-spacing: 0.7px;
+                padding: 10px 14px;
+                border-radius: 12px;
+                margin-bottom: 6px;
+            }
+
+            .tier-column-header img {
+                width: 18px;
+                height: 18px;
+                object-fit: contain;
+            }
+
+            /* Harmonized Tier Header Color Schemes */
+            .tier-column-header.tier-0,
+            .tier-column-header.tier-1 {
+                background: linear-gradient(135deg, rgba(234, 179, 8, 0.18), rgba(234, 179, 8, 0.03));
+                color: #facc15;
+                border: 1px solid rgba(234, 179, 8, 0.25);
+            }
+
+            .tier-column-header.tier-2 {
+                background: linear-gradient(135deg, rgba(244, 63, 94, 0.18), rgba(244, 63, 94, 0.03));
+                color: #fb7185;
+                border: 1px solid rgba(244, 63, 94, 0.25);
+            }
+
+            .tier-column-header.tier-3 {
+                background: linear-gradient(135deg, rgba(168, 85, 247, 0.18), rgba(168, 85, 247, 0.03));
+                color: #c084fc;
+                border: 1px solid rgba(168, 85, 247, 0.25);
+            }
+
+            .tier-column-header.tier-4 {
+                background: linear-gradient(135deg, rgba(56, 189, 248, 0.18), rgba(56, 189, 248, 0.03));
+                color: #38bdf8;
+                border: 1px solid rgba(56, 189, 248, 0.25);
+            }
+
+            .tier-column-header.tier-5,
+            .tier-column-header.tier-6 {
+                background: linear-gradient(135deg, rgba(148, 163, 184, 0.15), rgba(148, 163, 184, 0.03));
+                color: #cbd5e1;
+                border: 1px solid rgba(148, 163, 184, 0.2);
+            }
+
+            body.light .tier-column-header.tier-5,
+            body.light .tier-column-header.tier-6 {
+                color: #475569;
+            }
+
+            /* Player Item Row Cards */
+            .tier-column-player {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                padding: 10px 12px;
+                background: rgba(30, 41, 59, 0.4);
+                border: 1px solid rgba(148, 163, 184, 0.08);
+                border-radius: 12px;
+                cursor: pointer;
+                transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), 
+                            background-color 0.2s ease, 
+                            border-color 0.2s ease,
+                            box-shadow 0.2s ease;
+            }
+
+            body.light .tier-column-player {
+                background: rgba(255, 255, 255, 0.65);
+                border-color: rgba(0, 0, 0, 0.04);
+            }
+
+            .tier-column-player:hover {
+                transform: translateY(-2px);
+                background: rgba(30, 41, 59, 0.65);
+                border-color: rgba(var(--accent-rgb) / 0.4);
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            }
+
+            body.light .tier-column-player:hover {
+                background: #ffffff;
+                border-color: rgba(var(--accent-rgb) / 0.3);
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+            }
+
+            /* Structural Variations inside Player Item Card */
+            .tier-column-player-high {
+                border-left: 3px solid var(--accent);
+            }
+
+            .tier-column-player-low {
+                border-left: 3px solid var(--muted);
+            }
+
+            .tier-column-player-retired {
+                opacity: 0.55;
+            }
+
+            .player-avatar-small {
+                width: 32px;
+                height: 32px;
+                border-radius: 8px;
+                background: #090d16;
+                border: 1px solid rgba(255, 255, 255, 0.08);
+                object-fit: cover;
+            }
+
+            body.light .player-avatar-small {
+                border-color: rgba(0, 0, 0, 0.06);
+                background: #e2e8f0;
+            }
+
+            .tier-column-player-info {
+                flex: 1;
+                display: flex;
+                flex-direction: column;
+                min-width: 0;
+            }
+
+            .tier-column-player-name {
+                font-size: 0.88rem;
+                font-weight: 600;
+                color: var(--text-color);
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                display: flex;
+                flex-direction: column;
+                gap: 1px;
+            }
+
+            .tier-column-player-name .player-region {
+                font-size: 0.65rem;
+                font-weight: 700;
+                color: var(--muted);
+                letter-spacing: 0.4px;
+            }
+
+            .tier-column-player-icons {
+                display: flex;
+                align-items: center;
+                gap: 5px;
+            }
+
+            .tier-indicator-icon, 
+            .retired-indicator-icon {
+                width: 15px;
+                height: 15px;
+                object-fit: contain;
+            }
 
             .action-button svg {
                 width: 16px;
@@ -1337,6 +1530,7 @@
                         margin-bottom: 10px;
                         background: linear-gradient(135deg, #a855f7, #8b5cf6);
                         -webkit-background-clip: text;
+                        background-clip: text; 
                         -webkit-text-fill-color: transparent;
                     "
                 >
