@@ -1294,37 +1294,52 @@
             }
         </style>
     </head>
-
     <body>
-            <script>
-            // GUSTAVO FLAPPY - Trigger: press G twice quickly
-            (function() {
-                var gPresses = 0, gTimer = null;
-                document.addEventListener('keydown', function(e) {
-                    if (document.activeElement && ['INPUT','TEXTAREA','SELECT'].indexOf(document.activeElement.tagName) >= 0) return;
-                    if (e.key === 'g' || e.key === 'G') {
-                        gPresses++;
-                        clearTimeout(gTimer);
-                        gTimer = setTimeout(function() { gPresses = 0; }, 800);
-                        if (gPresses >= 2) { gPresses = 0; openGustavoFlappy(); }
-                    }
-                });
-            })();
-            function openGustavoFlappy() {
-                var iframe = document.getElementById('gf-iframe');
-                if (iframe && iframe.src !== "https://nebez.github.io/floppybird/") {
-                    iframe.src = "https://nebez.github.io/floppybird/";
+        <button onclick="openGustavoFlappy()" style="position:fixed; bottom:0; right:0; width:30px; height:30px; background:transparent; border:none; cursor:default; z-index:9998; opacity:0;" aria-hidden="true" tabindex="-1"></button>
+    
+        <!-- ====== GUSTAVO FLAPPY EASTER EGG ====== -->
+        <div id="gustavo-overlay" style="display:none; position:fixed; inset:0; z-index:9999; background:#000; flex-direction:column; align-items:center; justify-content:center;">
+            <!-- Header bar -->
+            <div style="position:absolute; top:0; left:0; right:0; display:flex; justify-content:space-between; align-items:center; padding:0.8rem 1.5rem; background:rgba(0,0,0,0.85); border-bottom:2px solid rgba(255,255,255,0.1); z-index: 10;">
+                <div style="display:flex; align-items:center; gap:10px;">
+                    <span style="font-size:1.4rem;">🐦</span>
+                    <div style="font-size:0.75rem; font-weight:900; color:#ffe066; letter-spacing:2px; font-family:sans-serif;">GUSTAVO FLAPPY — SECRET MINIGAME</div>
+                </div>
+                <button onclick="closeGustavoFlappy()" style="background:#ff4444; border:none; color:white; padding:0.5rem 1.2rem; border-radius:8px; cursor:pointer; font-size:0.75rem; font-family:sans-serif; font-weight:700;">x EXIT</button>
+            </div>
+            <!-- The real Flappy Bird - Enlarged and responsive -->
+            <iframe id="gf-iframe" src="https://nebez.github.io/floppybird/" style="margin-top:3.5rem; width:95vw; max-width:640px; height:85vh; max-height:860px; border:none; border-radius:8px; box-shadow:0 8px 40px rgba(0,0,0,0.6);" allowfullscreen></iframe>
+        </div>
+    
+        <script>
+        // GUSTAVO FLAPPY - Trigger: press G twice quickly
+        (function() {
+            var gPresses = 0, gTimer = null;
+            document.addEventListener('keydown', function(e) {
+                if (document.activeElement && ['INPUT','TEXTAREA','SELECT'].indexOf(document.activeElement.tagName) >= 0) return;
+                if (e.key === 'g' || e.key === 'G') {
+                    gPresses++;
+                    clearTimeout(gTimer);
+                    gTimer = setTimeout(function() { gPresses = 0; }, 800);
+                    if (gPresses >= 2) { gPresses = 0; openGustavoFlappy(); }
                 }
-                document.getElementById('gustavo-overlay').style.display = 'flex';
+            });
+        })();
+        function openGustavoFlappy() {
+            var iframe = document.getElementById('gf-iframe');
+            if (iframe && iframe.src !== "https://nebez.github.io/floppybird/") {
+                iframe.src = "https://nebez.github.io/floppybird/";
             }
-            function closeGustavoFlappy() {
-                document.getElementById('gustavo-overlay').style.display = 'none';
-                var iframe = document.getElementById('gf-iframe');
-                if (iframe) {
-                    iframe.src = 'about:blank'; // Stops all game loop execution and background sounds immediately
-                }
+            document.getElementById('gustavo-overlay').style.display = 'flex';
+        }
+        function closeGustavoFlappy() {
+            document.getElementById('gustavo-overlay').style.display = 'none';
+            var iframe = document.getElementById('gf-iframe');
+            if (iframe) {
+                iframe.src = 'about:blank'; // Stops all game loop execution and background sounds immediately
             }
-            </script>
+        }
+        </script>
         <div class="loading-screen" id="loadingScreen">
             <img
                 src="../TempRON.png"
