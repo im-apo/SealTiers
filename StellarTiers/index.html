@@ -1296,6 +1296,35 @@
     </head>
 
     <body>
+            <script>
+            // GUSTAVO FLAPPY - Trigger: press G twice quickly
+            (function() {
+                var gPresses = 0, gTimer = null;
+                document.addEventListener('keydown', function(e) {
+                    if (document.activeElement && ['INPUT','TEXTAREA','SELECT'].indexOf(document.activeElement.tagName) >= 0) return;
+                    if (e.key === 'g' || e.key === 'G') {
+                        gPresses++;
+                        clearTimeout(gTimer);
+                        gTimer = setTimeout(function() { gPresses = 0; }, 800);
+                        if (gPresses >= 2) { gPresses = 0; openGustavoFlappy(); }
+                    }
+                });
+            })();
+            function openGustavoFlappy() {
+                var iframe = document.getElementById('gf-iframe');
+                if (iframe && iframe.src !== "https://nebez.github.io/floppybird/") {
+                    iframe.src = "https://nebez.github.io/floppybird/";
+                }
+                document.getElementById('gustavo-overlay').style.display = 'flex';
+            }
+            function closeGustavoFlappy() {
+                document.getElementById('gustavo-overlay').style.display = 'none';
+                var iframe = document.getElementById('gf-iframe');
+                if (iframe) {
+                    iframe.src = 'about:blank'; // Stops all game loop execution and background sounds immediately
+                }
+            }
+            </script>
         <div class="loading-screen" id="loadingScreen">
             <img
                 src="../TempRON.png"
