@@ -1814,6 +1814,604 @@
             </div>
         </div>
         <script src="../mainstellar.js" defer></script>
+        <!-- ====== EXPANDED STELLAR APO CLICKER ====== -->
+        <div id="apo-clicker-overlay" style="display:none; position:fixed; inset:0; z-index:9999; background:rgba(12,8,18,0.95); backdrop-filter:blur(10px); flex-direction:column; align-items:center; justify-content:center; font-family:'Syncopate', 'Orbitron', sans-serif; color:white; overflow:hidden;">
+            <!-- Header bar -->
+            <div style="position:absolute; top:0; left:0; right:0; display:flex; justify-content:space-between; align-items:center; padding:1rem 2rem; background:rgba(0,0,0,0.8); border-bottom:1px solid rgba(168,85,247,0.2); z-index:10;">
+                <div style="display:flex; align-items:center; gap:12px;">
+                    <div style="width:28px; height:28px; border-radius:4px; border:2px solid #a855f7; background:linear-gradient(135deg, #a855f7, #6b21a8);"></div>
+                    <div>
+                        <div style="font-size:1rem; font-weight:900; color:#c084fc; letter-spacing:3px;">RISE OF APO</div>
+                        <div style="font-size:0.5rem; color:rgba(255,255,255,0.4); letter-spacing:2px; margin-top:2px;">STELLAR COMMAND UPLINK v2.0</div>
+                    </div>
+                </div>
+                <button onclick="closeApoClicker()" style="background:rgba(168,85,247,0.1); border:1px solid rgba(168,85,247,0.3); color:#c084fc; padding:0.6rem 1.5rem; border-radius:8px; cursor:pointer; font-family:'Syncopate', sans-serif; font-size:0.65rem; font-weight:700; letter-spacing:1px; transition:all 0.2s;" onmouseover="this.style.background='rgba(168,85,247,0.2)'" onmouseout="this.style.background='rgba(168,85,247,0.1)'">✕ DISCONNECT</button>
+            </div>
+
+            <!-- Game Layout Wrapper -->
+            <div style="display:flex; width:95%; max-width:1300px; height:80vh; margin-top:4rem; gap:2rem;">
+                
+                <!-- LEFT PANEL: Main Clicker Target -->
+                <div style="flex:1.2; display:flex; flex-direction:column; align-items:center; justify-content:center; background:rgba(0,0,0,0.3); border:1px solid rgba(168,85,247,0.1); border-radius:16px; padding:2rem; position:relative;">
+                    
+                    <!-- Target Stage Level Info -->
+                    <div style="text-align:center; margin-bottom:1.5rem; width:100%;">
+                        <div id="apo-stage-name" style="font-size:0.9rem; font-weight:900; color:#c084fc; letter-spacing:2px; margin-bottom:0.5rem;">TIER 1: LOCAL MILITIA</div>
+                        <!-- Enemy HP/Progress Bar -->
+                        <div style="width:80%; height:10px; background:rgba(0,0,0,0.8); border-radius:5px; margin:0 auto; overflow:hidden; border:1px solid rgba(168,85,247,0.2);">
+                            <div id="apo-hp-bar" style="width:100%; height:100%; background:linear-gradient(90deg, #6b21a8, #c084fc); transition:width 0.1s ease-out; border-radius:5px;"></div>
+                        </div>
+                        <div id="apo-hp-text" style="font-size:0.5rem; color:rgba(255,255,255,0.5); margin-top:6px; letter-spacing:1px;">INTEGRITY: 100/100</div>
+                    </div>
+
+                    <!-- Main Target Orb -->
+                    <div id="apo-target-wrapper" style="position:relative; cursor:pointer; user-select:none; padding:30px;">
+                        <div id="apo-target" style="width:140px; height:140px; border-radius:50%; background:radial-gradient(circle at 35% 35%, #d8b4fe, #7e22ce, #3b0764); box-shadow:0 0 30px rgba(168,85,247,0.3), inset 0 0 15px rgba(255,255,255,0.2); border:1px solid #e9d5ff; transition:transform 0.05s ease;"></div>
+                    </div>
+
+                    <div style="margin-top:2rem; text-align:center;">
+                        <div style="font-size:0.55rem; color:rgba(255,255,255,0.3); letter-spacing:2px;">RESOURCES ACQUIRED</div>
+                        <div id="apo-total-hits" style="font-size:2.8rem; font-weight:900; color:white; margin-top:0.3rem;">0</div>
+                        <div id="apo-hps" style="font-size:0.75rem; color:#c084fc; letter-spacing:1px; margin-top:0.3rem;">+0.0 YIELD / SEC</div>
+                    </div>
+                </div>
+
+                <!-- RIGHT PANEL: Shop & Upgrades -->
+                <div style="flex:1.5; background:rgba(0,0,0,0.3); border:1px solid rgba(168,85,247,0.1); border-radius:16px; padding:1.5rem; display:flex; flex-direction:column;">
+                    <div style="font-size:0.8rem; font-weight:900; color:#c084fc; letter-spacing:3px; margin-bottom:1rem; border-bottom:1px solid rgba(168,85,247,0.1); padding-bottom:0.5rem; text-align:center;">COMMAND CENTER UPGRADES</div>
+                    
+                    <!-- Upgrades scroll list -->
+                    <div id="apo-upgrades" style="flex:1; overflow-y:auto; display:grid; grid-template-columns: 1fr 1fr; gap:0.6rem; padding-right:0.5rem; align-content:start;">
+                        <!-- Items injected here by JS -->
+                    </div>
+                </div>
+                
+            </div>
+
+            <div style="position:absolute; bottom:1rem; font-size:0.45rem; color:rgba(255,255,255,0.2); letter-spacing:2px;">PRESS "F F" TO UPLINK • AUTO-SAVING TO SECURE MAINFRAME</div>
+        </div>
+        <script>
+            // ====== EXPANDED STELLAR APO CLICKER ENGINE ======
+            var gameState = {
+                hits: 0,
+                clickPower: 1,
+                hps: 0,
+                stage: 1,
+                hp: 100,
+                maxHp: 100,
+                upgrades: {
+                    // Tier 1: Early Weapons & Melee
+                    woodenClub: { name: "Wooden Club", count: 0, baseCost: 15, currentCost: 15, value: 1, type: "click" },
+                    copperSword: { name: "Copper Sword", count: 0, baseCost: 50, currentCost: 50, value: 1, type: "hps" },
+                    ironBroadsword: { name: "Iron Broadsword", count: 0, baseCost: 150, currentCost: 150, value: 3, type: "click" },
+                    steelHalberd: { name: "Steel Halberd", count: 0, baseCost: 400, currentCost: 400, value: 6, type: "hps" },
+                    crossbow: { name: "Heavy Crossbow", count: 0, baseCost: 1000, currentCost: 1000, value: 12, type: "click" },
+                    flintlock: { name: "Flintlock Pistol", count: 0, baseCost: 2500, currentCost: 2500, value: 25, type: "hps" },
+                    musket: { name: "Musket Volley", count: 0, baseCost: 6000, currentCost: 6000, value: 50, type: "click" },
+                    shotgun: { name: "Double Barrel Shotgun", count: 0, baseCost: 15000, currentCost: 15000, value: 100, type: "hps" },
+                    boltAction: { name: "Bolt-Action Rifle", count: 0, baseCost: 35000, currentCost: 35000, value: 250, type: "click" },
+                    gatlingGun: { name: "Gatling Gun", count: 0, baseCost: 80000, currentCost: 80000, value: 500, type: "hps" },
+
+                    // Tier 2: Modern Military & Vehicles
+                    assaultRifle: { name: "Assault Rifle Squad", count: 0, baseCost: 200000, currentCost: 200000, value: 1200, type: "click" },
+                    sniper: { name: "Sniper Team", count: 0, baseCost: 500000, currentCost: 500000, value: 2500, type: "hps" },
+                    rpgLauncher: { name: "RPG Launcher", count: 0, baseCost: 1.2e6, currentCost: 1.2e6, value: 6000, type: "click" },
+                    minigun: { name: "Heavy Minigun", count: 0, baseCost: 3e6, currentCost: 3e6, value: 12000, type: "hps" },
+                    armoredCar: { name: "Armored Car", count: 0, baseCost: 7.5e6, currentCost: 7.5e6, value: 30000, type: "click" },
+                    lightTank: { name: "Light Tank", count: 0, baseCost: 18e6, currentCost: 18e6, value: 60000, type: "hps" },
+                    heavyTank: { name: "Heavy Battle Tank", count: 0, baseCost: 45e6, currentCost: 45e6, value: 120000, type: "click" },
+                    artillery: { name: "Mobile Artillery", count: 0, baseCost: 110e6, currentCost: 110e6, value: 250000, type: "hps" },
+                    attackHeli: { name: "Attack Helicopter", count: 0, baseCost: 250e6, currentCost: 250e6, value: 600000, type: "click" },
+                    fighterJet: { name: "Fighter Jet", count: 0, baseCost: 600e6, currentCost: 600e6, value: 1.2e6, type: "hps" },
+
+                    // Tier 3: Legendary Weapons & High-Tech
+                    stealthBomber: { name: "Stealth Bomber", count: 0, baseCost: 1.5e9, currentCost: 1.5e9, value: 3e6, type: "click" },
+                    excalibur: { name: "Legendary Excalibur", count: 0, baseCost: 3.5e9, currentCost: 3.5e9, value: 6e6, type: "hps" },
+                    mjolnir: { name: "Mjolnir's Strike", count: 0, baseCost: 8e9, currentCost: 8e9, value: 15e6, type: "click" },
+                    gungnir: { name: "Gungnir Spear", count: 0, baseCost: 18e9, currentCost: 18e9, value: 30e6, type: "hps" },
+                    railgun: { name: "Magnetic Railgun", count: 0, baseCost: 45e9, currentCost: 45e9, value: 75e6, type: "click" },
+                    laserRifle: { name: "Laser Rifle", count: 0, baseCost: 110e9, currentCost: 110e9, value: 150e6, type: "hps" },
+                    plasmaCannon: { name: "Plasma Cannon", count: 0, baseCost: 250e9, currentCost: 250e9, value: 400e6, type: "click" },
+                    mechSuit: { name: "Combat Mech Suit", count: 0, baseCost: 600e9, currentCost: 600e9, value: 800e6, type: "hps" },
+                    nuke: { name: "Tactical Nuke", count: 0, baseCost: 1.5e12, currentCost: 1.5e12, value: 2e9, type: "click" },
+                    icbmSilo: { name: "ICBM Silo", count: 0, baseCost: 3.5e12, currentCost: 3.5e12, value: 4.5e9, type: "hps" },
+
+                    // Tier 4: Space Age & Ships
+                    orbitalDrop: { name: "Orbital Drop Pods", count: 0, baseCost: 8e12, currentCost: 8e12, value: 10e9, type: "click" },
+                    spaceElevator: { name: "Space Elevator", count: 0, baseCost: 18e12, currentCost: 18e12, value: 25e9, type: "hps" },
+                    lunarBase: { name: "Lunar Base", count: 0, baseCost: 45e12, currentCost: 45e12, value: 60e9, type: "click" },
+                    starfighter: { name: "Starfighter", count: 0, baseCost: 110e12, currentCost: 110e12, value: 150e9, type: "hps" },
+                    corvette: { name: "Light Corvette", count: 0, baseCost: 250e12, currentCost: 250e12, value: 350e9, type: "click" },
+                    frigate: { name: "Space Frigate", count: 0, baseCost: 600e12, currentCost: 600e12, value: 800e9, type: "hps" },
+                    ionCannon: { name: "Ion Cannon", count: 0, baseCost: 1.5e15, currentCost: 1.5e15, value: 2e12, type: "click" },
+                    starCruiser: { name: "Star Cruiser", count: 0, baseCost: 3.5e15, currentCost: 3.5e15, value: 4.5e12, type: "hps" },
+                    starDestroyer: { name: "Star Destroyer", count: 0, baseCost: 8e15, currentCost: 8e15, value: 10e12, type: "click" },
+                    dreadnought: { name: "Dreadnought", count: 0, baseCost: 18e15, currentCost: 18e15, value: 25e12, type: "hps" },
+
+                    // Tier 5: Advanced Cosmic Tech
+                    antimatterBomb: { name: "Antimatter Bomb", count: 0, baseCost: 45e15, currentCost: 45e15, value: 60e12, type: "click" },
+                    quantumRadar: { name: "Quantum Radar", count: 0, baseCost: 110e15, currentCost: 110e15, value: 150e12, type: "hps" },
+                    darkMatterBlaster: { name: "Dark Matter Blaster", count: 0, baseCost: 250e15, currentCost: 250e15, value: 350e12, type: "click" },
+                    singularityCore: { name: "Singularity Core", count: 0, baseCost: 600e15, currentCost: 600e15, value: 800e12, type: "hps" },
+                    warpDrive: { name: "Warp Drive", count: 0, baseCost: 1.5e18, currentCost: 1.5e18, value: 2e15, type: "click" },
+                    dysonSwarm: { name: "Dyson Swarm", count: 0, baseCost: 3.5e18, currentCost: 3.5e18, value: 4.5e15, type: "hps" },
+                    solarForge: { name: "Solar Forge", count: 0, baseCost: 8e18, currentCost: 8e18, value: 10e15, type: "click" },
+                    stellarEngine: { name: "Stellar Engine", count: 0, baseCost: 18e18, currentCost: 18e18, value: 25e15, type: "hps" },
+                    galaxyCruiser: { name: "Galaxy Cruiser", count: 0, baseCost: 45e18, currentCost: 45e18, value: 60e15, type: "click" },
+                    voidRay: { name: "Void Ray", count: 0, baseCost: 110e18, currentCost: 110e18, value: 150e15, type: "hps" },
+
+                    // Tier 6: Early Boss Artifacts
+                    skeletonKingCrown: { name: "Skeleton King's Crown", count: 0, baseCost: 250e18, currentCost: 250e18, value: 350e15, type: "click" },
+                    zombieKingBlade: { name: "Zombie King's Blade", count: 0, baseCost: 600e18, currentCost: 600e18, value: 800e15, type: "hps" },
+                    slimePrinceGoo: { name: "Slime Prince's Goo", count: 0, baseCost: 1.5e21, currentCost: 1.5e21, value: 2e18, type: "click" },
+                    giantClub: { name: "The Giant's Club", count: 0, baseCost: 3.5e21, currentCost: 3.5e21, value: 4.5e18, type: "hps" },
+                    magmarFurnace: { name: "Magmar's Furnace", count: 0, baseCost: 8e21, currentCost: 8e21, value: 10e18, type: "click" },
+                    frostveilShard: { name: "Frostveil's Shard", count: 0, baseCost: 18e21, currentCost: 18e21, value: 25e18, type: "hps" },
+                    aurelionVoidflame: { name: "Aurelion's Voidflame", count: 0, baseCost: 45e21, currentCost: 45e21, value: 60e18, type: "click" },
+                    infernaxEmber: { name: "Infernax's Ember", count: 0, baseCost: 110e21, currentCost: 110e21, value: 150e18, type: "hps" },
+                    changelingMask: { name: "Changeling's Mask", count: 0, baseCost: 250e21, currentCost: 250e21, value: 350e18, type: "click" },
+                    bularCleaver: { name: "Bular's Cleaver", count: 0, baseCost: 600e21, currentCost: 600e21, value: 800e18, type: "hps" },
+
+                    // Tier 7: High Bosses & The Underworld
+                    angorRotDagger: { name: "Angor Rot's Dagger", count: 0, baseCost: 1.5e24, currentCost: 1.5e24, value: 2e21, type: "click" },
+                    gunmarDecimaar: { name: "Gunmar's Decimaar", count: 0, baseCost: 3.5e24, currentCost: 3.5e24, value: 4.5e21, type: "hps" },
+                    brimstoneCore: { name: "Brimstone Core", count: 0, baseCost: 8e24, currentCost: 8e24, value: 10e21, type: "click" },
+                    catastropheTremor: { name: "Catastrophe's Tremor", count: 0, baseCost: 18e24, currentCost: 18e24, value: 25e21, type: "hps" },
+                    cataclysmRift: { name: "Cataclysm's Rift", count: 0, baseCost: 45e24, currentCost: 45e24, value: 60e21, type: "click" },
+                    shadeLordAura: { name: "Shade Lord's Aura", count: 0, baseCost: 110e24, currentCost: 110e24, value: 150e21, type: "hps" },
+                    astryxStarlight: { name: "Astryx's Starlight", count: 0, baseCost: 250e24, currentCost: 250e24, value: 350e21, type: "click" },
+                    vorlithGeode: { name: "Vorlith's Geode", count: 0, baseCost: 600e24, currentCost: 600e24, value: 800e21, type: "hps" },
+                    eclipseSeraphWing: { name: "Eclipse Seraph Wing", count: 0, baseCost: 1.5e27, currentCost: 1.5e27, value: 2e24, type: "click" },
+                    nyxaraVoidCrown: { name: "Nyxara's Void Crown", count: 0, baseCost: 3.5e27, currentCost: 3.5e27, value: 4.5e24, type: "hps" },
+
+                    // Tier 8: Interdimensional & Arcane Order
+                    titanfallCore: { name: "Titanfall Core", count: 0, baseCost: 8e27, currentCost: 8e27, value: 10e24, type: "click" },
+                    apollyonRune: { name: "Apollyon's Rune", count: 0, baseCost: 18e27, currentCost: 18e27, value: 25e24, type: "hps" },
+                    kaelthrysNullifier: { name: "Kaelthrys's Nullifier", count: 0, baseCost: 45e27, currentCost: 45e27, value: 60e24, type: "click" },
+                    xyphorosGate: { name: "Xyphoros's Gate", count: 0, baseCost: 110e27, currentCost: 110e27, value: 150e24, type: "hps" },
+                    velmoraMemory: { name: "Velmora's Memory", count: 0, baseCost: 250e27, currentCost: 250e27, value: 350e24, type: "click" },
+                    oblivexErasure: { name: "Oblivex's Erasure", count: 0, baseCost: 600e27, currentCost: 600e27, value: 800e24, type: "hps" },
+                    aetherionOrder: { name: "Aetherion's Order", count: 0, baseCost: 1.5e30, currentCost: 1.5e30, value: 2e27, type: "click" },
+                    nariOvergrowth: { name: "Nari's Overgrowth", count: 0, baseCost: 3.5e30, currentCost: 3.5e30, value: 4.5e27, type: "hps" },
+                    bellrochFlame: { name: "Bellroch's Flame", count: 0, baseCost: 8e30, currentCost: 8e30, value: 10e27, type: "click" },
+                    skraelWind: { name: "Skrael's Wind", count: 0, baseCost: 18e30, currentCost: 18e30, value: 25e27, type: "hps" },
+
+                    // Tier 9: Post-Arcane Order & Starfall
+                    helioraxMaw: { name: "Heliorax's Maw", count: 0, baseCost: 45e30, currentCost: 45e30, value: 60e27, type: "click" },
+                    vaelstromGravity: { name: "Vaelstrom's Gravity", count: 0, baseCost: 110e30, currentCost: 110e30, value: 150e27, type: "hps" },
+                    ashboundForge: { name: "Ashbound's Forge", count: 0, baseCost: 250e30, currentCost: 250e30, value: 350e27, type: "click" },
+                    nytheraTrap: { name: "Nythera's Trap", count: 0, baseCost: 600e30, currentCost: 600e30, value: 800e27, type: "hps" },
+                    astralReclaimer: { name: "Astral Reclaimer", count: 0, baseCost: 1.5e33, currentCost: 1.5e33, value: 2e30, type: "click" },
+                    solkarStarForge: { name: "Solkar's Star-Forge", count: 0, baseCost: 3.5e33, currentCost: 3.5e33, value: 4.5e30, type: "hps" },
+                    umbrosyneEclipse: { name: "Umbrosyne's Eclipse", count: 0, baseCost: 8e33, currentCost: 8e33, value: 10e30, type: "click" },
+                    parallaxLeviathan: { name: "Parallax Leviathan", count: 0, baseCost: 18e33, currentCost: 18e33, value: 25e30, type: "hps" },
+                    kryxalonDevourer: { name: "Kryxalon's Devourer", count: 0, baseCost: 45e33, currentCost: 45e33, value: 60e30, type: "click" },
+                    virexxCleaver: { name: "Virexx's Cleaver", count: 0, baseCost: 110e33, currentCost: 110e33, value: 150e30, type: "hps" },
+
+                    // Tier 10: Cosmic Entities & The End
+                    celestialHusk: { name: "The Celestial Husk", count: 0, baseCost: 250e33, currentCost: 250e33, value: 350e30, type: "click" },
+                    astraeonWarden: { name: "Astraeon's Warden", count: 0, baseCost: 600e33, currentCost: 600e33, value: 800e30, type: "hps" },
+                    oblivionChoir: { name: "The Oblivion Choir", count: 0, baseCost: 1.5e36, currentCost: 1.5e36, value: 2e33, type: "click" },
+                    zyggorathBehemoth: { name: "Zyggorath's Behemoth", count: 0, baseCost: 3.5e36, currentCost: 3.5e36, value: 4.5e33, type: "hps" },
+                    nullAscendant: { name: "The Null Ascendant", count: 0, baseCost: 8e36, currentCost: 8e36, value: 10e33, type: "click" },
+                    redSpaceHarbinger: { name: "Red Space Harbinger", count: 0, baseCost: 18e36, currentCost: 18e36, value: 25e33, type: "hps" },
+                    sleeperOrbits: { name: "Sleeper Beneath Orbits", count: 0, baseCost: 45e36, currentCost: 45e36, value: 60e33, type: "click" },
+                    xothVelSignal: { name: "Xoth-Vel's Signal", count: 0, baseCost: 110e36, currentCost: 110e36, value: 150e33, type: "hps" },
+                    abyssalConvergence: { name: "Abyssal Convergence", count: 0, baseCost: 250e36, currentCost: 250e36, value: 350e33, type: "click" },
+                    cthuluCataclysm: { name: "Cthulu's Cataclysm", count: 0, baseCost: 600e36, currentCost: 600e36, value: 800e33, type: "hps" },
+
+                    // Tier 11: Apo & The Chosen One 
+                    apoVanguardShield: { name: "Apo's Vanguard Shield", count: 0, baseCost: 1.5e39, currentCost: 1.5e39, value: 2e36, type: "click" },
+                    apoEliteSpear: { name: "Apo's Elite Spear", count: 0, baseCost: 3.5e39, currentCost: 3.5e39, value: 4.5e36, type: "hps" },
+                    apoChosenBlade: { name: "Apo's Chosen Blade", count: 0, baseCost: 8e39, currentCost: 8e39, value: 10e36, type: "click" },
+                    apoAvatarCrown: { name: "Apo's Avatar Crown", count: 0, baseCost: 18e39, currentCost: 18e39, value: 25e36, type: "hps" },
+                    stellarMainframeNode: { name: "Stellar Mainframe Node", count: 0, baseCost: 45e39, currentCost: 45e39, value: 60e36, type: "click" },
+                    realityAnchor: { name: "Reality Anchor", count: 0, baseCost: 110e39, currentCost: 110e39, value: 150e36, type: "hps" },
+                    multiverseNexus: { name: "Multiverse Nexus", count: 0, baseCost: 250e39, currentCost: 250e39, value: 350e36, type: "click" },
+                    omniversalShift: { name: "Omniversal Shift", count: 0, baseCost: 600e39, currentCost: 600e39, value: 800e36, type: "hps" },
+                    apoSingularity: { name: "Apo's Singularity", count: 0, baseCost: 1.5e42, currentCost: 1.5e42, value: 2e39, type: "click" },
+                    theChosenAscension: { name: "The Chosen's Ascension", count: 0, baseCost: 5e42, currentCost: 5e42, value: 10e39, type: "hps" }
+                }
+            };
+
+            var clickerInterval = null;
+
+            // 150 Boss Stages
+            var APO_STAGES = [
+                "Local Militia",
+                "Rebel Stronghold",
+                "Crypt of the Skeleton King",
+                "Skeleton King",
+                "Border Skirmish",
+                "Rival Faction",
+                "Wasteland of the Zombie King",
+                "Zombie King",
+                "Capital City",
+                "Desert Outpost",
+                "Domain of the King Slime",
+                "King Slime",
+                "Naval Blockade",
+                "Island Fortress",
+                "The Giant's Stand",
+                "Giant",
+                "Mountain Citadel",
+                "Continental Command",
+                "Magmar's Volcanic Ring",
+                "Magmar - Magma Elemental",
+                "Global Alliance",
+                "Underground Bunker",
+                "Frostveil's Blizzard Peak",
+                "Frostveil - Frost Elemental",
+                "Secret Syndicate",
+                "Polar Station",
+                "Aurelion's Corrupted Sanctuary",
+                "Aurelion - Corrupted King",
+                "Oceanic Rig",
+                "Stratospheric Base",
+                "Infernax's Voidflame Forge",
+                "Infernax the Ancient",
+                "Orbital Defense",
+                "Lunar Colony",
+                "Lair of the Changeling",
+                "Changeling",
+                "Martian Outpost",
+                "Asteroid Miners",
+                "Bular's Brutal Hunting Grounds",
+                "Bular the Butcher",
+                "Jovian Station",
+                "Titan Refinery",
+                "Angor Rot's Infernal Shroud",
+                "Angor Rot",
+                "Pluto Watchtower",
+                "Oort Cloud Fleet",
+                "Gunmar's Dark Underworld",
+                "Gunmar the Black",
+                "Alpha Centauri Gate",
+                "Proxima Centauri Base",
+                "Reawoken Brimstone Core",
+                "Reawoken Brimstone Elemental",
+                "Sirius Shipyards",
+                "Vega Citadel",
+                "Catastrophe's Tremor Zone",
+                "Catastrophe",
+                "Orion Nebula Hub",
+                "Pleiades Council",
+                "Cataclysm's Chaos Rift",
+                "Cataclysm",
+                "Andromeda Vanguard",
+                "Void Marauders",
+                "Absolute Catastrophe's Epicenter",
+                "Absolute Catastrophe",
+                "Nebula Pirates",
+                "Cosmic Traders",
+                "Absolute Cataclysm's Storm",
+                "Absolute Cataclysm",
+                "Dark Matter Forge",
+                "Quasar Emitter",
+                "Throne of the Shade Lord",
+                "Shade Lord",
+                "Pulsar Station",
+                "Neutron Star Rig",
+                "Astryx's Court of Starlight",
+                "Astryx, The Starbound Judge",
+                "Black Hole Event Horizon",
+                "Singularity Core",
+                "Vorlith's Sculpted Continent",
+                "Vorlith, The Worldshaper",
+                "Galactic Federation",
+                "Stellar Empire",
+                "Eclipse Seraph's Shadow",
+                "Eclipse Seraph",
+                "Cosmic Sovereignty",
+                "Universal Dominion",
+                "Nyxara's Void Court",
+                "Nyxara, Queen of the Void Court",
+                "Multiverse Gateway",
+                "Titanfall Colossus Awakening",
+                "The Titanfall Colossus",
+                "Apollyon's Prophecy",
+                "Apollyon, The End Written in Flame",
+                "Kaelthrys's Magic Nullifier",
+                "Kaelthrys, The Spellbreaker Titan",
+                "Xyphoros's Infinite Gate",
+                "Xyphoros, Architect of the Infinite Gate",
+                "Velmora's Memory Weapon",
+                "Velmora, The Astral Sovereign",
+                "Oblivex's Erasure Point",
+                "Oblivex, The World Unraveler",
+                "Arcane Law Nexus",
+                "Aetherion Prime, Herald of the Arcane Order",
+                "Nari's Eternal Forest",
+                "Nari of the Eternal Forest",
+                "Bellroch's Keep of Flame",
+                "Bellroch, Keeper of the Flame",
+                "Skrael's Northern Wind",
+                "Skrael of the Northern Wind",
+                "Heliorax's Star-Eater Maw",
+                "Heliorax, Star-Eater Spawn",
+                "Vaelstrom Maw's Debris Field",
+                "Vaelstrom Maw",
+                "Ashbound Sovereign's Fleet",
+                "The Ashbound Sovereign",
+                "Nythera's Adaptive Trap",
+                "Nythera, Voidborne Huntress",
+                "Astral Reclaimer's Factory",
+                "The Astral Reclaimer",
+                "Solkar's Star-Forged Empire",
+                "Solkar, The Star-Forged Tyrant",
+                "Umbrosyne's Roaming Eclipse",
+                "Umbrosyne, Dusk of a Thousand Worlds",
+                "The Parallax Leviathan Encounter",
+                "The Parallax Leviathan",
+                "Kryxalon's Devoured Planet",
+                "Kryxalon, The Core Devourer",
+                "Virexx's System Cleaver",
+                "Virexx, The System Cleaver",
+                "The Celestial Husk",
+                "The Celestial Husk",
+                "Astraeon's Boundary Warden",
+                "Astraeon, Boundary Warden",
+                "The Oblivion Choir",
+                "The Oblivion Choir (Unified Form)",
+                "Zyggorath's Behemoth Shell",
+                "Zyggorath, Star-Spawn Behemoth",
+                "The Null Ascendant",
+                "The Null Ascendant",
+                "Harbinger of Red Space",
+                "The Harbinger of Red Space",
+                "The Sleeper Beneath Orbits",
+                "The Sleeper Beneath Orbits",
+                "Xoth-Vel's Deep Signal",
+                "Xoth-Vel, Herald of the Deep Signal",
+                "The Abyssal Convergence",
+                "The Abyssal Convergence",
+                "Apo's Vanguard",
+                "Apo's Elite Guard",
+                "Apo's Chosen",
+                "Apo's Avatar",
+                "THE STELLAR MAINFRAME",
+                "Cthulu's Dreaming Cataclysm",
+                "Cthulu, The Dreaming Cataclysm",
+                "Apo.",
+                "The Chosen One"
+            ];
+
+            // Trigger on double-F press
+            (function() {
+                var fPresses = 0, fTimer = null;
+                document.addEventListener('keydown', function(e) {
+                    if (document.activeElement && ['INPUT','TEXTAREA','SELECT'].indexOf(document.activeElement.tagName) >= 0) return;
+                    if (e.key === 'f' || e.key === 'F') {
+                        fPresses++;
+                        clearTimeout(fTimer);
+                        fTimer = setTimeout(function() { fPresses = 0; }, 800);
+                        if (fPresses >= 2) {
+                            fPresses = 0;
+                            openApoClicker();
+                        }
+                    }
+                });
+            })();
+
+            // Initialize Clicker
+            function openApoClicker() {
+                loadApoProgress();
+                document.getElementById('apo-clicker-overlay').style.display = 'flex';
+                renderApoUpgrades();
+                updateApoUI();
+                
+                if (clickerInterval) clearInterval(clickerInterval);
+                clickerInterval = setInterval(function() {
+                    if (gameState.hps > 0) processHits(gameState.hps / 10, true);
+                }, 100);
+
+                var targetWrapper = document.getElementById('apo-target-wrapper');
+                targetWrapper.onmousedown = function(e) {
+                    document.getElementById('apo-target').style.transform = "scale(0.95)";
+                    processHits(gameState.clickPower, false);
+                    spawnDmgPop(e.clientX, e.clientY, "+" + formatNumber(gameState.clickPower));
+                };
+                targetWrapper.onmouseup = function() { document.getElementById('apo-target').style.transform = "scale(1)"; };
+                targetWrapper.onmouseleave = function() { document.getElementById('apo-target').style.transform = "scale(1)"; };
+            }
+
+            function closeApoClicker() {
+                document.getElementById('apo-clicker-overlay').style.display = 'none';
+                if (clickerInterval) { clearInterval(clickerInterval); clickerInterval = null; }
+                saveApoProgress();
+            }
+
+            function processHits(amount, isPassive) {
+                gameState.hits += amount;
+                if (!isPassive) {
+                    gameState.hp -= amount;
+                    if (gameState.hp <= 0) levelUpApoStage();
+                }
+                updateApoUI();
+            }
+
+            function levelUpApoStage() {
+                gameState.stage++;
+                gameState.maxHp = Math.floor(100 * Math.pow(1.85, gameState.stage - 1)); // HP scales by 1.85x per stage
+                gameState.hp = gameState.maxHp;
+                
+                var target = document.getElementById('apo-target');
+                target.style.boxShadow = "0 0 60px #c084fc, inset 0 0 30px #ffffff";
+                setTimeout(function() { target.style.boxShadow = "0 0 30px rgba(168,85,247,0.3), inset 0 0 15px rgba(255,255,255,0.2)"; }, 200);
+                
+                saveApoProgress();
+            }
+
+            function formatNumber(num) {
+                if (num >= 1e100) return (num / 1e100).toFixed(2) + "Gg";   // Googol
+                if (num >= 1e99)  return (num / 1e99).toFixed(2)  + "DVg";  // Duotrigintillion
+                if (num >= 1e96)  return (num / 1e96).toFixed(2)  + "UTg";  // Untrigintillion
+                if (num >= 1e93)  return (num / 1e93).toFixed(2)  + "Tgt";  // Trigintillion
+                if (num >= 1e90)  return (num / 1e90).toFixed(2)  + "Nvg";  // Novemvigintillion
+                if (num >= 1e87)  return (num / 1e87).toFixed(2)  + "Ovg";  // Octovigintillion
+                if (num >= 1e84)  return (num / 1e84).toFixed(2)  + "Svg";  // Septvigintillion
+                if (num >= 1e81)  return (num / 1e81).toFixed(2)  + "Xvg";  // Sexvigintillion
+                if (num >= 1e78)  return (num / 1e78).toFixed(2)  + "Qvg";  // Quinvigintillion
+                if (num >= 1e75)  return (num / 1e75).toFixed(2)  + "Qvt";  // Quattuorvigintillion
+                if (num >= 1e72)  return (num / 1e72).toFixed(2)  + "Tvg";  // Trevigintillion
+                if (num >= 1e69)  return (num / 1e69).toFixed(2)  + "Dvg";  // Duovigintillion
+                if (num >= 1e66)  return (num / 1e66).toFixed(2)  + "Uvg";  // Unvigintillion
+                if (num >= 1e63)  return (num / 1e63).toFixed(2)  + "Vgt";  // Vigintillion
+                if (num >= 1e60)  return (num / 1e60).toFixed(2)  + "Ndc";  // Novemdecillion
+                if (num >= 1e57)  return (num / 1e57).toFixed(2)  + "Odc";  // Octodecillion
+                if (num >= 1e54)  return (num / 1e54).toFixed(2)  + "Sdc";  // Septdecillion
+                if (num >= 1e51)  return (num / 1e51).toFixed(2)  + "Xdc";  // Sexdecillion
+                if (num >= 1e48)  return (num / 1e48).toFixed(2)  + "Qnd";  // Quindecillion
+                if (num >= 1e45)  return (num / 1e45).toFixed(2)  + "Qtd";  // Quattuordecillion
+                if (num >= 1e42)  return (num / 1e42).toFixed(2)  + "Trd";  // Tredecillion
+                if (num >= 1e39)  return (num / 1e39).toFixed(2)  + "Dod";  // Duodecillion
+                if (num >= 1e36)  return (num / 1e36).toFixed(2)  + "Und";  // Undecillion
+                if (num >= 1e33)  return (num / 1e33).toFixed(2)  + "Dc";   // Decillion
+                if (num >= 1e30)  return (num / 1e30).toFixed(2)  + "No";   // Nonillion
+                if (num >= 1e27)  return (num / 1e27).toFixed(2)  + "Oc";   // Octillion
+                if (num >= 1e24)  return (num / 1e24).toFixed(2)  + "Sp";   // Septillion
+                if (num >= 1e21)  return (num / 1e21).toFixed(2)  + "Sx";   // Sextillion
+                if (num >= 1e18)  return (num / 1e18).toFixed(2)  + "Qi";   // Quintillion
+                if (num >= 1e15)  return (num / 1e15).toFixed(2)  + "Qa";   // Quadrillion
+                if (num >= 1e12)  return (num / 1e12).toFixed(2)  + "T";    // Trillion
+                if (num >= 1e9)   return (num / 1e9).toFixed(2)   + "B";    // Billion
+                if (num >= 1e6)   return (num / 1e6).toFixed(2)   + "M";    // Million
+                if (num >= 1e3)   return (num / 1e3).toFixed(1)   + "K";    // Thousand
+                return Math.floor(num);
+            }
+
+            function spawnDmgPop(x, y, text) {
+                var pop = document.createElement('div');
+                pop.textContent = text;
+                pop.style.position = 'fixed';
+                pop.style.left = x + 'px';
+                pop.style.top = y + 'px';
+                pop.style.color = '#e9d5ff';
+                pop.style.fontWeight = '900';
+                pop.style.fontSize = '1.1rem';
+                pop.style.pointerEvents = 'none';
+                pop.style.zIndex = '100000';
+                pop.style.fontFamily = 'Syncopate, sans-serif';
+                pop.style.transition = 'all 0.6s cubic-bezier(0.25, 1, 0.5, 1)';
+                document.body.appendChild(pop);
+                
+                setTimeout(function() { pop.style.transform = 'translateY(-80px) scale(0.7)'; pop.style.opacity = '0'; }, 10);
+                setTimeout(function() { pop.remove(); }, 600);
+            }
+
+            function updateApoUI() {
+                document.getElementById('apo-total-hits').textContent = formatNumber(gameState.hits);
+                document.getElementById('apo-hps').textContent = "+" + formatNumber(gameState.hps) + " YIELD / SEC";
+                
+                var stageIdx = Math.min(gameState.stage - 1, APO_STAGES.length - 1);
+                var stageText = gameState.stage > APO_STAGES.length ? "OMNIPOTENCE" : APO_STAGES[stageIdx];
+                document.getElementById('apo-stage-name').textContent = "TIER " + gameState.stage + ": " + stageText;
+                
+                var hpPercent = Math.max(0, (gameState.hp / gameState.maxHp) * 100);
+                document.getElementById('apo-hp-bar').style.width = hpPercent + "%";
+                document.getElementById('apo-hp-text').textContent = "INTEGRITY: " + formatNumber(Math.ceil(gameState.hp)) + " / " + formatNumber(gameState.maxHp);
+
+                for (var key in gameState.upgrades) {
+                    var item = gameState.upgrades[key];
+                    var btn = document.getElementById('apo-btn-' + key);
+                    if (btn) {
+                        if (gameState.hits >= item.currentCost) {
+                            btn.disabled = false; btn.style.opacity = "1"; btn.style.cursor = "pointer";
+                        } else {
+                            btn.disabled = true; btn.style.opacity = "0.3"; btn.style.cursor = "not-allowed";
+                        }
+                    }
+                }
+            }
+
+            function renderApoUpgrades() {
+                var container = document.getElementById('apo-upgrades');
+                container.innerHTML = '';
+                
+                for (var key in gameState.upgrades) {
+                    (function(k) {
+                        var item = gameState.upgrades[k];
+                        var card = document.createElement('div');
+                        card.style.background = "rgba(168,85,247,0.05)";
+                        card.style.border = "1px solid rgba(168,85,247,0.15)";
+                        card.style.borderRadius = "10px";
+                        card.style.padding = "0.6rem";
+                        card.style.display = "flex";
+                        card.style.flexDirection = "column";
+                        card.style.justifyContent = "space-between";
+                        card.style.gap = "0.5rem";
+                        
+                        var info = document.createElement('div');
+                        info.innerHTML = `
+                            <div style="font-size:0.6rem; font-weight:900; color:white; letter-spacing:1px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${item.name} <span style="color:#c084fc;">(${item.count})</span></div>
+                            <div style="font-size:0.45rem; color:rgba(255,255,255,0.4); margin-top:2px;">
+                                ${item.type === 'click' ? `+${formatNumber(item.value)} Click/Tap` : `+${formatNumber(item.value)} Yield/s`}
+                            </div>
+                        `;
+                        
+                        var btn = document.createElement('button');
+                        btn.id = 'apo-btn-' + k;
+                        btn.style.background = "#6b21a8";
+                        btn.style.border = "none";
+                        btn.style.color = "white";
+                        btn.style.padding = "0.4rem";
+                        btn.style.borderRadius = "6px";
+                        btn.style.fontFamily = "'Syncopate', sans-serif";
+                        btn.style.fontSize = "0.45rem";
+                        btn.style.fontWeight = "900";
+                        btn.innerHTML = `BUY: ${formatNumber(item.currentCost)}`;
+                        btn.onclick = function() { buyUpgrade(k); };
+                        
+                        card.appendChild(info);
+                        card.appendChild(btn);
+                        container.appendChild(card);
+                    })(key);
+                }
+            }
+
+            function buyUpgrade(key) {
+                var item = gameState.upgrades[key];
+                if (gameState.hits >= item.currentCost) {
+                    gameState.hits -= item.currentCost;
+                    item.count++;
+                    item.currentCost = Math.floor(item.baseCost * Math.pow(1.15, item.count));
+                    
+                    if (item.type === 'click') gameState.clickPower += item.value;
+                    else gameState.hps += item.value;
+                    
+                    saveApoProgress();
+                    renderApoUpgrades();
+                    updateApoUI();
+                }
+            }
+
+            function saveApoProgress() {
+                localStorage.setItem('apo_clicker_save_v2', JSON.stringify(gameState));
+            }
+
+            function loadApoProgress() {
+                var saved = localStorage.getItem('apo_clicker_save_v2');
+                if (saved) {
+                    try {
+                        var loaded = JSON.parse(saved);
+                        if (typeof loaded.hits === 'number') gameState.hits = loaded.hits;
+                        if (typeof loaded.clickPower === 'number') gameState.clickPower = loaded.clickPower;
+                        if (typeof loaded.hps === 'number') gameState.hps = loaded.hps;
+                        if (typeof loaded.stage === 'number') gameState.stage = loaded.stage;
+                        if (typeof loaded.hp === 'number') gameState.hp = loaded.hp;
+                        if (typeof loaded.maxHp === 'number') gameState.maxHp = loaded.maxHp;
+                        if (loaded.upgrades) {
+                            for (var key in loaded.upgrades) {
+                                if (gameState.upgrades[key]) {
+                                    gameState.upgrades[key].count = loaded.upgrades[key].count || 0;
+                                    gameState.upgrades[key].currentCost = loaded.upgrades[key].currentCost || gameState.upgrades[key].baseCost;
+                                }
+                            }
+                        }
+                    } catch (e) { console.error("Failed to load Stellar clicker save:", e); }
+                }
+            }
+        </script>
         <div id="tierInfoModalSpare" class="modal" style="display:none;">
             <div class="modal-content tier-info-modal">
                 <button class="close-btn" onclick="document.getElementById('tierInfoModalSpare').style.display='none'">&times;</button>
