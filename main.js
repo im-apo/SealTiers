@@ -481,6 +481,9 @@ document.getElementById("discordBtn").addEventListener("click", () => {
 document.getElementById("apolloBtn").addEventListener("click", () => {
     window.location.href = "https://im-apo.github.io/ApolloRPG/";
 });
+document.getElementById("ronBtn").addEventListener("click", () => {
+    window.location.href = "https://im-apo.github.io/SealTiers/StellarTiers/";
+});
 
 function getBadge(points) {
 	if (points >= 900)
