@@ -411,9 +411,13 @@ function renderPlayers() {
     };
     const tierHierarchy = {
         HT1: 0,
+        RHT1: 0,
         LT1: 1,
+        RLT1: 1,
         HT2: 2,
+        RHT2: 2,
         LT2: 3,
+        RLT2: 3,
         HT3: 4,
         LT3: 5,
         HT4: 6,
