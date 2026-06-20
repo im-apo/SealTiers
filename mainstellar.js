@@ -509,7 +509,7 @@ function renderPlayers() {
         }"><div class="player-details"><span class="player-name">${p.name}${
             p.region
                 ? `<span class="player-region ${String(
-                      p.region || ""
+                      p.region || " "
                   ).toLowerCase()}">${p.region}</span>`
                 : ""
         }</span><span class="player-points">${
