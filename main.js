@@ -1,14 +1,13 @@
+const BASE_PATH = location.pathname.startsWith("/SealTiers/") ? "/SealTiers/" : "/";
+const IS_LOCAL = ["localhost", "127.0.0.1"].includes(location.hostname);
 if (sessionStorage.redirect) {
   const redirectPath = sessionStorage.redirect;
   delete sessionStorage.redirect;
   history.replaceState(null, '', redirectPath);
 }
 
-if (
-  location.pathname.startsWith('/StellarTiers/rankings') &&
-  !/^\/StellarTiers\/rankings\/(overall|crystal|smp|diasmp|sword|axe|uhc|potion|nethpot|mace|speed|elytra|cart|ogvanilla|nethuhc|nethsword|ltm)?\/?$/.test(location.pathname)
-) {
-  location.replace('/StellarTiers/rankings/overall');
+if (location.pathname.startsWith(BASE_PATH + 'rankings') && !new RegExp('^' + BASE_PATH + 'rankings/(overall|crystal|smp|diasmp|sword|axe|uhc|potion|nethpot|mace|speed|elytra|cart|ogvanilla|nethuhc|nethsword|moddia|ltm)?/?$').test(location.pathname)) {
+  location.replace(BASE_PATH + 'rankings/overall');
 }
 
 
@@ -33,27 +32,26 @@ document.addEventListener("DOMContentLoaded", () => {
     'nethuhc', 'nethsword', 'moddia', 'ltm'
   ];
 
-  const match = path.match(/\/StellarTiers\/rankings\/([^\/]+)/);
+  const match = path.match(/\/rankings\/([^\/]+)/);
   const gamemode = match ? match[1] : null;
 
 
-  if (path.startsWith('/StellarTiers/rankings') && !validGamemodes.includes(gamemode)) {
-    history.replaceState(null, '', '/StellarTiers/rankings/overall');
+  if (path.startsWith(BASE_PATH + 'rankings') && !validGamemodes.includes(gamemode)) {
+    history.replaceState(null, '', BASE_PATH + 'rankings/overall');
   }
 
   initializeFromURL();
 });
 
-const ASSET_BASE = "/StellarTiers/";
+const ASSET_BASE = BASE_PATH;
 const fixAssetPath = (path) => path.startsWith("assets/") ? ASSET_BASE + path : path;
 
 const esc = (v) => String(v ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 const byPoints = (a, b) => b.points - a.points || String(a.name).localeCompare(String(b.name));
-const ICON_FILES = { crystal: "Crystal", sword: "Sword", uhc: "Uhc", potion: "Potion", nethpot: "Nethpot", nethsword: "NethSword", smp: "Smp", axe: "Axe", mace: "Mace", diasmp: "Diasmp", speed: "Speed", elytra: "Elytra", trident: "Trident", cart: "Cart", bed: "Bed", bow: "Bow", creeper: "Creeper", debuff: "DeBuff", diasurv: "DiaSurv", manhunt: "Manhunt", ogvanilla: "OgVanilla", nethuhc: "NethUhc", ltm: "LTM" };
+const ICON_FILES = { crystal: "Crystal", sword: "Sword", uhc: "Uhc", potion: "Potion", nethpot: "Nethpot", nethsword: "NethSword", smp: "Smp", axe: "Axe", mace: "Mace", diasmp: "Diasmp", speed: "Speed", elytra: "Elytra", trident: "Trident", cart: "Cart", bed: "Bed", bow: "Bow", creeper: "Creeper", debuff: "DeBuff", diasurv: "DiaSurv", manhunt: "Manhunt", ogvanilla: "OgVanilla", nethuhc: "NethUhc", ltm: "LTM", moddia: "ModernDiamond" };
 const GAMEMODE_ICONS = Object.fromEntries(Object.entries(ICON_FILES).map(([k, f]) => [k, fixAssetPath(`assets/gamemode-icons/${f}.svg`)]));
 const TIER_ORDER = {};
 for (let n = 0; n <= 6; n++) for (const p of ["", "R"]) { TIER_ORDER[`${p}HT${n}`] = n * 2; TIER_ORDER[`${p}LT${n}`] = n * 2 + 1; }
-const EXTERNAL_LINKS = { stellartiers: "", extiers: "" }; // fill in URLs to show these buttons
 function closeAllOverlays() {
     document.querySelectorAll(".modal").forEach((m) => (m.style.display = "none"));
     const h = document.getElementById("searchHelpModal"); if (h) h.style.display = "none";
@@ -265,7 +263,7 @@ function getGamemodeFromURL() {
 }
 
 function updateURL(gamemode) {
-    const newPath = `/StellarTiers/rankings/${gamemode}`;
+    const newPath = `${BASE_PATH}rankings/${gamemode}`;
     window.history.pushState({ gamemode }, '', newPath);
 }
 
@@ -460,11 +458,11 @@ document.getElementById("copyIpBtn").addEventListener("click", () => {
 document.getElementById("discordBtn").addEventListener("click", () => {
     window.open("https://discord.gg/zMqy5QbevP", "_blank");
 });
-[["stellarTiersBtn", "stellartiers"], ["extiersBtn", "extiers"]].forEach(([id, key]) => {
-    const el = document.getElementById(id);
-    if (!el) return;
-    if (!EXTERNAL_LINKS[key]) { el.style.display = "none"; return; }
-    el.addEventListener("click", () => window.open(EXTERNAL_LINKS[key], "_blank", "noopener"));
+document.getElementById("apolloBtn")?.addEventListener("click", () => {
+    window.location.href = "https://im-apo.github.io/ApolloRPG/";
+});
+document.getElementById("ronBtn")?.addEventListener("click", () => {
+    window.location.href = "https://im-apo.github.io/SealTiers/StellarTiers/";
 });
 
 function getBadge(points) {
@@ -1810,7 +1808,7 @@ class PlayerBioSystem {
 const playerBioSystem = new PlayerBioSystem();
 
 playerBioSystem.setBio('ImApo', {
-    description: 'Creator and developer of the Axis Tierlist. Casual PvP player with an aggressive playstyle.',
+    description: 'Creator and developer of the Bunny Tiers. Casual PvP player with an aggressive playstyle.',
     socials: {
         youtube: 'https://www.youtube.com/@Im-Apo',
         discord: 'im_apo_'
@@ -1819,13 +1817,13 @@ playerBioSystem.setBio('ImApo', {
     playstyle: 'Aggressive'
 });
 playerBioSystem.setBio('Meraliu', {
-    description: 'Owner of the SAT discord server/team (seals and cats) - I also really like seals. 🦭',
+    description: 'Owner of the MissMorphs animal castle - I also really like Bunnies. 🦭',
     socials: {
         youtube: 'https://www.youtube.com/@ImMeraliu',
         discord: 'meraliu'
     },
-    favGamemode: 'Diamond SMP',
-    playstyle: 'Seal'
+    favGamemode: 'Spear Mace',
+    playstyle: 'Bunny'
 });
 
 
@@ -2588,8 +2586,51 @@ SOFTWARE.`);
 
 console.log(`-----------------------------------------------------------------------------------
 If Website appears to be Down Contact ImApo Immediately
-discord: cxnine._ Axis Discord Server: https://discord.gg/zMqy5QbevP
+discord: cxnine._ Bunny Discord Server: https://discord.gg/zMqy5QbevP
 -----------------------------------------------------------------------------------`);
+// ============================================================================
+// PROTECTION SYSTEM
+// ============================================================================
+
+// Disable right-click EXCEPT on player rows and the overall tab
+document.addEventListener('contextmenu', function(e) { 
+    const isPlayerRow = e.target.closest('.player-row');
+    const isOverallTab = e.target.closest('.gamemode-tab[data-gamemode="overall"]');
+    
+    // If it's NOT a player row and NOT the overall tab, block the right click
+    if (!isPlayerRow && !isOverallTab && !e.target.closest('input, textarea')) {
+        e.preventDefault(); 
+    }
+});
+
+// Block F12, Ctrl+Shift+I/J/C, Ctrl+U, Ctrl+S, Ctrl+A, Ctrl+P
+document.addEventListener('keydown', function(e) {
+    var blocked = false;
+    if (IS_LOCAL || /^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName)) return;
+    if (e.key === 'F12') blocked = true;
+    if (e.ctrlKey && e.shiftKey && ['I','J','C','i','j','c'].includes(e.key)) blocked = true;
+    if (e.ctrlKey && ['u','U','s','S','a','A','p','P'].includes(e.key)) blocked = true;
+    
+    if (blocked) { 
+        e.preventDefault(); 
+        e.stopPropagation(); 
+        return false; 
+    }
+}, true);
+
+// Clear console periodically to deter inspection
+if (!IS_LOCAL) setInterval(function() {
+    console.clear();
+    console.log('%c🔒 Bunny Tiers — All Rights Reserved', 'color:#ff003c;font-size:14px;font-weight:bold;');
+}, 1500);
+
+// Disable drag-select on entire page
+document.addEventListener('selectstart', function(e) {
+    const el = e.target.nodeType === 1 ? e.target : e.target.parentElement;
+    if (el && el.closest('input, textarea')) return;
+    e.preventDefault(); 
+    return false; 
+});
 
 // ---- Backdrop clicks, keyboard tabs, activity feed ----
 ["playerModal", "tierInfoModal", "kitInfoModal"].forEach((id) => {
