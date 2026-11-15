@@ -3,38 +3,81 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=1700, user-scalable=yes">
-    <meta property="og:title" content="Bunny Tiers - Rankings">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta property="og:title" content="Axis Tierlist - Rankings">
     <meta property="og:description" content="Interactive tierlist showcasing skilled Minecraft PvP players across Crystal, Sword, UHC, Potion, and more gamemodes. View detailed rankings and player statistics.">
-    <meta property="og:image" content="https://im-apo.github.io/SealTiers/logo.png">
-    <meta property="og:image:alt" content="Bunny Logo">
-    <meta property="og:url" content="https://im-apo.github.io/SealTiers/">
+    <meta property="og:image" content="https://im-apo.github.io/StellarTiers/logo.png">
+    <meta property="og:image:alt" content="Axis Logo">
+    <meta property="og:url" content="https://im-apo.github.io/StellarTiers/">
     <meta property="og:type" content="website">
-    <meta property="og:site_name" content="Bunny Tiers">
+    <meta property="og:site_name" content="Axis Tierlist">
+    <!-- Twitter Card Meta Tags -->
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Bunny Tiers - Rankings">
+    <meta name="twitter:title" content="Axis Tierlist - Rankings">
     <meta name="twitter:description" content="Interactive tierlist showcasing skilled Minecraft PvP players across multiple gamemodes. View rankings, stats, and player profiles.">
-    <meta name="twitter:image" content="https://im-apo.github.io/SealTiers/logo.png">
-    <meta name="twitter:image:alt" content="Bunny Logo">
-    <meta name="description" content="Explore Bunny's comprehensive tierlist featuring top Minecraft PvP players across Crystal PvP, Sword, UHC, Potion, and more competitive gamemodes.">
-    <meta name="keywords" content="minecraft, pvp, tierlist, crystal pvp, sword pvp, uhc, competitive minecraft, rankings, Bunny">
+    <meta name="twitter:image" content="https://im-apo.github.io/StellarTiers/logo.png">
+    <meta name="twitter:image:alt" content="Axis Logo">
+    <!-- Additional SEO Meta Tags -->
+    <meta name="description" content="Explore Axis's comprehensive tierlist featuring top Minecraft PvP players across Crystal PvP, Sword, UHC, Potion, and more competitive gamemodes.">
+    <meta name="keywords" content="minecraft, pvp, tierlist, crystal pvp, sword pvp, uhc, competitive minecraft, rankings, axis">
     <meta name="author" content="ImApo">
-    <meta name="theme-color" content="#0f1a2b">
-    <link rel="canonical" href="https://im-apo.github.io/SealTiers/">
-    <link rel="icon" href="/SealTiers/logo.png">
-    <link href="https://fonts.googleapis.com/css2?family=Roboto+Slab&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@800&display=swap" rel="stylesheet">
-	<link rel="stylesheet" href="/SealTiers/styles.css">
-    <meta property="og:type" content="website">
+    <!-- Theme and Branding -->
+    <meta name="theme-color" content="#1a1a1a">
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://im-apo.github.io/StellarTiers/">
+    <link rel="icon" href="/StellarTiers/logo.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+	<link rel="stylesheet" href="/StellarTiers/styles.css">
     <meta name="color-scheme" content="dark">
-    <title>Bunny Tiers - Rankings</title>
+    <title>Axis Tierlist - Rankings</title>
 </head>
 
 <body>
+    <!-- Top Navigation Bar -->
+    <nav class="top-navbar" id="navbar">
+        <div class="navbar-container">
+            <a href="/StellarTiers/rankings/overall" class="navbar-logo">
+                <img src="logo.png" alt="Axis Logo" class="navbar-logo-img" onerror="this.style.display='none';">
+                <span>Axis Website</span>
+            </a>
+            <div class="navbar-tabs">
+                <a href="/StellarTiers/Home/" class="navbar-tab">
+                    <svg xmlns="http://www.w3.org/2000/svg" id="Layer_1" version="1.1" viewBox="0 0 279.8 243.2">
+                        <defs>
+                            <style>
+                                .st2 {
+                                    fill: none;
+                                    stroke-width: 20.6px;
+                                    stroke-miterlimit: 10;
+                                    display: none;
+                                    stroke: #000
+                                }
+                            </style>
+                        </defs>
+                        <path d="M224 228.8H55.2c-11.9 0-21.5-9.6-21.5-21.5V94.8c0-7.1 3.5-13.7 9.3-17.7l88-60.3c7.6-5.2 17.6-5 24.9.5l80.8 59.8c5.5 4.1 8.7 10.5 8.7 17.3v113c0 11.9-9.6 21.5-21.5 21.5Z" style="stroke:#ffffff;fill:none;stroke-width:20.6px;stroke-miterlimit:10" />
+                        <path d="M81 179.2h118.2" style="stroke:#ffffff;fill:none;stroke-width:20.6px;stroke-linecap:round;stroke-linejoin:round" />
+                    </svg> Home </a>
+                <a href="/StellarTiers/rankings/overall" class="navbar-tab active">
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M16 11V3H8v6H2v12h20V11h-6zm-6-6h4v14h-4V5zm-6 6h4v8H4v-8zm16 8h-4v-6h4v6z" />
+                    </svg> Ranking </a>
+                <a href="/StellarTiers/Media/" class="navbar-tab">
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M8 5v14l11-7z" />
+                    </svg> Media </a>
+                <a href="/StellarTiers/Resources/" class="navbar-tab">
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z" />
+                    </svg> Resources </a>
+            </div>
+        </div>
+    </nav>
     <div class="loading-screen" id="loadingScreen">
-        <img src="logo.png" alt="Bunny Logo" class="logo" style="margin-bottom: 24px;" onerror="this.style.display='none';">
+        <img src="logo.png" alt="Axis Logo" class="logo" style="margin-bottom: 24px;" onerror="this.style.display='none';">
         <div class="loading-spinner"></div>
-        <div class="loading-text">Loading Bunny Tiers</div>
+        <div class="loading-text">Loading Axis Tierlist</div>
         <div class="loading-subtext" id="loadingSubtext">Please wait...</div>
     </div>
     <div class="container">
@@ -58,25 +101,29 @@
                         <g transform="matrix(0.4 0 0 0.4 12 12)">
                             <path transform="translate(-25, -25)" d="M 19 0 L 19 6 L 21 8 L 21 2 L 36 2 L 36 14 L 48 14 L 48 40 L 33 40 L 33 42 L 50 42 L 50 12.59375 L 37.40625 0 Z M 38 3.40625 L 46.59375 12 L 38 12 Z M 0 8 L 0 50 L 31 50 L 31 20.59375 L 30.71875 20.28125 L 18.71875 8.28125 L 18.40625 8 Z M 2 10 L 17 10 L 17 22 L 29 22 L 29 48 L 2 48 Z M 19 11.4375 L 27.5625 20 L 19 20 Z" fill="#ffffff" stroke="#ffffff" stroke-width="3" stroke-linejoin="round" stroke-linecap="round" />
                         </g>
-                    </svg> MC Server </button>
+                    </svg> Server Info </button>
                 <span id="copyPopup" style="display:none;"> Copied IP to clipboard! </span>
             </div>
-			<div class="action-buttons-2">
-                <button class="action-button" id="apolloBtn">
-                    <img src="assets/ExtraIcons/Apollo.webp" alt="Apollo Icon" class="button-icon"> Go To ApolloRPG </button>
-				<button class="action-button" id="ronBtn">
-                    <img src="/SealTiers/TempRON.png" alt="Ron Icon" class="button-icon"> Go To RoNTiers </button>
+            <div class="action-buttons-2">
+
+
+                <button class="action-button" id="stellarTiersBtn">
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+                    </svg> Go To StellarTiers </button>
+                <button class="action-button" id="extiersBtn">
+                    <img src="assets/Extiers.webp" alt="Stellar Icon" class="button-icon"> Go To ExTiers </button>
             </div>
-            <img src="logo.png" alt="Bunny Logo" class="logo" onerror="this.style.display='none';" style="cursor: pointer;" id="logoBtn">
-            <h1>Bunny Tiers</h1>
-            <p>Bunny Community's Tierlist</p>
-            <p2>Made By The One and Only ImApo, </p2>
-			<p2>Run /verify with your username in the discord server!</p2>
+            <img src="logo.png" alt="Axis Logo" class="logo" onerror="this.style.display='none';" style="cursor: pointer;" id="logoBtn">
+            <h1>Axis Tierlist</h1>
+            <p>Axis Community's Tierlist</p>
+            <p>Made By The One and Only ImApo</p>
+			<p>Run /verify with your username in the discord server!</p>
             <div class="search-container" style="position: relative; width: 100%; max-width: 600px; margin: 24px auto 0;">
                 <div class="search-wrapper" id="searchWrapper" style="
                     position: relative;
-                    background: rgba(15, 23, 42, 0.95);
-                    border: 2px solid rgba(71, 85, 105, 0.4);
+                    background: rgba(20, 20, 20, 0.95);
+                    border: 2px solid rgba(80, 80, 80, 0.4);
                     border-radius: 16px;
                     padding: 12px 48px 12px 16px;
                     display: flex;
@@ -90,6 +137,7 @@
                     <input
                         type="text"
                         id="searchBox"
+                        aria-label="Search players"
                         placeholder="Search players or use filters... (Press / to focus)"
                         autocomplete="off"
                         style="
@@ -134,14 +182,15 @@
                     </button>
                 </div>
                 
+                <!-- Suggestions dropdown -->
                 <div id="searchSuggestions" style="
                     display: none;
                     position: absolute;
                     top: calc(100% + 8px);
                     left: 0;
                     right: 0;
-                    background: rgba(15, 23, 42, 0.98);
-                    border: 2px solid rgba(71, 85, 105, 0.4);
+                    background: rgba(20, 20, 20, 0.98);
+                    border: 2px solid rgba(80, 80, 80, 0.4);
                     border-radius: 12px;
                     padding: 8px;
                     max-height: 400px;
@@ -150,6 +199,7 @@
                     backdrop-filter: blur(10px);
                 "></div>
                 
+                <!-- Active filters display -->
                 <div id="activeFilters" style="
                     display: none;
                     margin-top: 12px;
@@ -170,8 +220,8 @@
             <div style="display: flex; align-items: center; gap: 12px; margin-top: 16px; justify-content: center;">
                 <label style="color: #9ca3af; font-size: 0.9rem; font-weight: 600;">Players per page:</label>
                 <select id="pageSizeSelector" style="
-        background: rgba(15, 23, 42, 0.9);
-        border: 2px solid rgba(71, 85, 105, 0.5);
+        background: rgba(18, 18, 18, 0.9);
+        border: 2px solid rgba(80, 80, 80, 0.5);
         border-radius: 12px;
         padding: 6px 12px;
         color: #e5e5e5;
@@ -286,10 +336,6 @@
                             <img src="assets/gamemode-icons/NethSword.svg" alt="NethSword" class="gamemode-icon" onerror="this.style.display='none'; this.nextSibling.innerHTML='🏴';">
                             <span>Netherite Sword</span>
                         </div>
-						<div class="gamemode-tab" data-gamemode="moddia">
-                            <img src="assets/gamemode-icons/ModernDiamond" alt="ModDia" class="gamemode-icon" onerror="this.style.display='none'; this.nextSibling.innerHTML='🗡';">
-                            <span>Modern Diamond</span>
-                        </div>
                         <div class="gamemode-tab" data-gamemode="ltm">
                             <img src="assets/gamemode-icons/LTM.svg" alt="LTM" class="gamemode-icon" onerror="this.style.display='none'; this.nextSibling.innerHTML='⚖';">
                             <span>LTM</span>
@@ -310,13 +356,13 @@
     </div>
     <div id="playerModal" class="modal" style="display:none">
         <div class="modal-content">
-            <button id="closeModal" class="close-btn">&times;</button>
+            <button id="closeModal" class="close-btn" aria-label="Close">&times;</button>
             <div id="modalBody"></div>
         </div>
     </div>
     <div id="tierInfoModal" class="modal" style="display:none;">
         <div class="modal-content tier-info-modal">
-            <button id="closeTierInfo" class="close-btn">&times;</button>
+            <button id="closeTierInfo" class="close-btn" aria-label="Close">&times;</button>
             <h2 class="modal-title">Tier & Rank Info</h2>
             <div class="modal-desc"> Here's how tiers and ranks are calculated. Each tier grants points; your total determines your overall rank and badge! </div>
             <table class="tier-table">
@@ -327,42 +373,41 @@
                     </tr>
                 </thead>
                 <tbody>
-                </tbody>
                 <tr>
                     <td><span class="tier ht1">HT1</span></td>
-                    <td style="text-align:center;">85</td>
+                    <td style="text-align:center;">85</td></tr>
                 <tr>
                     <td><span class="tier lt1">LT1</span></td>
-                    <td style="text-align:center;">70</td>
+                    <td style="text-align:center;">70</td></tr>
                 <tr>
                     <td><span class="tier ht2">HT2</span></td>
-                    <td style="text-align:center;">50</td>
+                    <td style="text-align:center;">50</td></tr>
                 <tr>
                     <td><span class="tier lt2">LT2</span></td>
-                    <td style="text-align:center;">40</td>
+                    <td style="text-align:center;">40</td></tr>
                 <tr>
                     <td><span class="tier ht3">HT3</span></td>
-                    <td style="text-align:center;">20</td>
+                    <td style="text-align:center;">20</td></tr>
                 <tr>
                     <td><span class="tier lt3">LT3</span></td>
-                    <td style="text-align:center;">15</td>
+                    <td style="text-align:center;">15</td></tr>
                 <tr>
                     <td><span class="tier ht4">HT4</span></td>
-                    <td style="text-align:center;">8</td>
+                    <td style="text-align:center;">8</td></tr>
                 <tr>
                     <td><span class="tier lt4">LT4</span></td>
-                    <td style="text-align:center;">6</td>
+                    <td style="text-align:center;">6</td></tr>
                 <tr>
                     <td><span class="tier ht5">HT5</span></td>
-                    <td style="text-align:center;">4</td>
+                    <td style="text-align:center;">4</td></tr>
                 <tr>
                     <td><span class="tier lt5">LT5</span></td>
-                    <td style="text-align:center;">2</td>
+                    <td style="text-align:center;">2</td></tr>
                     </tbody>
             </table>
             <div style="margin-bottom:12px;">
                 <strong>Rank Badges:</strong>
-                <ul style="margin:8px 0 0 18px; color:#6B7C8A; font-size:1.05em; line-height:1.6;">
+                <ul style="margin:8px 0 0 18px; color:#8b5cf6; font-size:1.05em; line-height:1.6;">
 					<li><span class="points-badge pointoverlord">Points Overlord</span> &ndash; 900+ pts, T1 in all GMs</li>
                     <li><span class="points-badge legendary">Legendary</span> &ndash; 300+ pts</li>
                     <li><span class="points-badge master">Master</span> &ndash; 200+ pts</li>
@@ -383,19 +428,18 @@
                     </tr>
                 </thead>
                 <tbody>
-                </tbody>
                 <tr>
                     <td><span class="tier rht1">RHT1</span></td>
-                    <td style="text-align:center;">85</td>
+                    <td style="text-align:center;">85</td></tr>
                 <tr>
                     <td><span class="tier rlt1">RLT1</span></td>
-                    <td style="text-align:center;">70</td>
+                    <td style="text-align:center;">70</td></tr>
                 <tr>
                     <td><span class="tier rht2">RHT2</span></td>
-                    <td style="text-align:center;">50</td>
+                    <td style="text-align:center;">50</td></tr>
                 <tr>
                     <td><span class="tier rlt2">RLT2</span></td>
-                    <td style="text-align:center;">40</td>
+                    <td style="text-align:center;">40</td></tr>
                     </tbody>
             </table>
             <div style="text-align:center; color:#64748b; font-size:0.98em;">
@@ -405,17 +449,17 @@
     </div>
 	<div id="tierHistoryModal" class="modal" style="display: none;">
 		<div class="modal-content" style="width: 90vw; max-width: 1400px; max-height: none; height: auto; overflow: visible;">
-			<button class="close-btn" id="closeTierHistory">&times;</button>
+			<button class="close-btn" aria-label="Close" id="closeTierHistory">&times;</button>
 			<div id="tierHistoryBody" style="width: 100%;"></div>
 		</div>
 	</div>
     <div id="kitInfoModal" class="modal" style="display:none;">
         <div class="modal-content tier-info-modal">
-            <button id="closeKitInfo" class="close-btn">&times;</button>
+            <button id="closeKitInfo" class="close-btn" aria-label="Close">&times;</button>
             <h2 class="modal-title" id="kitInfoTitle">Kit Info</h2>
             <div class="modal-desc" id="kitInfoDesc"></div>
             <div id="kitInfoImage" style="text-align: center; margin: 20px 0;">
-                <img src="" alt="Kit Screenshot" style="max-width: 100%; border-radius: 12px; border: 2px solid rgba(148, 163, 184, 0.4);">
+                <img src="" alt="Kit Screenshot" style="max-width: 100%; border-radius: 12px; border: 2px solid rgba(120, 120, 120, 0.4);">
             </div>
         </div>
     </div>
@@ -463,7 +507,7 @@
     </div>
     <div id="tierInfoModalSpare" class="modal" style="display:none;">
         <div class="modal-content tier-info-modal">
-            <button id="closeTierInfo" class="close-btn">&times;</button>
+            <button id="closeTierInfoSpare" class="close-btn" aria-label="Close">&times;</button>
             <h2 class="modal-title">Tier & Rank Info</h2>
             <div class="modal-desc"> Here's spare tiers and ranks Each tier grants points; your total determines your overall rank and badge! </div>
             <table class="tier-table">
@@ -474,49 +518,48 @@
                     </tr>
                 </thead>
                 <tbody>
-                </tbody>
 				<tr>
                     <td><span class="tier rht0">RHT0</span></td>
-                    <td style="text-align:center;">200</td>
+                    <td style="text-align:center;">200</td></tr>
                 <tr>
-                    <td><span class="tier rlt0">RHT0</span></td>
-                    <td style="text-align:center;">100</td>
+                    <td><span class="tier rlt0">RLT0</span></td>
+                    <td style="text-align:center;">100</td></tr>
 				<tr>
                     <td><span class="tier ht0">HT0</span></td>
-                    <td style="text-align:center;">200</td>
+                    <td style="text-align:center;">200</td></tr>
                 <tr>
                     <td><span class="tier lt0">LT0</span></td>
-                    <td style="text-align:center;">100</td>
+                    <td style="text-align:center;">100</td></tr>
                 <tr>
                     <td><span class="tier rht3">RHT3</span></td>
-                    <td style="text-align:center;">20</td>
+                    <td style="text-align:center;">20</td></tr>
                 <tr>
                     <td><span class="tier rlt3">RLT3</span></td>
-                    <td style="text-align:center;">15</td>
+                    <td style="text-align:center;">15</td></tr>
                 <tr>
                     <td><span class="tier rht4">RHT4</span></td>
-                    <td style="text-align:center;">8</td>
+                    <td style="text-align:center;">8</td></tr>
                 <tr>
                     <td><span class="tier rlt4">RLT4</span></td>
-                    <td style="text-align:center;">6</td>
+                    <td style="text-align:center;">6</td></tr>
                 <tr>
                     <td><span class="tier rht5">RHT5</span></td>
-                    <td style="text-align:center;">4</td>
+                    <td style="text-align:center;">4</td></tr>
                 <tr>
                     <td><span class="tier rlt5">RLT5</span></td>
-                    <td style="text-align:center;">2</td>
+                    <td style="text-align:center;">2</td></tr>
                 <tr>
                     <td><span class="tier rht6">RHT6</span></td>
-                    <td style="text-align:center;">-10</td>
+                    <td style="text-align:center;">-10</td></tr>
                 <tr>
                     <td><span class="tier rlt6">RLT6</span></td>
-                    <td style="text-align:center;">-20</td>
+                    <td style="text-align:center;">-20</td></tr>
 				<tr>
                     <td><span class="tier ht6">HT6</span></td>
-                    <td style="text-align:center;">-10</td>
+                    <td style="text-align:center;">-10</td></tr>
                 <tr>
                     <td><span class="tier lt6">LT6</span></td>
-                    <td style="text-align:center;">-20</td>
+                    <td style="text-align:center;">-20</td></tr>
                     </tbody>
             </table>
         </div>
@@ -532,12 +575,25 @@
 		})();
 	</script>
     <div class="footer" id="footer">
-        <strong>ApolloMC© ImApo 2026</strong>
+        <strong>Axis Tierlist © ImApo 2025–2026</strong>
     </div>
+	<button class="activity-feed-button" id="activityFeedBtn" title="Recent Activity">
+    📋
+</button>
+
+<div class="activity-feed-modal" id="activityFeedModal">
+    <div class="activity-feed-content">
+        <div class="activity-feed-header">
+            <h2 class="activity-feed-title">Recent Activity</h2>
+            <button class="close-btn" aria-label="Close" id="closeActivityFeed">&times;</button>
+        </div>
+        <div class="activity-list" id="activityList"></div>
+    </div>
+</div>
 
 <div class="comparison-modal" id="comparisonModal">
     <div class="comparison-content">
-        <button class="close-btn" id="closeComparison">&times;</button>
+        <button class="close-btn" aria-label="Close" id="closeComparison">&times;</button>
         <h2 style="text-align: center; margin-bottom: 20px; color: #e5e5e5;">Compare Players</h2>
         
         <div class="player-select-grid">
@@ -566,9 +622,7 @@
     </div>
 </div>
 
-</div>
-</div>
-
+<!-- Search help modal -->
 <div id="searchHelpModal" style="
     display: none;
     position: fixed;
@@ -576,15 +630,15 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(15, 23, 42, 0.8);
+    background: rgba(0, 0, 0, 0.8);
     z-index: 10000;
     justify-content: center;
     align-items: center;
     padding: 20px;
 ">
     <div style="
-        background: rgba(15, 23, 42, 0.98);
-        border: 2px solid rgba(71, 85, 105, 0.6);
+        background: rgba(20, 20, 20, 0.98);
+        border: 2px solid rgba(80, 80, 80, 0.6);
         border-radius: 20px;
         padding: 32px;
         max-width: 600px;
@@ -596,47 +650,47 @@
         
         <div style="color: #d1d5db; line-height: 1.8;">
             <h3 style="color: #9ca3af; margin: 20px 0 12px; font-size: 1.1rem;">Tier Filters</h3>
-            <div style="background: rgba(30, 41, 59, 0.6); padding: 12px; border-radius: 8px; margin-bottom: 12px;">
-                <code style="color: #6B7C8A;">#ht</code> - All High Tiers<br>
-                <code style="color: #6B7C8A;">#lt</code> - All Low Tiers<br>
-                <code style="color: #6B7C8A;">#rt</code> - All Retired Tiers<br>
-                <code style="color: #6B7C8A;">#t5</code> - All Tier 5 (HT5, LT5, RHT5, RLT5)<br>
-                <code style="color: #6B7C8A;">#ht3</code> - Exact tier match
+            <div style="background: rgba(30, 30, 30, 0.6); padding: 12px; border-radius: 8px; margin-bottom: 12px;">
+                <code style="color: #fbbf24;">#ht</code> - All High Tiers<br>
+                <code style="color: #fbbf24;">#lt</code> - All Low Tiers<br>
+                <code style="color: #fbbf24;">#rt</code> - All Retired Tiers<br>
+                <code style="color: #fbbf24;">#t5</code> - All Tier 5 (HT5, LT5, RHT5, RLT5)<br>
+                <code style="color: #fbbf24;">#ht3</code> - Exact tier match
             </div>
             
             <h3 style="color: #9ca3af; margin: 20px 0 12px; font-size: 1.1rem;">Region Filters</h3>
-            <div style="background: rgba(30, 41, 59, 0.6); padding: 12px; border-radius: 8px; margin-bottom: 12px;">
-                <code style="color: #6B7C8A;">@na</code> <code style="color: #6B7C8A;">@eu</code> <code style="color: #6B7C8A;">@as</code> <code style="color: #6B7C8A;">@sa</code> - Filter by region
+            <div style="background: rgba(30, 30, 30, 0.6); padding: 12px; border-radius: 8px; margin-bottom: 12px;">
+                <code style="color: #60a5fa;">@na</code> <code style="color: #60a5fa;">@eu</code> <code style="color: #60a5fa;">@as</code> <code style="color: #60a5fa;">@sa</code> - Filter by region
             </div>
             
             <h3 style="color: #9ca3af; margin: 20px 0 12px; font-size: 1.1rem;">Points Filters</h3>
-            <div style="background: rgba(30, 41, 59, 0.6); padding: 12px; border-radius: 8px; margin-bottom: 12px;">
-                <code style="color: #6B7C8A;">&gt;100</code> - More than 100 points<br>
-                <code style="color: #6B7C8A;">&lt;500</code> - Less than 500 points<br>
-                <code style="color: #6B7C8A;">100-500</code> - Between 100 and 500 points
+            <div style="background: rgba(30, 30, 30, 0.6); padding: 12px; border-radius: 8px; margin-bottom: 12px;">
+                <code style="color: #34d399;">>100</code> - More than 100 points<br>
+                <code style="color: #34d399;"><500</code> - Less than 500 points<br>
+                <code style="color: #34d399;">100-500</code> - Between 100 and 500 points
             </div>
             
             <h3 style="color: #9ca3af; margin: 20px 0 12px; font-size: 1.1rem;">Badge Filters</h3>
-            <div style="background: rgba(30, 41, 59, 0.6); padding: 12px; border-radius: 8px; margin-bottom: 12px;">
-                <code style="color: #6B7C8A;">!legendary</code> <code style="color: #6B7C8A;">!master</code> <code style="color: #6B7C8A;">!expert</code>
+            <div style="background: rgba(30, 30, 30, 0.6); padding: 12px; border-radius: 8px; margin-bottom: 12px;">
+                <code style="color: #c084fc;">!legendary</code> <code style="color: #c084fc;">!master</code> <code style="color: #c084fc;">!expert</code>
             </div>
             
             <h3 style="color: #9ca3af; margin: 20px 0 12px; font-size: 1.1rem;">Gamemode Filters</h3>
-            <div style="background: rgba(30, 41, 59, 0.6); padding: 12px; border-radius: 8px; margin-bottom: 12px;">
-                <code style="color: #6B7C8A;">:crystal</code> <code style="color: #6B7C8A;">:sword</code> <code style="color: #6B7C8A;">:uhc</code> - Has tier in gamemode
+            <div style="background: rgba(30, 30, 30, 0.6); padding: 12px; border-radius: 8px; margin-bottom: 12px;">
+                <code style="color: #f472b6;">:crystal</code> <code style="color: #f472b6;">:sword</code> <code style="color: #f472b6;">:uhc</code> - Has tier in gamemode
             </div>
             
             <h3 style="color: #9ca3af; margin: 20px 0 12px; font-size: 1.1rem;">Combine Filters</h3>
-            <div style="background: rgba(30, 41, 59, 0.6); padding: 12px; border-radius: 8px;">
-                <code style="color: #e5e5e5;">apo #ht @na &gt;100</code><br>
-                <span style="color: #64748b; font-size: 0.9rem;">Search for "apo" with high tier, from NA, with &gt;100 points</span>
+            <div style="background: rgba(30, 30, 30, 0.6); padding: 12px; border-radius: 8px;">
+                <code style="color: #e5e5e5;">apo #ht @na >100</code><br>
+                <span style="color: #64748b; font-size: 0.9rem;">Search for "apo" with high tier, from NA, with >100 points</span>
             </div>
         </div>
         
         <button id="closeSearchHelp" style="
             margin-top: 24px;
-            background: rgba(71, 85, 105, 0.3);
-            border: 2px solid rgba(148, 163, 184, 0.5);
+            background: rgba(80, 80, 80, 0.3);
+            border: 2px solid rgba(120, 120, 120, 0.5);
             border-radius: 12px;
             padding: 12px 24px;
             color: #e5e5e5;
@@ -648,7 +702,8 @@
     </div>
 </div>
 
-<script src="/SealTiers/main.js"></script>
+<!-- Load enhanced features -->
+<script src="/StellarTiers/main.js"></script>
 </body>
 
 </html>
