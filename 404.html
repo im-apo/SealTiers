@@ -1,31 +1,52 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="noindex">
-  <meta name="color-scheme" content="dark">
+  <meta name="color-scheme" content="dark light">
+  <meta name="theme-color" content="#0d0f1f">
   <title>Page not found - Bunny Tiers</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,800&family=Inter:wght@400;600&display=swap" rel="stylesheet">
   <style>
+    :root {
+      --bg: #0d0f1f; --panel: #171b35; --panel-2: #1e2344; --line: #2b3157;
+      --text: #ecebf7; --muted: #9399c0; --accent: #a5b4fc; --accent-ink: #0d0f1f;
+    }
+    :root[data-theme="light"] {
+      --bg: #f5f4fb; --panel: #ffffff; --panel-2: #f0eff9; --line: #d8d6ec;
+      --text: #1a1b36; --muted: #5d6290; --accent: #5a5bd6; --accent-ink: #ffffff;
+    }
+    * { box-sizing: border-box; }
     html, body { height: 100%; margin: 0; }
     body {
-      display: flex; align-items: center; justify-content: center; text-align: center;
-      background: linear-gradient(135deg, #020617, #0f172a 60%, #16233f);
-      color: #e2e8f0; font-family: Inter, system-ui, sans-serif; padding: 20px;
+      display: flex; align-items: center; justify-content: center; text-align: center; padding: 20px;
+      background: var(--bg) radial-gradient(800px 380px at 50% -10%, color-mix(in srgb, var(--accent) 18%, transparent), transparent 70%) no-repeat;
+      color: var(--text); font-family: Inter, system-ui, -apple-system, "Segoe UI", sans-serif; line-height: 1.5;
     }
-    h1 { font-size: clamp(2rem, 6vw, 3rem); margin: 0 0 8px; }
-    p { color: #94a3b8; margin: 0 0 24px; font-size: 1.1rem; }
+    main { max-width: 520px; }
+    .logo { width: 72px; height: 72px; object-fit: contain; margin: 0 auto 18px; display: block; }
+    .code {
+      font-family: "Bricolage Grotesque", Inter, system-ui, sans-serif; font-weight: 800; letter-spacing: -.04em;
+      font-size: clamp(4.5rem, 20vw, 8rem); line-height: .9; margin: 0 0 14px; color: var(--accent);
+    }
+    h1 { font-family: "Bricolage Grotesque", Inter, system-ui, sans-serif; font-weight: 800; letter-spacing: -.02em; font-size: clamp(1.6rem, 5vw, 2.2rem); margin: 0 0 8px; }
+    p { color: var(--muted); margin: 0 0 26px; font-size: 1.05rem; }
     a {
-      display: inline-block; padding: 12px 24px; border-radius: 14px; font-weight: 600;
-      color: #e2e8f0; text-decoration: none; background: rgba(15, 23, 42, .85);
-      border: 1px solid rgba(127, 161, 195, .4);
+      display: inline-flex; align-items: center; padding: 12px 22px; border-radius: 12px; font-weight: 600; text-decoration: none;
+      color: var(--accent-ink); background: var(--accent); border: 1px solid var(--accent); transition: transform .15s, filter .15s;
     }
-    a:hover, a:focus-visible { border-color: #cbd5e1; outline: none; box-shadow: 0 0 18px rgba(127, 161, 195, .4); }
+    a:hover { filter: brightness(1.08); }
+    a:active { transform: translateY(1px); }
+    a:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
     [hidden] { display: none; }
   </style>
   <script>
     // Same base-path rule as main.js: project site under /SealTiers/, or the domain root otherwise.
     (function () {
+      try { var t = localStorage.getItem("theme"); if (t) document.documentElement.dataset.theme = t; } catch (e) {}
       var BASE = location.pathname.indexOf("/SealTiers/") === 0 ? "/SealTiers/" : "/";
       var isAppRoute = location.pathname.indexOf(BASE + "rankings") === 0;
       if (isAppRoute) {
@@ -35,6 +56,8 @@
       }
       document.addEventListener("DOMContentLoaded", function () {
         document.getElementById("home").href = BASE;
+        var logo = document.getElementById("logo");
+        logo.src = BASE + "logo.png";
         document.getElementById("notFound").hidden = false;
       });
     })();
@@ -42,12 +65,15 @@
 </head>
 <body>
   <main id="notFound" hidden>
+    <img id="logo" class="logo" alt="Bunny Tiers logo" onerror="this.style.display='none';">
+    <div class="code" aria-hidden="true">404</div>
     <h1>Page not found</h1>
     <p>That page doesn't exist, or it has moved.</p>
     <a id="home" href="./">Back to the leaderboard</a>
   </main>
   <noscript>
     <main>
+      <div class="code" aria-hidden="true">404</div>
       <h1>Page not found</h1>
       <p>That page doesn't exist, or it has moved.</p>
       <a href="./">Back to the leaderboard</a>
