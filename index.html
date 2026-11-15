@@ -3,6 +3,14 @@
 
 <head>
     <meta charset="UTF-8">
+    <script>
+        // Resolve all relative URLs from the site root, even if the page was opened at /rankings/<mode>.
+        (function () {
+            var p = location.pathname, i = p.indexOf("/rankings");
+            var b = i > -1 ? p.slice(0, i + 1) : p.replace(/[^\/]*$/, "");
+            document.write('<base href="' + b + '">');
+        })();
+    </script>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta property="og:title" content="Bunny Tiers - Rankings">
     <meta property="og:description" content="Interactive tierlist showcasing skilled Minecraft PvP players across Crystal, Sword, UHC, Potion, and more gamemodes. View detailed rankings and player statistics.">
