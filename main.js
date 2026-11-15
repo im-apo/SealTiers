@@ -1,421 +1,294 @@
+/* ==========================================================================
+   Bunny Tiers - remade front end
+   Same data source, routing, points system and features as before,
+   organised into small modules and rendered with the new layout.
+   ========================================================================== */
+
+// ---------------------------------------------------------------------------
+// Basics
+// ---------------------------------------------------------------------------
+const $ = (id) => document.getElementById(id);
 const BASE_PATH = new URL(".", document.baseURI).pathname;
 const IS_LOCAL = ["localhost", "127.0.0.1"].includes(location.hostname);
+
 if (sessionStorage.redirect) {
-  const redirectPath = sessionStorage.redirect;
-  delete sessionStorage.redirect;
-  history.replaceState(null, '', redirectPath);
+    const redirectPath = sessionStorage.redirect;
+    delete sessionStorage.redirect;
+    history.replaceState(null, "", redirectPath);
 }
 
-if (location.pathname.startsWith(BASE_PATH + 'rankings') && !new RegExp('^' + BASE_PATH + 'rankings/(overall|crystal|smp|diasmp|sword|axe|uhc|potion|nethpot|mace|speed|elytra|cart|ogvanilla|nethuhc|nethsword|moddia|ltm)?/?$').test(location.pathname)) {
-  location.replace(BASE_PATH + 'rankings/overall');
-}
-
-
-const STANDBY_TIER_CONFIG = {
-    enabled: true,
-    showIcon: true,
-    opacity: 0.35,
-    label: '-'
-};
-
-const ALL_GAMEMODES = {
-    main: ['crystal', 'sword', 'uhc', 'potion', 'nethpot', 'smp', 'axe', 'mace', 'diasmp'],
-    sub: ['speed', 'elytra', 'cart', 'ogvanilla'],
-    limited: ['nethuhc', 'nethsword', 'moddia']
-};
-
-document.addEventListener("DOMContentLoaded", () => {
-  const path = location.pathname;
-  const validGamemodes = [
-    'overall', 'crystal', 'smp', 'diasmp', 'sword', 'axe', 'uhc', 'potion',
-    'nethpot', 'mace', 'speed', 'elytra', 'cart', 'ogvanilla',
-    'nethuhc', 'nethsword', 'moddia', 'ltm'
-  ];
-
-  const match = path.match(/\/rankings\/([^\/]+)/);
-  const gamemode = match ? match[1] : null;
-
-
-  if (path.startsWith(BASE_PATH + 'rankings') && !validGamemodes.includes(gamemode)) {
-    history.replaceState(null, '', BASE_PATH + 'rankings/overall');
-  }
-
-  initializeFromURL();
-});
-
-const ASSET_BASE = BASE_PATH;
-const fixAssetPath = (path) => path.startsWith("assets/") ? ASSET_BASE + path : path;
-
+const fixAssetPath = (path) => (path.startsWith("assets/") ? BASE_PATH + path : path);
 const esc = (v) => String(v ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 const byPoints = (a, b) => b.points - a.points || String(a.name).localeCompare(String(b.name));
-const ICON_FILES = { crystal: "Crystal", sword: "Sword", uhc: "Uhc", potion: "Potion", nethpot: "Nethpot", nethsword: "NethSword", smp: "Smp", axe: "Axe", mace: "Mace", diasmp: "Diasmp", speed: "Speed", elytra: "Elytra", trident: "Trident", cart: "Cart", bed: "Bed", bow: "Bow", creeper: "Creeper", debuff: "DeBuff", diasurv: "DiaSurv", manhunt: "Manhunt", ogvanilla: "OgVanilla", nethuhc: "NethUhc", ltm: "LTM", moddia: "ModernDiamond" };
+
+const VALID_GAMEMODES = [
+    "overall", "crystal", "smp", "diasmp", "sword", "axe", "uhc", "potion", "nethpot", "mace",
+    "speed", "elytra", "cart", "ogvanilla", "nethuhc", "nethsword", "moddia", "ltm"
+];
+
+if (location.pathname.startsWith(BASE_PATH + "rankings") &&
+    !new RegExp("^" + BASE_PATH + "rankings/(" + VALID_GAMEMODES.join("|") + ")?/?$").test(location.pathname)) {
+    location.replace(BASE_PATH + "rankings/overall");
+}
+
+const STANDBY_TIER_CONFIG = { enabled: true, label: "-" };
+
+// Gamemodes shown on each player's row, in the original order
+const ALL_GAMEMODES = {
+    main: ["crystal", "sword", "uhc", "potion", "nethpot", "smp", "axe", "mace", "diasmp"],
+    sub: ["speed", "elytra", "cart", "ogvanilla"],
+    limited: ["nethuhc", "nethsword", "moddia"]
+};
+// Gamemodes shown in the gamemode bar (LTM lives under Limited)
+const BAR_GROUPS = {
+    main: ["crystal", "smp", "diasmp", "sword", "axe", "uhc", "potion", "nethpot", "mace"],
+    sub: ["speed", "elytra", "cart", "ogvanilla"],
+    limited: ["nethuhc", "nethsword", "moddia", "ltm"]
+};
+const GM_LABEL = {
+    overall: "Overall", crystal: "Crystal", smp: "SMP", diasmp: "Diamond SMP", sword: "Sword", axe: "Axe", uhc: "UHC",
+    potion: "Potion", nethpot: "Netherite Pot", mace: "Mace", speed: "Speed", elytra: "Elytra", cart: "Cart",
+    ogvanilla: "OG Vanilla", nethuhc: "Netherite UHC", nethsword: "Netherite Sword", moddia: "Modern Diamond", ltm: "LTM",
+    trident: "Trident", bed: "Bed", bow: "Bow", creeper: "Creeper", debuff: "Debuff", diasurv: "Diamond Survival", manhunt: "Manhunt"
+};
+const groupOf = (gm) => Object.keys(BAR_GROUPS).find((g) => BAR_GROUPS[g].includes(gm)) || "main";
+
+const ICON_FILES = { overall: "Overall", crystal: "Crystal", sword: "Sword", uhc: "Uhc", potion: "Potion", nethpot: "Nethpot", nethsword: "NethSword", smp: "Smp", axe: "Axe", mace: "Mace", diasmp: "Diasmp", speed: "Speed", elytra: "Elytra", trident: "Trident", cart: "Cart", bed: "Bed", bow: "Bow", creeper: "Creeper", debuff: "DeBuff", diasurv: "DiaSurv", manhunt: "Manhunt", ogvanilla: "OgVanilla", nethuhc: "NethUhc", ltm: "LTM", moddia: "ModernDiamond" };
 const GAMEMODE_ICONS = Object.fromEntries(Object.entries(ICON_FILES).map(([k, f]) => [k, fixAssetPath(`assets/gamemode-icons/${f}.svg`)]));
+const gmIcon = (gm) => GAMEMODE_ICONS[gm] || GAMEMODE_ICONS.overall;
+
 const TIER_ORDER = {};
 for (let n = 0; n <= 6; n++) for (const p of ["", "R"]) { TIER_ORDER[`${p}HT${n}`] = n * 2; TIER_ORDER[`${p}LT${n}`] = n * 2 + 1; }
-function closeAllOverlays() {
-    document.querySelectorAll(".modal").forEach((m) => (m.style.display = "none"));
-    const h = document.getElementById("searchHelpModal"); if (h) h.style.display = "none";
-    document.querySelectorAll(".context-menu").forEach((m) => (m.style.display = "none"));
-    document.querySelectorAll(".activity-feed-modal, .comparison-modal").forEach((m) => m.classList.remove("active"));
-}
-
 
 const tierPoints = {
-    RHT0: 200,
-    RLT0: 100,
-    HT0: 200,
-    LT0: 100,
-    RHT1: 85,
-    RLT1: 70,
-    HT1: 85,
-    LT1: 70,
-    RHT2: 50,
-    RLT2: 40,
-    HT2: 50,
-    LT2: 40,
-    RHT3: 20,
-    RLT3: 15,
-    HT3: 20,
-    LT3: 15,
-    RHT4: 8,
-    RLT4: 6,
-    HT4: 8,
-    LT4: 6,
-    RHT5: 4,
-    RLT5: 2,
-    HT5: 4,
-    LT5: 2,
-    RHT6: -10,
-    RLT6: -20,
-    HT6: -10,
-    LT6: -20,
+    RHT0: 200, RLT0: 100, HT0: 200, LT0: 100,
+    RHT1: 85, RLT1: 70, HT1: 85, LT1: 70,
+    RHT2: 50, RLT2: 40, HT2: 50, LT2: 40,
+    RHT3: 20, RLT3: 15, HT3: 20, LT3: 15,
+    RHT4: 8, RLT4: 6, HT4: 8, LT4: 6,
+    RHT5: 4, RLT5: 2, HT5: 4, LT5: 2,
+    RHT6: -10, RLT6: -20, HT6: -10, LT6: -20
 };
 
+const REGIONS = ["na", "eu", "as", "sa", "me", "au", "af"];
+const REGION_NAMES = { na: "North America", eu: "Europe", as: "Asia", sa: "South America", me: "Middle East", au: "Oceania", af: "Africa" };
+
+// ---------------------------------------------------------------------------
+// Kit info
+// ---------------------------------------------------------------------------
+const KIT_NOTE = "\n\nWhen a tier testing queue opens for this kit, be sure to join right away to secure your test spot. LT3 tests and below have a 3-day cooldown, while HT3 and higher come with a 7-day cooldown, so plan accordingly!";
+const kit = (title, img, description) => ({ title, description: description + KIT_NOTE, image: fixAssetPath(`assets/kits/${img}.png`) });
+const kitInfo = {
+    crystal: kit("Crystal PvP Kit", "Crystal", "Advanced end crystal combat loadout with heavy emphasis on explosive warfare. Features extensive supplies of ender pearls for mobility, chorus fruit for emergency escapes, and respawn anchors for additional explosive options. The multiple diamond and obsidian blocks enable rapid crystal placement and defensive structures. Purple shulker boxes provide portable storage for extended engagements."),
+    smp: kit("SMP Kit", "Smp", "Standard survival multiplayer combat loadout with balanced resources. Full netherite protection with comprehensive potion support including healing, speed, and combat buffs. Purple shulker box for storage."),
+    diasmp: kit("Diamond SMP Kit", "Diasmp", "Traditional diamond-tier SMP combat with balanced approach. Full diamond armor with extensive golden apple reserves and varied potions for adaptable fighting."),
+    sword: kit("Sword PvP Kit", "Sword", "Pure sword combat minimalist setup focusing on fundamental melee mechanics. Clean inventory allowing focus on combos, strafing, and movement without distraction."),
+    axe: kit("Axe PvP Kit", "Axe", "Axe-focused combat with emphasis on timing and high damage output. Minimal loadout designed for shield-breaking mechanics and cooldown-based attacks."),
+    uhc: kit("UHC Kit", "Uhc", "Ultra Hardcore optimized loadout emphasizing careful resource management. Golden apples are critical since natural regeneration is disabled. Balanced combat tools with strategic potion selection."),
+    nethuhc: kit("Netherite UHC Kit", "NethUhc", "Ultra Hardcore Netherite optimized loadout emphasizing careful resource management. Golden apples are critical since natural regeneration is disabled. Balanced combat tools with strategic potion selection."),
+    potion: kit("Potion PvP Kit", "Potion", "High-intensity potion warfare loadout with extensive splash potion arsenal. Features multiple types of instant damage, poison, and debuff potions for aggressive play, alongside healing and regeneration options. Golden carrots provide sustained saturation."),
+    nethpot: kit("Netherite Potion Kit", "Nethpot", "Enhanced potion combat with full netherite protection. Combines the speed of potion PvP with superior armor durability and knockback resistance. Heavy focus on golden apples and fish for sustained healing between potion exchanges."),
+    nethsword: kit("Netherite Sword Kit", "NethSword", "Pure sword combat (But Netherite!) minimalist setup focusing on fundamental melee mechanics. Clean inventory allowing focus on combos, strafing, and movement without distraction."),
+    mace: kit("Mace Kit", "Mace", "Vertical combat specialist kit built around the mace's fall damage mechanics introduced in 1.21. Features mace as primary weapon with golden apples for survivability. Potions provide mobility buffs and combat advantages for devastating smash attacks from height."),
+    speed: kit("Speed PvP Kit", "Speed", "High-velocity combat kit dominated by splash potions for sustained speed effects. Minimal equipment to maximize movement speed and agility during combat."),
+    elytra: kit("Elytra Kit", "Elytra", "Aerial combat specialist with focus on elytra flight mechanics. Multiple milk buckets for clearing negative effects mid-flight, alongside food, potions, and honey for landing safety."),
+    trident: kit("Trident Kit", "Trident", "Minimalist trident-focused combat setup emphasizing aquatic mobility and ranged attacks. Clean loadout designed for riptide propulsion and loyalty mechanics with room for tactical flexibility."),
+    cart: kit("Minecart Kit", "Cart", "Minecart-based combat utilizing rails, momentum, and vehicle mechanics for unique movement-based fighting strategies."),
+    bed: kit("Bed Kit", "Bed", "Bedwars-style combat setup with building materials and utility items. Features swords, bows, and tools for rapid base construction and destruction. Includes TNT, beds, and various blocks for tactical gameplay."),
+    bow: kit("Bow Kit", "Bow", "Archery-focused minimalist kit emphasizing ranged superiority. Features multiple bows and arrows for sustained ranged pressure with basic melee backup."),
+    creeper: kit("Creeper Kit", "Creeper", "Explosive-themed combat with milk buckets for clearing debuffs and golden apples for survival. Includes tools and materials for tactical positioning around explosion mechanics."),
+    debuff: kit("Debuff Kit", "DeBuff", "Status effect warfare specialist with heavy emphasis on negative splash potions. Arsenal designed to weaken opponents while maintaining personal advantages through strategic debuff application."),
+    diasurv: kit("Diamond Survival Kit", "DiaSurv", "Diamond-tier crystal PvP combat with end crystal explosive warfare. Features extensive supplies of ender pearls for mobility, chorus fruit for emergency escapes, and respawn anchors for additional explosive options. Diamond armor provides solid protection while maintaining the core crystal combat mechanics with diamond and obsidian blocks for rapid placement."),
+    manhunt: kit("Manhunt Kit", "Manhunt", "Diverse survival combat kit mirroring speedrunning scenarios. Includes crafting materials, tools for rapid resource gathering, and combat essentials for fighting while on the move. Features water buckets, beds for respawn setting, and golden apples for clutch healing."),
+    ogvanilla: kit("OG Vanilla Kit", "OgVanilla", "Classic vanilla Minecraft combat with traditional techniques and straightforward gameplay. Focuses on fundamental combat skills without specialized mechanics or modern additions."),
+    moddia: kit("Modern Diamond Kit", "ModernDiamond", "Suit up in full diamond armour and dominate the battlefield with raw power and precision. Master the fundamentals of diamond-tier combat, from sword technique to strategic positioning, in this classic yet formidable kit.")
+};
+
+// ---------------------------------------------------------------------------
+// State
+// ---------------------------------------------------------------------------
 let players = [];
 let currentGamemode = "overall";
+let currentGroup = "main";
 let currentPage = 1;
 let playersPerPage = 50;
-let isLoadingMore = false;
-let displayedPlayers = 0;
-const INITIAL_LOAD = 15; // Load 15 players initially
-const LOAD_MORE_COUNT = 10; // Load 10 more when scrolling
-let filteredPlayers = []; // Store filtered players globally
-
-const kitInfo = {
-    crystal: {
-        title: "Crystal PvP Kit",
-        description:
-            "Advanced end crystal combat loadout with heavy emphasis on explosive warfare. Features extensive supplies of ender pearls for mobility, chorus fruit for emergency escapes, and respawn anchors for additional explosive options. The multiple diamond and obsidian blocks enable rapid crystal placement and defensive structures. Purple shulker boxes provide portable storage for extended engagements.\n\nWhen a tier testing queue opens for this kit, be sure to join right away to secure your test spot. LT3 tests and below have a 3-day cooldown, while HT3 and higher come with a 7-day cooldown, so plan accordingly!",
-        image: fixAssetPath("assets/kits/Crystal.png"),
-    },
-    smp: {
-        title: "SMP Kit",
-        description:
-            "Standard survival multiplayer combat loadout with balanced resources. Full netherite protection with comprehensive potion support including healing, speed, and combat buffs. Purple shulker box for storage.\n\nWhen a tier testing queue opens for this kit, be sure to join right away to secure your test spot. LT3 tests and below have a 3-day cooldown, while HT3 and higher come with a 7-day cooldown, so plan accordingly!",
-        image: fixAssetPath("assets/kits/Smp.png"),
-    },
-    diasmp: {
-        title: "Diamond SMP Kit",
-        description:
-            "Traditional diamond-tier SMP combat with balanced approach. Full diamond armor with extensive golden apple reserves and varied potions for adaptable fighting.\n\nWhen a tier testing queue opens for this kit, be sure to join right away to secure your test spot. LT3 tests and below have a 3-day cooldown, while HT3 and higher come with a 7-day cooldown, so plan accordingly!",
-        image: fixAssetPath("assets/kits/Diasmp.png"),
-    },
-    sword: {
-        title: "Sword PvP Kit",
-        description:
-            "Pure sword combat minimalist setup focusing on fundamental melee mechanics. Clean inventory allowing focus on combos, strafing, and movement without distraction.\n\nWhen a tier testing queue opens for this kit, be sure to join right away to secure your test spot. LT3 tests and below have a 3-day cooldown, while HT3 and higher come with a 7-day cooldown, so plan accordingly!",
-        image: fixAssetPath("assets/kits/Sword.png"),
-    },
-    axe: {
-        title: "Axe PvP Kit",
-        description:
-            "Axe-focused combat with emphasis on timing and high damage output. Minimal loadout designed for shield-breaking mechanics and cooldown-based attacks.\n\nWhen a tier testing queue opens for this kit, be sure to join right away to secure your test spot. LT3 tests and below have a 3-day cooldown, while HT3 and higher come with a 7-day cooldown, so plan accordingly!",
-        image: fixAssetPath("assets/kits/Axe.png"),
-    },
-    uhc: {
-        title: "UHC Kit",
-        description:
-            "Ultra Hardcore optimized loadout emphasizing careful resource management. Golden apples are critical since natural regeneration is disabled. Balanced combat tools with strategic potion selection.\n\nWhen a tier testing queue opens for this kit, be sure to join right away to secure your test spot. LT3 tests and below have a 3-day cooldown, while HT3 and higher come with a 7-day cooldown, so plan accordingly!",
-        image: fixAssetPath("assets/kits/Uhc.png"),
-    },
-    nethuhc: {
-        title: "Netherite UHC Kit",
-        description:
-            "Ultra Hardcore Netherite optimized loadout emphasizing careful resource management. Golden apples are critical since natural regeneration is disabled. Balanced combat tools with strategic potion selection.\n\nWhen a tier testing queue opens for this kit, be sure to join right away to secure your test spot. LT3 tests and below have a 3-day cooldown, while HT3 and higher come with a 7-day cooldown, so plan accordingly!",
-        image: fixAssetPath("assets/kits/NethUhc.png"),
-    },
-    potion: {
-        title: "Potion PvP Kit",
-        description:
-            "High-intensity potion warfare loadout with extensive splash potion arsenal. Features multiple types of instant damage, poison, and debuff potions for aggressive play, alongside healing and regeneration options. Golden carrots provide sustained saturation.\n\nWhen a tier testing queue opens for this kit, be sure to join right away to secure your test spot. LT3 tests and below have a 3-day cooldown, while HT3 and higher come with a 7-day cooldown, so plan accordingly!",
-        image: fixAssetPath("assets/kits/Potion.png"),
-    },
-    nethpot: {
-        title: "Netherite Potion Kit",
-        description:
-            "Enhanced potion combat with full netherite protection. Combines the speed of potion PvP with superior armor durability and knockback resistance. Heavy focus on golden apples and fish for sustained healing between potion exchanges.\n\nWhen a tier testing queue opens for this kit, be sure to join right away to secure your test spot. LT3 tests and below have a 3-day cooldown, while HT3 and higher come with a 7-day cooldown, so plan accordingly!",
-        image: fixAssetPath("assets/kits/Nethpot.png"),
-    },
-    nethsword: {
-        title: "Netherite Sword Kit",
-        description:
-            "Pure sword combat (But Netherite!) minimalist setup focusing on fundamental melee mechanics. Clean inventory allowing focus on combos, strafing, and movement without distraction.\n\nWhen a tier testing queue opens for this kit, be sure to join right away to secure your test spot. LT3 tests and below have a 3-day cooldown, while HT3 and higher come with a 7-day cooldown, so plan accordingly!",
-        image: fixAssetPath("assets/kits/NethSword.png"),
-    },
-    mace: {
-        title: "Mace Kit",
-        description:
-            "Vertical combat specialist kit built around the mace's fall damage mechanics introduced in 1.21. Features mace as primary weapon with golden apples for survivability. Potions provide mobility buffs and combat advantages for devastating smash attacks from height.\n\nWhen a tier testing queue opens for this kit, be sure to join right away to secure your test spot. LT3 tests and below have a 3-day cooldown, while HT3 and higher come with a 7-day cooldown, so plan accordingly!",
-        image: fixAssetPath("assets/kits/Mace.png"),
-    },
-    speed: {
-        title: "Speed PvP Kit",
-        description:
-            "High-velocity combat kit dominated by splash potions for sustained speed effects. Minimal equipment to maximize movement speed and agility during combat.\n\nWhen a tier testing queue opens for this kit, be sure to join right away to secure your test spot. LT3 tests and below have a 3-day cooldown, while HT3 and higher come with a 7-day cooldown, so plan accordingly!",
-        image: fixAssetPath("assets/kits/Speed.png"),
-    },
-    elytra: {
-        title: "Elytra Kit",
-        description:
-            "Aerial combat specialist with focus on elytra flight mechanics. Multiple milk buckets for clearing negative effects mid-flight, alongside food, potions, and honey for landing safety.\n\nWhen a tier testing queue opens for this kit, be sure to join right away to secure your test spot. LT3 tests and below have a 3-day cooldown, while HT3 and higher come with a 7-day cooldown, so plan accordingly!",
-        image: fixAssetPath("assets/kits/Elytra.png"),
-    },
-    trident: {
-        title: "Trident Kit",
-        description:
-            "Minimalist trident-focused combat setup emphasizing aquatic mobility and ranged attacks. Clean loadout designed for riptide propulsion and loyalty mechanics with room for tactical flexibility.\n\nWhen a tier testing queue opens for this kit, be sure to join right away to secure your test spot. LT3 tests and below have a 3-day cooldown, while HT3 and higher come with a 7-day cooldown, so plan accordingly!",
-        image: fixAssetPath("assets/kits/Trident.png"),
-    },
-    cart: {
-        title: "Minecart Kit",
-        description:
-            "Minecart-based combat utilizing rails, momentum, and vehicle mechanics for unique movement-based fighting strategies.\n\nWhen a tier testing queue opens for this kit, be sure to join right away to secure your test spot. LT3 tests and below have a 3-day cooldown, while HT3 and higher come with a 7-day cooldown, so plan accordingly!",
-        image: fixAssetPath("assets/kits/Cart.png"),
-    },
-    bed: {
-        title: "Bed Kit",
-        description:
-            "Bedwars-style combat setup with building materials and utility items. Features swords, bows, and tools for rapid base construction and destruction. Includes TNT, beds, and various blocks for tactical gameplay.\n\nWhen a tier testing queue opens for this kit, be sure to join right away to secure your test spot. LT3 tests and below have a 3-day cooldown, while HT3 and higher come with a 7-day cooldown, so plan accordingly!",
-        image: fixAssetPath("assets/kits/Bed.png"),
-    },
-    bow: {
-        title: "Bow Kit",
-        description:
-            "Archery-focused minimalist kit emphasizing ranged superiority. Features multiple bows and arrows for sustained ranged pressure with basic melee backup.\n\nWhen a tier testing queue opens for this kit, be sure to join right away to secure your test spot. LT3 tests and below have a 3-day cooldown, while HT3 and higher come with a 7-day cooldown, so plan accordingly!",
-        image: fixAssetPath("assets/kits/Bow.png"),
-    },
-    creeper: {
-        title: "Creeper Kit",
-        description:
-            "Explosive-themed combat with milk buckets for clearing debuffs and golden apples for survival. Includes tools and materials for tactical positioning around explosion mechanics.\n\nWhen a tier testing queue opens for this kit, be sure to join right away to secure your test spot. LT3 tests and below have a 3-day cooldown, while HT3 and higher come with a 7-day cooldown, so plan accordingly!",
-        image: fixAssetPath("assets/kits/Creeper.png"),
-    },
-    debuff: {
-        title: "Debuff Kit",
-        description:
-            "Status effect warfare specialist with heavy emphasis on negative splash potions. Arsenal designed to weaken opponents while maintaining personal advantages through strategic debuff application.\n\nWhen a tier testing queue opens for this kit, be sure to join right away to secure your test spot. LT3 tests and below have a 3-day cooldown, while HT3 and higher come with a 7-day cooldown, so plan accordingly!",
-        image: fixAssetPath("assets/kits/DeBuff.png"),
-    },
-    diasurv: {
-        title: "Diamond Survival Kit",
-        description:
-            "Diamond-tier crystal PvP combat with end crystal explosive warfare. Features extensive supplies of ender pearls for mobility, chorus fruit for emergency escapes, and respawn anchors for additional explosive options. Diamond armor provides solid protection while maintaining the core crystal combat mechanics with diamond and obsidian blocks for rapid placement.\n\nWhen a tier testing queue opens for this kit, be sure to join right away to secure your test spot. LT3 tests and below have a 3-day cooldown, while HT3 and higher come with a 7-day cooldown, so plan accordingly!",
-        image: fixAssetPath("assets/kits/DiaSurv.png"),
-    },
-    manhunt: {
-        title: "Manhunt Kit",
-        description:
-            "Diverse survival combat kit mirroring speedrunning scenarios. Includes crafting materials, tools for rapid resource gathering, and combat essentials for fighting while on the move. Features water buckets, beds for respawn setting, and golden apples for clutch healing.\n\nWhen a tier testing queue opens for this kit, be sure to join right away to secure your test spot. LT3 tests and below have a 3-day cooldown, while HT3 and higher come with a 7-day cooldown, so plan accordingly!",
-        image: fixAssetPath("assets/kits/Manhunt.png"),
-    },
-    ogvanilla: {
-        title: "OG Vanilla Kit",
-        description:
-            "Classic vanilla Minecraft combat with traditional techniques and straightforward gameplay. Focuses on fundamental combat skills without specialized mechanics or modern additions.\n\nWhen a tier testing queue opens for this kit, be sure to join right away to secure your test spot. LT3 tests and below have a 3-day cooldown, while HT3 and higher come with a 7-day cooldown, so plan accordingly!",
-        image: fixAssetPath("assets/kits/OgVanilla.png"),
-    },
-	moddia: {
-        title: "Modern Diamond Kit",
-        description:
-            "Suit up in full diamond armour and dominate the battlefield with raw power and precision. Master the fundamentals of diamond-tier combat, from sword technique to strategic positioning, in this classic yet formidable kit.\n\nWhen a tier testing queue opens for this kit, be sure to join right away to secure your test spot. LT3 tests and below have a 3-day cooldown, while HT3 and higher come with a 7-day cooldown, so plan accordingly!",
-        image: fixAssetPath("assets/kits/ModernDiamond.png"),
-    }
-};
-
-function calculatePeakTier(currentTier, peakTier) {
-    if (!peakTier || !currentTier) return null;
-    
-    const tierRank = TIER_ORDER;
-    
-    const currentRank = tierRank[currentTier] ?? 999;
-    const peakRank = tierRank[peakTier] ?? 999;
-    
-    if (peakRank < currentRank) {
-        return { isPeak: false, peakTier: peakTier, showTooltip: true };
-    }
-    return { isPeak: true, peakTier: currentTier, showTooltip: false };
-}
-
-function getGamemodeFromURL() {
-    if (IS_LOCAL && location.hash.length > 1) return location.hash.slice(1);
-    const path = window.location.pathname;
-    const match = path.match(/\/rankings\/([^\/]+)/);
-    return match ? match[1] : 'overall';
-}
-
-function updateURL(gamemode) {
-    const newPath = IS_LOCAL ? `${location.pathname.replace(/\/rankings\/.*$/, '/')}#${gamemode}` : `${BASE_PATH}rankings/${gamemode}`;
-    window.history.pushState({ gamemode }, '', newPath);
-}
-
-function initializeFromURL() {
-    const gamemodeFromURL = getGamemodeFromURL();
-    
-    const validGamemodes = [
-        'overall', 'crystal', 'smp', 'diasmp', 'sword', 'axe', 'uhc', 'potion',
-        'nethpot', 'mace', 'speed', 'elytra', 'cart', 'ogvanilla', 'nethuhc',
-        'nethsword', 'moddia', 'ltm'
-    ];
-    
-    if (validGamemodes.includes(gamemodeFromURL)) {
-        currentGamemode = gamemodeFromURL;
-    } else {
-        updateURL('overall');
-        currentGamemode = 'overall';
-    }
-    
-    // Update active tab in UI
-    document.querySelectorAll('.gamemode-tab').forEach(tab => {
-        if (tab.dataset.gamemode === currentGamemode) {
-            tab.classList.add('active');
-        } else {
-            tab.classList.remove('active');
-        }
-    });
-    
-    updateKitInfoButton();
-}
-
-// Handle browser back/forward buttons
-window.addEventListener('popstate', (event) => {
-    if (event.state && event.state.gamemode) {
-        currentGamemode = event.state.gamemode;
-    } else {
-        currentGamemode = getGamemodeFromURL();
-    }
-    
-    // Update active tab
-    document.querySelectorAll('.gamemode-tab').forEach(tab => {
-        if (tab.dataset.gamemode === currentGamemode) {
-            tab.classList.add('active');
-        } else {
-            tab.classList.remove('active');
-        }
-    });
-    
-    currentPage = 1;
-    updateKitInfoButton();
-    renderPlayers();
-});
-
-
-function createTierWithTooltip(gamemode, tier, peakTier, iconSrc) {
-    const tierClass = tier.toLowerCase();
-    const peakInfo = calculatePeakTier(tier, peakTier);
-    
-    const tooltipContent = peakInfo && !peakInfo.isPeak ? `
-        <div class="peak-tier-tooltip">
-            <div class="peak-tier-content">
-                <span class="peak-tier-label">Peak Tier</span>
-                <span class="peak-tier-value">
-                    <img src="${iconSrc}" class="peak-icon" alt="${gamemode}" onerror="this.style.display='none';">
-                    <span class="tier ${peakTier.toLowerCase()}">${peakTier}</span>
-                </span>
-            </div>
-        </div>
-    ` : '';
-    
-    return `
-        <div class="tier-wrapper">
-            <div class="gamemode-tier-item">
-                <div class="gamemode-tier-icon-container" style="border-color: var(--${tierClass}, #64748b);">
-                    <img class="gamemode-tier-icon" src="${iconSrc}" alt="${gamemode}" 
-                         onerror="this.style.display='none';">
-                </div>
-                <span class="tier ${tierClass}">${tier}</span>
-            </div>
-            ${tooltipContent}
-        </div>
-    `;
-}
-
-function renderTierHistory(player, gamemode) {
-    if (!player.tierHistory || !player.tierHistory[gamemode] || player.tierHistory[gamemode].length === 0) {
-        return '<div class="no-history">No tier history available for this gamemode</div>';
-    }
-    
-    const history = player.tierHistory[gamemode];
-    const tierColors = {
-        'HT1': '#f472b6', 'LT1': '#ec4899', 'RHT1': '#f472b6', 'RLT1': '#ec4899',
-        'HT2': '#c084fc', 'LT2': '#a855f7', 'RHT2': '#c084fc', 'RLT2': '#a855f7',
-        'HT3': '#93c5fd', 'LT3': '#60a5fa', 'RHT3': '#93c5fd', 'RLT3': '#60a5fa',
-        'HT4': '#5eead4', 'LT4': '#34d399', 'RHT4': '#5eead4', 'RLT4': '#34d399',
-        'HT5': '#fcd34d', 'LT5': '#fbbf24', 'RHT5': '#fcd34d', 'RLT5': '#fbbf24',
-    };
-    
-    return `
-        <div class="chart-container">
-            <div class="tier-timeline">
-                <div class="timeline-line"></div>
-                ${history.map((entry, index) => {
-                    const color = tierColors[entry.tier] || '#6b7280';
-                    const date = new Date(entry.date).toLocaleDateString('en-US', { 
-                        month: 'short', 
-                        day: 'numeric',
-                        year: 'numeric'
-                    });
-                    
-                    return `
-                        <div class="timeline-point">
-                            <div class="timeline-dot" style="border-color: ${color};" 
-                                 title="${entry.tier} - ${date}${entry.note ? ' (' + entry.note + ')' : ''}"></div>
-                            <span class="timeline-tier tier ${entry.tier.toLowerCase()}">${entry.tier}</span>
-                            <span class="timeline-date">${date}</span>
-                        </div>
-                    `;
-                }).join('')}
-            </div>
-        </div>
-    `;
-}
-
-// Show/hide Kit Info button based on gamemode
-function updateKitInfoButton() {
-    const kitInfoBtn = document.getElementById("kitInfoBtn");
-    if (currentGamemode !== "overall" && kitInfo[currentGamemode]) {
-        kitInfoBtn.style.display = "flex";
-    } else {
-        kitInfoBtn.style.display = "none";
-    }
-}
-
-// Multi-region filter functionality
-let selectedRegions = new Set(); // Store selected regions
-let allPlayersRanking = []; // Store the complete ranking for reference
-
+let allPlayersRanking = [];
+let selectedRegions = new Set();
 let isInitialLoad = true;
+let retryDelay = 3000;
 
 const PLAYERS_URL = "https://stellartiersbot.onrender.com/players.json";
 const CACHE_KEY = "players_cache_v1";
-let retryDelay = 3000;
-function hideLoader() {
-    const l = document.getElementById("loadingScreen");
-    if (!l || l.classList.contains("hidden")) return;
-    l.classList.add("hidden");
-    setTimeout(() => (l.style.display = "none"), 500);
+
+// ---------------------------------------------------------------------------
+// Small helpers
+// ---------------------------------------------------------------------------
+let toastTimer;
+function toast(msg) {
+    const t = $("toast");
+    t.textContent = msg;
+    t.classList.add("show");
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => t.classList.remove("show"), 2200);
 }
+function openOverlay(id) { $(id)?.classList.add("open"); }
+function closeOverlay(id) { $(id)?.classList.remove("open"); }
+function closeAllOverlays() {
+    document.querySelectorAll(".overlay").forEach((o) => o.classList.remove("open"));
+    $("playerContextMenu").style.display = "none";
+}
+function copyText(text, okMsg) {
+    navigator.clipboard?.writeText(text).then(() => toast(okMsg), () => toast("Could not copy"));
+}
+
+const tierKey = (t) => String(t || "").toLowerCase();
+const pill = (tier) => `<span class="tier" data-t="${esc(tierKey(tier))}">${esc(tier)}</span>`;
+const icoImg = (gm) => `<img src="${gmIcon(gm)}" alt="" loading="lazy" onerror="this.style.display='none';">`;
+const avatarImg = (p, cls = "avatar") => `<img class="${cls}" src="${esc(p.avatar)}" alt="${esc(p.name)}" loading="lazy" onerror="this.style.visibility='hidden';">`;
+const regionTag = (r) => r ? `<span class="region ${esc(String(r).toLowerCase())}">${esc(String(r).toUpperCase())}</span>` : "";
+const bestTiers = (p, n = 3) => Object.entries(p.tiers || {}).filter(([, t]) => t).sort((a, b) => (TIER_ORDER[a[1]] ?? 999) - (TIER_ORDER[b[1]] ?? 999)).slice(0, n);
+
+function calculatePoints(player) {
+    let total = 0;
+    for (const mode in (player.tiers || {})) total += tierPoints[player.tiers[mode]] || 0;
+    return total;
+}
+
+function getBadge(points) {
+    if (points >= 900) return { label: "Points Overlord", class: "pointoverlord" };
+    if (points >= 300) return { label: "Legendary", class: "legendary" };
+    if (points >= 200) return { label: "Master", class: "master" };
+    if (points >= 100) return { label: "Expert", class: "expert" };
+    if (points >= 50) return { label: "Advanced", class: "advanced" };
+    if (points >= 20) return { label: "Intermediate", class: "intermediate" };
+    return { label: "Novice", class: "novice" };
+}
+
+function calculatePeakTier(currentTier, peakTier) {
+    if (!peakTier || !currentTier) return null;
+    const currentRank = TIER_ORDER[currentTier] ?? 999;
+    const peakRank = TIER_ORDER[peakTier] ?? 999;
+    if (peakRank < currentRank) return { isPeak: false, peakTier, showTooltip: true };
+    return { isPeak: true, peakTier: currentTier, showTooltip: false };
+}
+
+function getPlayerRank(playerName) {
+    const sorted = [...players];
+    if (currentGamemode === "overall") sorted.forEach((p) => (p.points = calculatePoints(p)));
+    else sorted.forEach((p) => (p.points = tierPoints[p.tiers?.[currentGamemode]] || 0));
+    sorted.sort(byPoints);
+    const i = sorted.findIndex((p) => p.name === playerName);
+    return i !== -1 ? i + 1 : 0;
+}
+
+// A gamemode chip: icon + tier pill, with a hover tip for peak tier
+function chip(gm, tier, peakTier) {
+    const label = GM_LABEL[gm] || gm;
+    if (!tier) {
+        if (!STANDBY_TIER_CONFIG.enabled) return "";
+        return `<span class="chip standby" title="${esc(label)}: unranked"><span class="ico">${icoImg(gm)}</span><span class="chip-t">${STANDBY_TIER_CONFIG.label}</span></span>`;
+    }
+    const pk = calculatePeakTier(tier, peakTier);
+    const tip = pk && !pk.isPeak ? `<span class="peak"><span>Peak tier</span>${pill(peakTier)}</span>` : "";
+    return `<span class="chip" data-t="${esc(tierKey(tier))}" title="${esc(label)}" tabindex="0"><span class="ico">${icoImg(gm)}</span>${pill(tier)}${tip}</span>`;
+}
+
+// ---------------------------------------------------------------------------
+// Routing
+// ---------------------------------------------------------------------------
+function getGamemodeFromURL() {
+    if (IS_LOCAL && location.hash.length > 1) return location.hash.slice(1);
+    const match = location.pathname.match(/\/rankings\/([^\/]+)/);
+    return match ? match[1] : "overall";
+}
+
+function updateURL(gamemode) {
+    const url = IS_LOCAL ? `${location.pathname.replace(/\/rankings\/.*$/, "/")}#${gamemode}` : `${BASE_PATH}rankings/${gamemode}${location.search}`;
+    history.pushState({ gamemode }, "", url);
+}
+
+function applyGamemode(gm) {
+    currentGamemode = VALID_GAMEMODES.includes(gm) ? gm : "overall";
+    if (currentGamemode !== "overall") currentGroup = groupOf(currentGamemode);
+    currentPage = 1;
+}
+
+window.addEventListener("popstate", (event) => {
+    applyGamemode(event.state?.gamemode || getGamemodeFromURL());
+    renderPlayers();
+});
+
+// ---------------------------------------------------------------------------
+// Gamemode bar
+// ---------------------------------------------------------------------------
+function buildModeBar() {
+    const scroller = $("modeChips"), prevLeft = scroller.scrollLeft;
+    scroller.innerHTML = BAR_GROUPS[currentGroup].map((gm) =>
+        `<button class="mode${gm === currentGamemode ? " active" : ""}" data-gamemode="${gm}" role="tab">${icoImg(gm)}<span>${esc(GM_LABEL[gm])}</span></button>`
+    ).join("");
+    document.querySelectorAll("#groupSwitch button").forEach((b) => b.classList.toggle("on", b.dataset.group === currentGroup));
+    scroller.scrollLeft = prevLeft;
+}
+
+function syncModeUI() {
+    buildModeBar();
+    const overall = $("overallTab");
+    overall.classList.toggle("active", currentGamemode === "overall");
+    overall.classList.toggle("filtered", selectedRegions.size > 0);
+    overall.querySelector("span").textContent = selectedRegions.size
+        ? `Overall (${[...selectedRegions].map((r) => r.toUpperCase()).join(", ")})`
+        : "Overall";
+    $("kitInfoBtn").style.display = currentGamemode !== "overall" && kitInfo[currentGamemode] ? "inline-flex" : "none";
+    const isOverall = currentGamemode === "overall";
+    $("regionBtn").style.display = isOverall ? "inline-flex" : "none";
+    $("pageSizeSelector").style.display = isOverall ? "" : "none";
+    $("regionBtnLabel").textContent = selectedRegions.size ? `Regions: ${[...selectedRegions].map((r) => r.toUpperCase()).join(", ")}` : "Regions";
+}
+
+function setGamemode(gm) {
+    applyGamemode(gm);
+    updateURL(currentGamemode);
+    renderPlayers();
+}
+
+$("modebar").addEventListener("click", (e) => {
+    const sw = e.target.closest("#groupSwitch button");
+    if (sw) { currentGroup = sw.dataset.group; buildModeBar(); return; }
+    const m = e.target.closest(".mode");
+    if (m) setGamemode(m.dataset.gamemode);
+});
+
+function resetToOverall() {
+    selectedRegions.clear();
+    $("searchBox").value = "";
+    $("clearSearchBtn").style.display = "none";
+    currentGroup = "main";
+    const u = new URL(location.href); u.searchParams.delete("q"); history.replaceState(history.state, "", u);
+    setGamemode("overall");
+}
+$("logoBtn").addEventListener("click", resetToOverall);
+$("logoBtn").addEventListener("keydown", (e) => { if (e.key === "Enter") resetToOverall(); });
+
+// ---------------------------------------------------------------------------
+// Loading players
+// ---------------------------------------------------------------------------
+function hideLoader() {
+    const l = $("loadingScreen");
+    if (!l || l.classList.contains("hidden-fade")) return;
+    l.classList.add("hidden-fade");
+    setTimeout(() => { if (l.classList.contains("hidden-fade")) l.style.display = "none"; }, 500);
+}
+function showLoader(msg, color) {
+    const l = $("loadingScreen"), s = $("loadingSubtext");
+    if (!l || !s) return;
+    l.style.display = "flex";
+    requestAnimationFrame(() => l.classList.remove("hidden-fade"));
+    s.textContent = msg;
+    s.style.color = color;
+}
+
 async function loadPlayers() {
-    const sub = document.getElementById("loadingSubtext");
+    const sub = $("loadingSubtext");
     if (isInitialLoad) {
         isInitialLoad = false;
         try {
@@ -442,2126 +315,629 @@ async function loadPlayers() {
     }
 }
 
-function calculatePoints(player) {
-    let total = 0;
-    for (const mode in (player.tiers || {})) {
-        total += tierPoints[player.tiers[mode]] || 0;
-    }
+window.addEventListener("online", () => {
+    showLoader("Connection restored. Reloading...", "#10b981");
+    setTimeout(loadPlayers, 1000);
+});
+window.addEventListener("offline", () => showLoader("No internet connection. Waiting for connection...", "#ef4444"));
+
+$("refreshBtn").addEventListener("click", async () => {
+    const btn = $("refreshBtn"), original = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = `<svg viewBox="0 0 24 24" style="animation: spin 1s linear infinite"><path d="M17.65 6.35A7.96 7.96 0 0 0 12 4a8 8 0 1 0 7.73 10h-2.08A6 6 0 1 1 12 6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg><span class="lbl">Refreshing...</span>`;
+    await loadPlayers();
+    setTimeout(() => { btn.disabled = false; btn.innerHTML = original; }, 500);
+});
+
+// ---------------------------------------------------------------------------
+// Rendering: overall list, podium, tier columns, pagination
+// ---------------------------------------------------------------------------
+function tiersHTML(p) {
+    const sorter = (a, b) => (TIER_ORDER[a[1]] ?? 999) - (TIER_ORDER[b[1]] ?? 999);
+    const line = (arr) => arr.map((gm) => [gm, p.tiers?.[gm] || null, p.peakTiers?.[gm]]).sort(sorter).map(([gm, t, pk]) => chip(gm, t, pk)).join("");
+    return `<div class="tline"><span class="gl">Main</span>${line(ALL_GAMEMODES.main)}</div>` +
+        `<div class="tline"><span class="gl">Sub</span>${line(ALL_GAMEMODES.sub)}<span class="sp"></span><span class="gl lim">Limited</span>${line(ALL_GAMEMODES.limited)}</div>`;
+}
+
+const dataAttrs = (p) => `data-name="${esc(p.name)}" data-points="${esc(p.points)}" data-tiers="${esc(JSON.stringify(p.tiers || {}))}"`;
+
+function podiumHTML(top) {
+    return `<div class="podium">${top.map((p, i) => {
+        const b = getBadge(p.points);
+        return `<div class="pod p${i + 1}" ${dataAttrs(p)} tabindex="0" role="button">
+            <span class="medal">${i + 1}</span>
+            ${avatarImg(p)}
+            <h3><span>${esc(p.name)}</span>${regionTag(p.region)}</h3>
+            <div class="pod-pts"><span class="pts ${b.class}">${p.points} pts</span><span class="badge ${b.class}">${b.label}</span></div>
+            <div class="pod-tiers">${bestTiers(p).map(([gm, t]) => chip(gm, t)).join("")}</div>
+        </div>`;
+    }).join("")}</div>`;
+}
+
+function rowHTML(p, rank) {
+    const b = getBadge(p.points);
+    return `<div class="prow" ${dataAttrs(p)} tabindex="0" role="button">
+        <div class="rank">${rank}</div>
+        <div class="who">${avatarImg(p)}<div class="who-meta">
+            <div class="who-name"><span>${esc(p.name)}</span>${regionTag(p.region)}</div>
+            <div class="who-pts"><span class="pts ${b.class}">${p.points} pts</span><span class="badge ${b.class}">${b.label}</span></div>
+        </div></div>
+        <div class="tiers">${tiersHTML(p)}</div>
+    </div>`;
+}
+
+function renderTierColumns(list, container) {
+    const groups = [[], [], [], [], []];
+    const mapping = {};
+    for (let n = 1; n <= 5; n++) for (const t of ["HT", "LT", "RHT", "RLT"]) mapping[`${t}${n}`] = n - 1;
+    list.forEach((p) => {
+        const code = p.tiers?.[currentGamemode];
+        if (code in mapping) groups[mapping[code]].push({ p, code });
+    });
+    const total = groups.reduce((n, g) => n + g.length, 0);
+    if (!total) { container.innerHTML = `<div class="state"><h3>No players here yet</h3><p>Nobody has a tier in ${esc(GM_LABEL[currentGamemode])} that matches your search.</p></div>`; return 0; }
+
+    const icons = ["tier_1", "tier_2", "tier_3", "tier_45", "tier_45"].map((f) => fixAssetPath(`assets/icons/${f}.svg`));
+    container.innerHTML = `<div class="cols">${groups.map((g, i) => `
+        <section class="col">
+            <div class="col-head t${i + 1}"><img src="${icons[i]}" alt="" onerror="this.style.display='none';">Tier ${i + 1}<span class="count">${g.length}</span></div>
+            <div class="col-body">${g.length ? g.map(({ p, code }) => {
+                const high = /HT/.test(code), retired = /^R/.test(code);
+                return `<div class="cp ${high ? "hi" : ""} ${retired ? "retired" : ""}" ${dataAttrs(p)} tabindex="0" role="button">
+                    ${avatarImg(p)}
+                    <span class="cp-name"><span>${esc(p.name)}</span>${regionTag(p.region)}</span>
+                    <span class="cp-icons">
+                        ${retired ? `<img src="${fixAssetPath("assets/icons/retired_icon.svg")}" alt="Retired" title="Retired" onerror="this.style.display='none';">` : ""}
+                        <img src="${fixAssetPath(high ? "assets/icons/ht_icon.svg" : "assets/icons/lt_icon.svg")}" alt="${high ? "HT" : "LT"}" title="${code}" onerror="this.style.display='none';">
+                    </span></div>`;
+            }).join("") : `<div class="empty">No players in this tier</div>`}</div>
+        </section>`).join("")}</div>`;
     return total;
 }
 
-document.getElementById("copyIpBtn").addEventListener("click", () => {
-    document.getElementById("copyPopup").textContent = "Not officially linked with any server";
-    const popup = document.getElementById("copyPopup");
-    popup.style.display = "block";
-    setTimeout(() => (popup.style.display = "none"), 2000);
-});
-document.getElementById("discordBtn").addEventListener("click", () => {
-    window.open("https://discord.gg/zMqy5QbevP", "_blank");
-});
-document.getElementById("apolloBtn")?.addEventListener("click", () => {
-    window.location.href = "https://im-apo.github.io/ApolloRPG/";
-});
-document.getElementById("ronBtn")?.addEventListener("click", () => {
-    window.location.href = "https://im-apo.github.io/SealTiers/StellarTiers/";
-});
-
-function getBadge(points) {
-	if (points >= 900)
-        return {
-            label: "Points Overlord",
-            class: "pointoverlord",
-        };
-    if (points >= 300)
-        return {
-            label: "Legendary",
-            class: "legendary",
-        };
-    if (points >= 200)
-        return {
-            label: "Master",
-            class: "master",
-        };
-    if (points >= 100)
-        return {
-            label: "Expert",
-            class: "expert",
-        };
-    if (points >= 50)
-        return {
-            label: "Advanced",
-            class: "advanced",
-        };
-    if (points >= 20)
-        return {
-            label: "Intermediate",
-            class: "intermediate",
-        };
-    return {
-        label: "Novice",
-        class: "novice",
-    };
+function pagerHTML(totalPages, totalPlayers) {
+    if (totalPages <= 1) return "";
+    const start = (currentPage - 1) * playersPerPage + 1;
+    const end = Math.min(currentPage * playersPerPage, totalPlayers);
+    const btn = (n) => `<button class="pg${n === currentPage ? " on" : ""}" data-page="${n}">${n}</button>`;
+    let nums = "";
+    const s = Math.max(1, currentPage - 2), e = Math.min(totalPages, currentPage + 2);
+    if (s > 1) { nums += btn(1); if (s > 2) nums += `<span class="dots">...</span>`; }
+    for (let i = s; i <= e; i++) nums += btn(i);
+    if (e < totalPages) { if (e < totalPages - 1) nums += `<span class="dots">...</span>`; nums += btn(totalPages); }
+    return `<div class="pager">
+        <button class="pg" data-page="${currentPage - 1}" ${currentPage === 1 ? "disabled" : ""}>← Previous</button>
+        ${nums}
+        <span class="info">Showing ${start}-${end} of ${totalPlayers} players</span>
+        <button class="pg" data-page="${currentPage + 1}" ${currentPage === totalPages ? "disabled" : ""}>Next →</button>
+    </div>`;
 }
 
-function updateOverallTabAppearance() {
-    const overallTabs = document.querySelectorAll(
-        '.gamemode-tab[data-gamemode="overall"]'
-    );
-
-    overallTabs.forEach((tab) => {
-        if (selectedRegions.size > 0) {
-            tab.classList.add("filtered");
-            const span = tab.querySelector("span");
-            const regionList = Array.from(selectedRegions)
-                .map((r) => r.toUpperCase())
-                .join(", ");
-            span.textContent = `Overall (${regionList})`;
-        } else {
-            tab.classList.remove("filtered");
-            tab.querySelector("span").textContent = "Overall";
-        }
-    });
+function setHead(title, sub) {
+    $("resultsTitle").textContent = title;
+    $("resultsSub").textContent = sub;
 }
-
-window.addEventListener("online", () => {
-    const loadingScreen = document.getElementById("loadingScreen");
-    const loadingSubtext = document.getElementById("loadingSubtext");
-
-    if (loadingScreen && loadingSubtext) {
-        // Show the loading screen again
-        loadingScreen.style.display = "flex";
-        loadingScreen.classList.remove("hidden");
-
-        loadingSubtext.textContent = "Connection restored. Reloading...";
-        loadingSubtext.style.color = "#10b981";
-
-        setTimeout(() => {
-            loadPlayers();
-        }, 1000);
-    }
-});
-
-window.addEventListener("offline", () => {
-    const loadingScreen = document.getElementById("loadingScreen");
-    const loadingSubtext = document.getElementById("loadingSubtext");
-
-    if (loadingScreen && loadingSubtext) {
-        // Show the loading screen
-        loadingScreen.style.display = "flex";
-        loadingScreen.classList.remove("hidden");
-
-        loadingSubtext.textContent =
-            "No internet connection. Waiting for connection...";
-        loadingSubtext.style.color = "#ef4444";
-    }
-});
-
-document.getElementById("refreshBtn").addEventListener("click", async () => {
-    const btn = document.getElementById("refreshBtn");
-    const originalContent = btn.innerHTML;
-
-    // Visual feedback - disable and show loading
-    btn.disabled = true;
-    btn.style.opacity = "0.6";
-    btn.style.cursor = "not-allowed";
-    btn.innerHTML = `
-        <svg viewBox="0 0 24 24" fill="currentColor" style="width: 16px; height: 16px; animation: spin 1s linear infinite;">
-            <path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/>
-        </svg>
-        Refreshing...
-    `;
-
-    // Reload the data
-    await loadPlayers();
-
-    // Re-enable button after a short delay
-    setTimeout(() => {
-        btn.disabled = false;
-        btn.style.opacity = "1";
-        btn.style.cursor = "pointer";
-        btn.innerHTML = originalContent;
-    }, 500);
-});
-
-function updatePaginationControls(totalPages, totalPlayers) {
-    // Remove existing pagination if it exists
-    const existingPagination = document.getElementById("pagination");
-    if (existingPagination) {
-        existingPagination.remove();
-    }
-
-    if (totalPages <= 1) return; // Don't show pagination for single page
-
-    const startRank = (currentPage - 1) * playersPerPage + 1;
-    const endRank = Math.min(currentPage * playersPerPage, totalPlayers);
-
-    const pagination = document.createElement("div");
-    pagination.id = "pagination";
-    pagination.style.cssText = `
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 12px;
-    margin-top: 30px;
-    padding: 20px 0;
-    border-top: 1px solid rgba(71, 85, 105, 0.3);
-  `;
-
-    const pageInfo = document.createElement("span");
-    pageInfo.style.cssText = `
-    color: #94a3b8;
-    font-size: 0.9rem;
-    font-weight: 600;
-    margin: 0 16px;
-  `;
-    pageInfo.textContent = `Showing ${startRank}-${endRank} of ${totalPlayers} players`;
-
-    const prevBtn = document.createElement("button");
-    prevBtn.textContent = "← Previous";
-    prevBtn.disabled = currentPage === 1;
-    prevBtn.style.cssText = `
-    background: ${
-        currentPage === 1 ? "rgba(51, 65, 85, 0.5)" : "rgba(15, 23, 42, 0.95)"
-    };
-    border: 2px solid rgba(71, 85, 105, 0.6);
-    border-radius: 12px;
-    padding: 8px 16px;
-    color: ${currentPage === 1 ? "#64748b" : "#cbd5e1"};
-    font-weight: 600;
-    cursor: ${currentPage === 1 ? "not-allowed" : "pointer"};
-    transition: all 0.3s ease;
-  `;
-    if (currentPage > 1) {
-        prevBtn.addEventListener("mouseover", () => {
-            prevBtn.style.background = "rgba(30, 41, 59, 0.95)";
-            prevBtn.style.borderColor = "#a8b3c7";
-        });
-        prevBtn.addEventListener("mouseout", () => {
-            prevBtn.style.background = "rgba(15, 23, 42, 0.95)";
-            prevBtn.style.borderColor = "rgba(71, 85, 105, 0.6)";
-        });
-    }
-
-    document.getElementById("logoBtn").addEventListener("click", () => {
-    // Reset to overall gamemode
-    currentGamemode = "overall";
-    
-    // Update URL
-    updateURL('overall');
-
-    // Reset to first page of players
-    currentPage = 1;
-
-    // Reset to first page of gamemode switcher
-    currentPageIndex = 0;
-    showPage(0);
-
-    // Clear any region filters
-    selectedRegions.clear();
-    updateOverallTabAppearance();
-    updateRegionCheckboxes();
-
-    // Clear search box
-    document.getElementById("searchBox").value = "";
-
-    // Update all gamemode tabs to show overall as active
-    document.querySelectorAll(".gamemode-tab").forEach((t) => {
-        if (t.dataset.gamemode === "overall") {
-            t.classList.add("active");
-        } else {
-            t.classList.remove("active");
-        }
-    });
-
-    // Re-render the players
-    renderPlayers();
-});
-
-    const nextBtn = document.createElement("button");
-    nextBtn.textContent = "Next →";
-    nextBtn.disabled = currentPage === totalPages;
-    nextBtn.style.cssText = `
-    background: ${
-        currentPage === totalPages
-            ? "rgba(51, 65, 85, 0.5)"
-            : "rgba(15, 23, 42, 0.95)"
-    };
-    border: 2px solid rgba(71, 85, 105, 0.6);
-    border-radius: 12px;
-    padding: 8px 16px;
-    color: ${currentPage === totalPages ? "#64748b" : "#cbd5e1"};
-    font-weight: 600;
-    cursor: ${currentPage === totalPages ? "not-allowed" : "pointer"};
-    transition: all 0.3s ease;
-  `;
-    if (currentPage < totalPages) {
-        nextBtn.addEventListener("mouseover", () => {
-            nextBtn.style.background = "rgba(30, 41, 59, 0.95)";
-            nextBtn.style.borderColor = "#a8b3c7";
-        });
-        nextBtn.addEventListener("mouseout", () => {
-            nextBtn.style.background = "rgba(15, 23, 42, 0.95)";
-            nextBtn.style.borderColor = "rgba(71, 85, 105, 0.6)";
-        });
-    }
-
-    // Add click handlers
-    prevBtn.addEventListener("click", () => {
-        if (currentPage > 1) {
-            currentPage--;
-            renderPlayers();
-        }
-    });
-
-    nextBtn.addEventListener("click", () => {
-        if (currentPage < totalPages) {
-            currentPage++;
-            renderPlayers();
-        }
-    });
-
-    pagination.appendChild(prevBtn);
-
-    // Add page numbers (show max 5 pages around current page)
-    const pageNumbers = document.createElement("div");
-    pageNumbers.style.cssText = `
-    display: flex;
-    gap: 6px;
-    align-items: center;
-  `;
-
-    let startPage = Math.max(1, currentPage - 2);
-    let endPage = Math.min(totalPages, currentPage + 2);
-
-    if (startPage > 1) {
-        const firstPage = createPageButton(1);
-        pageNumbers.appendChild(firstPage);
-        if (startPage > 2) {
-            const dots = document.createElement("span");
-            dots.textContent = "...";
-            dots.style.color = "#64748b";
-            pageNumbers.appendChild(dots);
-        }
-    }
-
-    for (let i = startPage; i <= endPage; i++) {
-        pageNumbers.appendChild(createPageButton(i));
-    }
-
-    if (endPage < totalPages) {
-        if (endPage < totalPages - 1) {
-            const dots = document.createElement("span");
-            dots.textContent = "...";
-            dots.style.color = "#64748b";
-            pageNumbers.appendChild(dots);
-        }
-        const lastPage = createPageButton(totalPages);
-        pageNumbers.appendChild(lastPage);
-    }
-
-    pagination.appendChild(pageNumbers);
-    pagination.appendChild(pageInfo);
-    pagination.appendChild(nextBtn);
-
-    document.getElementById("playerList").appendChild(pagination);
-}
-
-function createPageButton(pageNum) {
-    const btn = document.createElement("button");
-    btn.textContent = pageNum;
-    btn.style.cssText = `
-    background: ${
-        pageNum === currentPage
-            ? "linear-gradient(135deg, #1f2a44, #0b1220)"
-            : "rgba(15, 23, 42, 0.95)"
-    };
-    border: 2px solid ${
-        pageNum === currentPage ? "#cbd5e1" : "rgba(71, 85, 105, 0.6)"
-    };
-    border-radius: 8px;
-    padding: 6px 12px;
-    color: ${pageNum === currentPage ? "#f8fafc" : "#cbd5e1"};
-    font-weight: ${pageNum === currentPage ? "700" : "600"};
-    cursor: pointer;
-    transition: all 0.3s ease;
-    min-width: 36px;
-  `;
-
-    if (pageNum !== currentPage) {
-        btn.addEventListener("mouseover", () => {
-            btn.style.background = "rgba(30, 41, 59, 0.95)";
-            btn.style.borderColor = "#a8b3c7";
-        });
-        btn.addEventListener("mouseout", () => {
-            btn.style.background = "rgba(15, 23, 42, 0.95)";
-            btn.style.borderColor = "rgba(71, 85, 105, 0.6)";
-        });
-    }
-
-    btn.addEventListener("click", () => {
-        currentPage = pageNum;
-        renderPlayers();
-    });
-
-    return btn;
-}
-
-function renderTierColumns(filteredPlayers, container) {
-    // Group players by tier
-    const tierGroups = {
-        "Tier 1": [],
-        "Tier 2": [],
-        "Tier 3": [],
-        "Tier 4": [],
-        "Tier 5": [],
-    };
-
-    const tierMapping = {
-        HT1: "Tier 1", LT1: "Tier 1", RHT1: "Tier 1", RLT1: "Tier 1",
-        HT2: "Tier 2", LT2: "Tier 2", RHT2: "Tier 2", RLT2: "Tier 2",
-        HT3: "Tier 3", LT3: "Tier 3", RHT3: "Tier 3", RLT3: "Tier 3",
-        HT4: "Tier 4", LT4: "Tier 4", RHT4: "Tier 4", RLT4: "Tier 4",
-        HT5: "Tier 5", LT5: "Tier 5", RHT5: "Tier 5", RLT5: "Tier 5",
-    };
-
-    // Tier icons mapping
-    const tierIcons = {
-        "Tier 1": fixAssetPath("assets/icons/tier_1.svg"),
-        "Tier 2": fixAssetPath("assets/icons/tier_2.svg"),
-        "Tier 3": fixAssetPath("assets/icons/tier_3.svg"),
-        "Tier 4": fixAssetPath("assets/icons/tier_45.svg"),
-        "Tier 5": fixAssetPath("assets/icons/tier_45.svg"),
-    };
-
-    // Populate groups
-    filteredPlayers.forEach((player) => {
-        const tierCode = player.tiers && player.tiers[currentGamemode];
-        const tierGroup = tierMapping[tierCode];
-        if (tierGroup) {
-            player.currentTierCode = tierCode;
-            tierGroups[tierGroup].push(player);
-        }
-    });
-
-    // Create columns container
-    const columnsContainer = document.createElement("div");
-    columnsContainer.className = "tier-columns-container";
-
-    // Create a column for each tier (always show all 5)
-    Object.entries(tierGroups).forEach(([tierName, players], index) => {
-        const column = document.createElement("div");
-        column.className = "tier-column";
-
-        const header = document.createElement("div");
-        header.className = `tier-column-header tier-${index + 1}`;
-
-        const tierIcon = tierIcons[tierName];
-        if (tierIcon) {
-            header.innerHTML = `<img src="${tierIcon}" alt="${tierName}" onerror="this.style.display='none';"> ${tierName}`;
-        } else {
-            header.textContent = tierName;
-        }
-
-        column.appendChild(header);
-
-        // Show empty state if no players
-        if (!players || players.length === 0) {
-            const emptyState = document.createElement("div");
-            emptyState.style.cssText = `
-                text-align: center;
-                padding: 20px;
-                color: #64748b;
-                font-size: 0.9rem;
-                font-style: italic;
-            `;
-            emptyState.textContent = "No players in this tier";
-            column.appendChild(emptyState);
-        } else {
-            players.forEach((player) => {
-                const tierCode = player.currentTierCode || "";
-                const isHighTier = /HT/.test(tierCode);
-                const isRetired = /^R/.test(tierCode);
-
-                const playerDiv = document.createElement("div");
-                playerDiv.classList.add("tier-column-player");
-                playerDiv.classList.add(isHighTier ? "tier-column-player-high" : "tier-column-player-low");
-                if (isRetired) playerDiv.classList.add("tier-column-player-retired");
-
-                // ✅ Correct interpolation here:
-                const tierIndicatorHTML = isRetired
-                    ? `<img src="${fixAssetPath("assets/icons/retired_icon.svg")}" class="retired-indicator-icon" alt="Retired" onerror="this.style.display='none';">`
-                    : "";
-
-                const htltIndicatorHTML = isHighTier
-                    ? `<img src="${fixAssetPath("assets/icons/ht_icon.svg")}" class="tier-indicator-icon" alt="HT" onerror="this.style.display='none';">`
-                    : `<img src="${fixAssetPath("assets/icons/lt_icon.svg")}" class="tier-indicator-icon" alt="LT" onerror="this.style.display='none';">`;
-
-                playerDiv.innerHTML = `
-                    <img src="${esc(player.avatar)}" alt="${esc(player.name)}" class="player-avatar-small" onerror="this.style.display='none';">
-                    <div class="tier-column-player-info">
-                        <span class="tier-column-player-name ${isHighTier ? "high-tier" : "low-tier"}">
-                            ${esc(player.name)}
-                            <span class="player-region ${esc(player.region ? player.region.toLowerCase() : "unknown")}">
-                                ${esc(player.region ? player.region.toUpperCase() : "UNKNOWN")}
-                            </span>
-                        </span>
-                    </div>
-                    <div class="tier-column-player-icons">
-                        ${tierIndicatorHTML}
-                        ${htltIndicatorHTML}
-                    </div>
-                `;
-
-                playerDiv.addEventListener("click", () => openPlayerModal(player));
-                column.appendChild(playerDiv);
-            });
-        }
-
-        columnsContainer.appendChild(column);
-    });
-
-    container.innerHTML = "";
-    container.appendChild(columnsContainer);
-}
-
-
 
 function renderPlayers() {
-    let filtered = advancedSearch.search(document.getElementById("searchBox").value);
+    syncModeUI();
+    const box = $("playerList");
+    const query = $("searchBox").value;
+    renderFilterChips(query);
+    if (players.length) $("statPlayers").textContent = players.length;
 
-    // Special case: LTM gamemode shows announcement instead of leaderboard
     if (currentGamemode === "ltm") {
-        const container = document.getElementById("playerList");
-        container.innerHTML = `
-          				<div id="ltmAnnouncement" class="ltm-announcement">
-  <h1>⚒️ Limited-Time Modes are coming soon!</h1>
-  <p>
-    We're working on implementing LTMs, which will include
-    <strong>custom limited-time kits</strong> for future minecraft updates and special servers – however,
-    a few other things will take priority :)
-  </p>
-</div>
-        `;
+        setHead("Limited-time modes", "");
+        box.innerHTML = `<div class="ltm"><h2>Limited-time modes are coming soon</h2>
+            <p>We're working on implementing LTMs, which will include <strong>custom limited-time kits</strong> for future Minecraft updates and special servers. A few other things will take priority for now :)</p></div>`;
         return;
     }
 
-    // Calculate points and create complete ranking first (for true rank reference)
+    let filtered = advancedSearch.search(query);
+
     if (currentGamemode === "overall") {
-        // Create complete ranking of all players
-        allPlayersRanking = [...players];
-        allPlayersRanking.forEach((p) => (p.points = calculatePoints(p)));
-        allPlayersRanking.sort(byPoints);
-
-        // Apply region filter if any regions are selected
-        if (selectedRegions.size > 0) {
-            filtered = filtered.filter(
-                (p) => p.region && selectedRegions.has(p.region.toLowerCase())
-            );
-        }
-
+        players.forEach((p) => (p.points = calculatePoints(p)));
+        allPlayersRanking = [...players].sort(byPoints);
+        if (selectedRegions.size > 0) filtered = filtered.filter((p) => p.region && selectedRegions.has(p.region.toLowerCase()));
         filtered.forEach((p) => (p.points = calculatePoints(p)));
         filtered.sort(byPoints);
     } else {
-        filtered.forEach(
-            (p) => (p.points = tierPoints[p.tiers?.[currentGamemode]] || 0)
-        );
+        filtered.forEach((p) => (p.points = tierPoints[p.tiers?.[currentGamemode]] || 0));
         filtered.sort(byPoints);
     }
 
-    const container = document.getElementById("playerList");
-    container.innerHTML = "";
-
+    if (!players.length) return;
     if (!filtered.length) {
-        container.innerHTML = `<div class="no-results">No players found</div>`;
+        setHead(currentGamemode === "overall" ? "Overall rankings" : `${GM_LABEL[currentGamemode]} tier list`, "0 players");
+        box.innerHTML = `<div class="state"><h3>No players found</h3><p>Try a different name, or remove a filter.</p></div>`;
         return;
     }
 
-    // If viewing a specific gamemode, use tier-based column layout
     if (currentGamemode !== "overall") {
-        renderTierColumns(filtered, container);
+        const n = renderTierColumns(filtered, box);
+        setHead(`${GM_LABEL[currentGamemode]} tier list`, `${n} ranked in ${GM_LABEL[currentGamemode]}`);
         return;
     }
 
-    // Calculate pagination for overall view
     const totalPlayers = filtered.length;
     const totalPages = Math.ceil(totalPlayers / playersPerPage);
+    if (currentPage > totalPages) currentPage = 1;
     const startIndex = (currentPage - 1) * playersPerPage;
-    const endIndex = startIndex + playersPerPage;
-    const playersToShow = filtered.slice(startIndex, endIndex);
+    const pageSlice = filtered.slice(startIndex, startIndex + playersPerPage);
+    const rankOf = (p, idx) => (selectedRegions.size > 0 ? allPlayersRanking.findIndex((x) => x.name === p.name) + 1 : startIndex + idx + 1);
 
-    playersToShow.forEach((p, idx) => {
-        const badge = getBadge(calculatePoints(p));
+    const showPodium = !query.trim() && selectedRegions.size === 0 && currentPage === 1 && pageSlice.length >= 3;
+    const podium = showPodium ? podiumHTML(pageSlice.slice(0, 3)) : "";
+    const rest = showPodium ? pageSlice.slice(3) : pageSlice;
+    const offset = showPodium ? 3 : 0;
 
-        // Calculate actual rank (not just position on current page)
-        let displayRank = startIndex + idx + 1;
-        if (currentGamemode === "overall" && selectedRegions.size > 0) {
-            const trueRank =
-                allPlayersRanking.findIndex(
-                    (player) => player.name === p.name
-                ) + 1;
-            displayRank = trueRank;
-        }
-
-        // Create gamemode icons mapping
-        const gamemodeIcons = GAMEMODE_ICONS;
-
-        // Define tier hierarchy for sorting (higher tiers first)
-        const tierHierarchy = TIER_ORDER;
-
-        // Define tier organization
-        const mainTiers = [
-            "crystal",
-            "sword",
-            "uhc",
-            "potion",
-            "nethpot",
-            "smp",
-            "axe",
-            "mace",
-            "diasmp",
-        ];
-        const subTiers = [
-            "speed",
-            "elytra",
-            "cart",
-            "ogvanilla",
-        ];
-
-        const limitedTiers = ["nethuhc", "nethsword", "ltm"];
-
-let gamemodeDisplay = (() => {
-    const playerMainTiers = [];
-    const playerSubTiers = [];
-    const playerLimitedTiers = [];
-
-    // Process main tiers (show all, including empty)
-    ALL_GAMEMODES.main.forEach((gm) => {
-        const tier = p.tiers?.[gm];
-        const peakTier = p.peakTiers?.[gm];
-        playerMainTiers.push([gm, tier || null, peakTier]);
-    });
-
-    // Process sub tiers (show all, including empty)
-    ALL_GAMEMODES.sub.forEach((gm) => {
-        const tier = p.tiers?.[gm];
-        const peakTier = p.peakTiers?.[gm];
-        playerSubTiers.push([gm, tier || null, peakTier]);
-    });
-
-    // Process limited tiers (show all, including empty)
-    ALL_GAMEMODES.limited.forEach((gm) => {
-        const tier = p.tiers?.[gm];
-        const peakTier = p.peakTiers?.[gm];
-        playerLimitedTiers.push([gm, tier || null, peakTier]);
-    });
-
-    const sortByTierHierarchy = (a, b) => {
-        const rankA = tierHierarchy[a[1]] ?? 999;
-        const rankB = tierHierarchy[b[1]] ?? 999;
-        return rankA - rankB;
-    };
-
-    playerMainTiers.sort(sortByTierHierarchy);
-    playerSubTiers.sort(sortByTierHierarchy);
-    playerLimitedTiers.sort(sortByTierHierarchy);
-
-    const createTierItem = ([gm, tier, peakTier]) => {
-        const iconSrc = gamemodeIcons[gm] || 'assets/gamemode-icons/Overall.svg';
-        
-        // If no tier, create standby version
-        if (!tier && STANDBY_TIER_CONFIG.enabled) {
-            return `
-                <div class="tier-wrapper">
-                    <div class="gamemode-tier-item standby-tier" style="opacity: ${STANDBY_TIER_CONFIG.opacity};">
-                        <div class="gamemode-tier-icon-container" style="border-color: #26324d; border-style: dashed;">
-                            <img class="gamemode-tier-icon" src="${iconSrc}" alt="${gm}" onerror="this.style.display='none';">
-                        </div>
-                        <span class="tier" style="background: #1f2a44; color: #64748b; box-shadow: none;">
-                            ${STANDBY_TIER_CONFIG.label}
-                        </span>
-                    </div>
-                </div>
-            `;
-        }
-        
-        // Normal tier with tooltip
-        return createTierWithTooltip(gm, tier, peakTier, iconSrc);
-    };
-
-    let html = '';
-
-    if (playerMainTiers.length > 0) {
-        html += '<div class="tier-row-wrapper">';
-        html += '<span class="tier-row-label">Main Tiers:</span>';
-        html += '<div class="tier-row">';
-        html += playerMainTiers.map(createTierItem).join('');
-        html += '</div>';
-        html += '</div>';
-    }
-
-    if (playerSubTiers.length > 0) {
-        html += '<div class="tier-row-wrapper">';
-        html += '<span class="tier-row-label">SubTiers:</span>';
-        html += '<div class="tier-row">';
-        html += playerSubTiers.map(createTierItem).join('');
-        html += '</div>';
-        html += '</div>';
-    }
-
-    if (playerLimitedTiers.length > 0) {
-        html += '<div class="tier-row-wrapper">';
-        html += '<span class="tier-row-label">Limited Tiers:</span>';
-        html += '<div class="tier-row">';
-        html += playerLimitedTiers.map(createTierItem).join('');
-        html += '</div>';
-        html += '</div>';
-    }
-
-    return html;
-})();
-
-        const row = document.createElement("div");
-        row.className = "player-row";
-
-        // Use true overall rank when region filtering is active
-        const rankClass =
-            displayRank === 1
-                ? "gold"
-                : displayRank === 2
-                ? "silver"
-                : displayRank === 3
-                ? "bronze"
-                : "";
-
-        let placementBadge = "";
-        let rankStyle = "position: relative; z-index: 2;";
-        let badgeContainerStyle =
-            "position: relative; display: flex; align-items: center; justify-content: center;";
-
-        if (displayRank === 1) {
-  placementBadge = `
-    <img src="${fixAssetPath('assets/icons/Placement1.svg')}"
-         alt="1st Place"
-         style="position: absolute; width: 80px; height: 40px; z-index: 1;
-                left: 50%; top: 50%; transform: translate(-50%, -50%);" />
-  `;
-} else if (displayRank === 2) {
-  placementBadge = `
-    <img src="${fixAssetPath('assets/icons/Placement2.svg')}"
-         alt="2nd Place"
-         style="position: absolute; width: 80px; height: 40px; z-index: 1;
-                left: 50%; top: 50%; transform: translate(-50%, -50%);" />
-  `;
-} else if (displayRank === 3) {
-  placementBadge = `
-    <img src="${fixAssetPath('assets/icons/Placement3.svg')}"
-         alt="3rd Place"
-         style="position: absolute; width: 80px; height: 40px; z-index: 1;
-                left: 50%; top: 50%; transform: translate(-50%, -50%);" />
-  `;
-} else {
-  placementBadge = `
-    <img src="${fixAssetPath('assets/icons/PlacementOther.svg')}"
-         alt="Rank"
-         style="position: absolute; width: 80px; height: 40px; z-index: 1;
-                left: 50%; top: 50%; transform: translate(-50%, -50%);" />
-  `;
+    box.innerHTML = podium + `<div class="rows">${rest.map((p, i) => rowHTML(p, rankOf(p, i + offset))).join("")}</div>` + pagerHTML(totalPages, totalPlayers);
+    setHead("Overall rankings", `${totalPlayers} player${totalPlayers === 1 ? "" : "s"}${selectedRegions.size ? " in " + [...selectedRegions].map((r) => REGION_NAMES[r]).join(", ") : ""}`);
 }
 
-        row.innerHTML = `
-  <div class="rank ${rankClass}" style="${badgeContainerStyle}">
-    ${placementBadge}
-    <span style="${rankStyle}">${displayRank}</span>
-  </div>
-  <div class="player-info">
-    <img class="player-avatar" src="${esc(p.avatar)}" alt="${esc(p.name)}">
-    <div class="player-details">
-      <span class="player-name">
-      ${esc(p.name)}
-         <span class="player-region ${esc(String(p.region || "").toLowerCase())}">${esc(p.region)}</span>
-      </span>
-      <span class="player-points"><span class="points-number">${p.points} pts</span> <span class="points-badge ${badge.class}">${badge.label}</span></span>
-    </div>
-  </div>
-  <div class="gamemode-tiers">${gamemodeDisplay}</div>
-`;
-        row.tabIndex = 0; row.setAttribute("role", "button");
-        row.addEventListener("click", () => openPlayerModal(p));
-        row.addEventListener("keydown", (e) => { if (e.key === "Enter") openPlayerModal(p); });
-
-        // Store player data for context menu
-        row.dataset.username = p.name;
-        row.dataset.tiers = JSON.stringify(p.tiers);
-        row.dataset.points = p.points;
-
-        container.appendChild(row);
-    });
-
-    updatePaginationControls(totalPages, totalPlayers);
-}
-
-function openPlayerModal(player) {
-    const modal = document.getElementById("playerModal");
-    const body = document.getElementById("modalBody");
-    const totalPoints = calculatePoints(player);
-    const badge = getBadge(totalPoints);
-
-    // Create tier icons mapping
-    const gamemodeIcons = GAMEMODE_ICONS;
-
-    // Define tier hierarchy for sorting (higher tiers first)
-    // Retired tiers have same priority as normal tiers
-    const tierHierarchy = TIER_ORDER;
-
-    // Sort tiers by hierarchy (highest first)
-    const sortedTiers = Object.entries(player.tiers || {}).sort(
-        ([, tierA], [, tierB]) => {
-            const rankA = tierHierarchy[tierA] ?? 999;
-            const rankB = tierHierarchy[tierB] ?? 999;
-            return rankA - rankB;
-        }
-    );
-
-    // Check if region is a valid region code (2-3 letters) or something else
-    const validRegions = ["na", "eu", "as", "sa", "me", "au", "af"];
-    const isValidRegion =
-        player.region && validRegions.includes(player.region.toLowerCase());
-
-    // Get player's rank position (1-based)
-    const playerRank = getPlayerRank(player.name);
-    let rankClass = "";
-    if (playerRank === 1) rankClass = "rank-1-name";
-    else if (playerRank === 2) rankClass = "rank-2-name";
-    else if (playerRank === 3) rankClass = "rank-3-name";
-
-    body.innerHTML = `
-    <div class="player-modal-header">
-      <img class="player-modal-avatar" src="${esc(player.avatar)}" alt="${esc(player.name)}">
-      <h2 class="player-modal-name">
-        <span class="${rankClass}">${esc(player.name)}</span>
-        ${
-            isValidRegion
-                ? `<span class="player-region ${player.region.toLowerCase()}">${player.region.toUpperCase()}</span>`
-                : ""
-        }
-      </h2>
-      <div class="player-modal-points">
-		<span class="points-number">${totalPoints} points</span>
-		<span class="points-badge ${badge.class}">${badge.label}</span>
-	  </div>
-    </div>
-  `;
-
-    const nameMcBtn = document.createElement("button");
-    nameMcBtn.className = "action-button";
-    nameMcBtn.style.cssText = `
-  background: rgba(15, 23, 42, 0.9);
-  border: 2px solid rgba(100, 116, 139, 0.6);
-  border-radius: 16px;
-  padding: 12px 20px;
-  color: #cbd5e1;
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  text-decoration: none;
-`;
-    nameMcBtn.innerHTML = `
-  <svg viewBox="0 0 24 24" fill="currentColor" style="width: 16px; height: 16px;">
-    <path d="M14,3V5H17.59L7.76,14.83L9.17,16.24L19,6.41V10H21V3M19,19H5V5H12V3H5C3.89,3 3,3.9 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V12H19V19Z" />
-  </svg>
-  View on NameMC
-`;
-    nameMcBtn.addEventListener("click", () => {
-        window.open(`https://namemc.com/profile/${esc(player.name)}`, "_blank");
-    });
-    nameMcBtn.addEventListener("mouseenter", () => {
-        nameMcBtn.style.background = "#0b1220";
-        nameMcBtn.style.color = "#f8fafc";
-        nameMcBtn.style.transform = "translateY(-2px)";
-        nameMcBtn.style.boxShadow = "0 0 20px rgba(148, 163, 184, 0.7)";
-    });
-    nameMcBtn.addEventListener("mouseleave", () => {
-        nameMcBtn.style.background = "rgba(15, 23, 42, 0.9)";
-        nameMcBtn.style.color = "#cbd5e1";
-        nameMcBtn.style.transform = "translateY(0)";
-        nameMcBtn.style.boxShadow = "0 0 15px rgba(30, 41, 59, 0.6)";
-    });
-
-    // Check if player has any tier history
-    const hasHistory = player.tierHistory && Object.keys(player.tierHistory).some(
-        gm => player.tierHistory[gm] && player.tierHistory[gm].length > 0
-    );
-
-    // Insert button after the header section
-    const modalBody = document.getElementById("modalBody");
-
-    if (hasHistory) {
-        const tierHistoryBtn = document.createElement("button");
-        tierHistoryBtn.className = "action-button";
-        tierHistoryBtn.style.cssText = `
-      background: rgba(15, 23, 42, 0.9);
-      border: 2px solid rgba(100, 116, 139, 0.6);
-      border-radius: 16px;
-      padding: 12px 20px;
-      color: #cbd5e1;
-      font-size: 14px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      text-decoration: none;
-      margin-top: 12px;
-    `;
-        tierHistoryBtn.innerHTML = `
-      <svg viewBox="0 0 24 24" fill="currentColor" style="width: 16px; height: 16px;">
-        <path d="M13.5,8H12V13L16.28,15.54L17,14.33L13.5,12.25V8M13,3A9,9 0 0,0 4,12H1L4.96,16.03L9,12H6A7,7 0 0,1 13,5A7,7 0 0,1 20,12A7,7 0 0,1 13,19C11.07,19 9.32,18.21 8.06,16.94L6.64,18.36C8.27,20 10.5,21 13,21A9,9 0 0,0 22,12A9,9 0 0,0 13,3" />
-      </svg>
-      View Tier History
-    `;
-        tierHistoryBtn.addEventListener("click", () => {
-			openTierHistoryModal(player); // This now uses the new modal
-		});
-		document.getElementById("tierHistoryModal").addEventListener("click", (e) => {
-			if (e.target === document.getElementById("tierHistoryModal")) {
-				document.getElementById("tierHistoryModal").style.display = "none";
-			}
-		});
-        tierHistoryBtn.addEventListener("mouseenter", () => {
-            tierHistoryBtn.style.background = "#0b1220";
-            tierHistoryBtn.style.color = "#f8fafc";
-            tierHistoryBtn.style.transform = "translateY(-2px)";
-            tierHistoryBtn.style.boxShadow = "0 0 20px rgba(148, 163, 184, 0.7)";
-        });
-        tierHistoryBtn.addEventListener("mouseleave", () => {
-            tierHistoryBtn.style.background = "rgba(15, 23, 42, 0.9)";
-            tierHistoryBtn.style.color = "#cbd5e1";
-            tierHistoryBtn.style.transform = "translateY(0)";
-            tierHistoryBtn.style.boxShadow = "0 0 15px rgba(30, 41, 59, 0.6)";
-        });
-
-        const buttonsContainer = document.createElement("div");
-        buttonsContainer.style.cssText = `
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 0;
-            margin: 20px auto;
-            width: fit-content;
-        `;
-        
-        buttonsContainer.appendChild(nameMcBtn);
-        buttonsContainer.appendChild(tierHistoryBtn);
-        modalBody.appendChild(buttonsContainer);
-    } else {
-        nameMcBtn.style.margin = "20px auto";
-        nameMcBtn.style.width = "fit-content";
-        modalBody.appendChild(nameMcBtn);
-    }
-
-    // Add tiers section after button
-    const tiersSection = document.createElement("div");
-    tiersSection.className = "modal-section";
-    tiersSection.style.marginTop = "20px";
-    tiersSection.innerHTML = `
-    <h3 class="modal-section-title">Tiers</h3>
-    <div class="tier-grid">
-      ${sortedTiers
-          .map(([gm, tier]) => {
-              const tierClass = tier.toLowerCase();
-              const iconSrc =
-                  gamemodeIcons[gm] || fixAssetPath("assets/gamemode-icons/Overall.svg");
-
-              return `
-          <div class="tier-item">
-            <div class="tier-icon-container" style="border-color: var(--${tierClass}, #64748b);">
-              <img class="tier-icon" src="${iconSrc}" alt="${gm}" 
-                   onerror="this.style.display='none';">
-            </div>
-            <span class="tier-label tier ${tierClass}" style="text-align: center;">${tier}</span>
-            <span style="font-size: 0.7rem; color: #94a3b8; text-align: center;">${gm.toUpperCase()}</span>
-          </div>
-        `;
-          })
-          .join("")}
-    </div>
-  `;
-
-    modalBody.appendChild(tiersSection);
-
-    modal.style.display = "flex";
-}
-
-function getPlayerRank(playerName) {
-    // Create a sorted copy of players for overall ranking
-    const sortedPlayers = [...players];
-
-    if (currentGamemode === "overall") {
-        sortedPlayers.forEach((p) => (p.points = calculatePoints(p)));
-        sortedPlayers.sort(byPoints);
-    } else {
-        sortedPlayers.forEach(
-            (p) => (p.points = tierPoints[p.tiers?.[currentGamemode]] || 0)
-        );
-        sortedPlayers.sort(byPoints);
-    }
-
-    // Find the player's position (1-based ranking)
-    const playerIndex = sortedPlayers.findIndex((p) => p.name === playerName);
-    return playerIndex !== -1 ? playerIndex + 1 : 0;
-}
-
-function updateRegionCheckboxes() {
-    const checkboxes = document.querySelectorAll(
-        '#regionFilterModal input[type="checkbox"]'
-    );
-    checkboxes.forEach((checkbox) => {
-        checkbox.checked = selectedRegions.has(checkbox.value);
-    });
-}
-
-document.getElementById("closeModal").addEventListener("click", () => {
-    document.getElementById("playerModal").style.display = "none";
+// Delegated interactions on the list
+$("playerList").addEventListener("click", (e) => {
+    const pg = e.target.closest("[data-page]");
+    if (pg && !pg.disabled) { currentPage = parseInt(pg.dataset.page); renderPlayers(); $("modebar").scrollIntoView({ behavior: "smooth", block: "start" }); return; }
+    const el = e.target.closest("[data-name]");
+    if (el) { const p = players.find((x) => x.name === el.dataset.name); if (p) openPlayerModal(p); }
+});
+$("playerList").addEventListener("keydown", (e) => {
+    if (e.key !== "Enter") return;
+    const el = e.target.closest("[data-name]");
+    if (el) { const p = players.find((x) => x.name === el.dataset.name); if (p) openPlayerModal(p); }
 });
 
-document.getElementById("tierInfoBtn").addEventListener("click", () => {
-    document.getElementById("tierInfoModal").style.display = "flex";
-});
-document.getElementById("closeTierInfo").addEventListener("click", () => {
-    document.getElementById("tierInfoModal").style.display = "none";
-});
-
-// Page size selector
-document.addEventListener("DOMContentLoaded", () => {
-    const savedPageSize = localStorage.getItem("playersPerPage");
-    if (savedPageSize) {
-        playersPerPage = parseInt(savedPageSize);
-        const selector = document.getElementById("pageSizeSelector");
-        if (selector) {
-            selector.value = savedPageSize;
-        }
-    }
+// Page size
+try {
+    const saved = localStorage.getItem("playersPerPage");
+    if (saved) { playersPerPage = parseInt(saved); $("pageSizeSelector").value = saved; }
+} catch {}
+$("pageSizeSelector").addEventListener("change", (e) => {
+    playersPerPage = parseInt(e.target.value);
+    try { localStorage.setItem("playersPerPage", String(playersPerPage)); } catch {}
+    currentPage = 1;
+    renderPlayers();
 });
 
-// Event listener for page size selector
-document.addEventListener("DOMContentLoaded", () => {
-    const selector = document.getElementById("pageSizeSelector");
-    document.addEventListener("keydown", (e) => {
-        if (e.key === "Escape") { closeAllOverlays(); return; }
-        const t = e.target;
-        if (e.key === "/" && !/^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName) && !t.isContentEditable) {
-            e.preventDefault();
-            document.getElementById("searchBox")?.focus();
-        }
-    });
-    if (selector) {
-        selector.addEventListener("change", (e) => {
-            playersPerPage = parseInt(e.target.value);
-            localStorage.setItem("playersPerPage", playersPerPage.toString());
-            currentPage = 1;
-            renderPlayers();
-        });
-    }
-});
-
-// Clear the "/" from the search box if it gets typed
-document.getElementById("searchBox").addEventListener("input", (e) => {
-    if (e.target.value === "/") {
-        e.target.value = "";
-    }
-
-});
-
-document.querySelectorAll(".gamemode-tab").forEach((tab) => {
-    tab.addEventListener("click", () => {
-        document
-            .querySelectorAll(".gamemode-tab")
-            .forEach((t) => t.classList.remove("active"));
-        tab.classList.add("active");
-        
-        currentGamemode = tab.dataset.gamemode;
-        
-        // Update URL when gamemode changes
-        updateURL(currentGamemode);
-        
-        currentPage = 1;
-        updateKitInfoButton();
-        renderPlayers();
-    });
-});
-
-const pages = ["gamemodePageMain", "gamemodePageSub", "gamemodePageExtra"];
-let currentPageIndex = 0;
-
-function showPage(index) {
-    pages.forEach((id, i) => {
-        const el = document.getElementById(id);
-        if (el) {
-            if (i === index) {
-                el.classList.add("active");
-            } else {
-                el.classList.remove("active");
-            }
-        }
-    });
-    currentPageIndex = index;
-}
-
-document.getElementById("prevPageBtn").addEventListener("click", () => {
-    currentPageIndex = (currentPageIndex - 1 + pages.length) % pages.length;
-    showPage(currentPageIndex);
-});
-
-document.getElementById("nextPageBtn").addEventListener("click", () => {
-    currentPageIndex = (currentPageIndex + 1) % pages.length;
-    showPage(currentPageIndex);
-});
-
-showPage(0);
-
-// Multi-region filter functionality
-const regionModal = document.getElementById("regionFilterModal");
-
-// Show region filter modal on right-click of any Overall button
-document.addEventListener("contextmenu", (e) => {
-    const overallTab = e.target.closest(
-        '.gamemode-tab[data-gamemode="overall"]'
-    );
-    if (overallTab && currentGamemode === "overall") {
-        e.preventDefault();
-
-        // Update checkboxes to reflect current selection
-        updateRegionCheckboxes();
-
-        // Position and show modal
-        regionModal.style.display = "flex";
-    }
-});
-
-// Handle region selection
-document.getElementById("regionFilterModal").addEventListener("change", (e) => {
-    if (e.target.type === "checkbox") {
-        const region = e.target.value;
-
-        if (e.target.checked) {
-            selectedRegions.add(region);
-        } else {
-            selectedRegions.delete(region);
-        }
-
-        // If all regions are selected, clear selection (show all)
-        const allRegions = ["na", "eu", "as", "sa", "me", "au", "af"];
-        if (allRegions.every((r) => selectedRegions.has(r))) {
-            selectedRegions.clear();
-            updateRegionCheckboxes();
-        }
-
-        updateOverallTabAppearance();
-        currentPage = 1;
-        renderPlayers();
-    }
-});
-
-// Close modal when clicking outside or close button
-document.getElementById("regionFilterModal").addEventListener("click", (e) => {
-    if (
-        e.target === regionModal ||
-        e.target.classList.contains("close-region-filter")
-    ) {
-        regionModal.style.display = "none";
-    }
-});
-
-function openTierHistoryModal(player) {
-    const modal = document.getElementById("tierHistoryModal");
-    const body = document.getElementById("tierHistoryBody");
-    
-    const gamemodeIcons = GAMEMODE_ICONS;
-
-    const gamesWithHistory = Object.keys(player.tierHistory || {}).filter(
-        gm => player.tierHistory[gm] && player.tierHistory[gm].length > 0
-    );
-
-    if (gamesWithHistory.length === 0) return;
-
-    const firstGamemode = gamesWithHistory[0];
-    
-    body.innerHTML = `
-        <div style="display: flex; flex-direction: column; align-items: center; width: 100%;">
-            <div class="player-modal-header" style="margin-bottom: 32px;">
-                <img class="player-modal-avatar" src="${esc(player.avatar)}" alt="${esc(player.name)}">
-                <h2 class="player-modal-name" style="margin-bottom: 8px;">
-                    <span>${esc(player.name)}</span>
-                </h2>
-                <div style="font-size: 1.2rem; color: #94a3b8; font-weight: 600;">Tier History</div>
-            </div>
-            
-            <div style="width: 100%; padding: 40px; background: rgba(2, 6, 23, 0.6); border-radius: 20px; border: 1px solid rgba(71, 85, 105, 0.3);">
-                <div style="display: flex; justify-content: center; margin-bottom: 40px;">
-                    <div class="gamemode-selector" style="display: flex; gap: 16px; flex-wrap: wrap; justify-content: center;">
-                        ${gamesWithHistory.map(gm => {
-                            const iconSrc = gamemodeIcons[gm] || 'assets/gamemode-icons/Overall.svg';
-                            return `
-                                <button class="gamemode-selector-btn ${gm === firstGamemode ? 'active' : ''}" 
-                                        data-gamemode="${gm}"
-                                        style="background: ${gm === firstGamemode ? 'linear-gradient(135deg, #1f2a44, #0b1220)' : 'rgba(15, 23, 42, 0.8)'}; 
-                                               border: 2px solid ${gm === firstGamemode ? '#cbd5e1' : 'rgba(71, 85, 105, 0.4)'}; 
-                                               border-radius: 16px; 
-                                               padding: 16px; 
-                                               cursor: pointer; 
-                                               transition: all 0.3s ease;
-                                               box-shadow: ${gm === firstGamemode ? '0 0 18px rgba(203, 213, 225, 0.7)' : 'none'};">
-                                    <img src="${iconSrc}" alt="${gm}" style="width: 40px; height: 40px; display: block;" onerror="this.style.display='none';">
-                                </button>
-                            `;
-                        }).join('')}
-                    </div>
-                </div>
-                <div class="tier-history-chart" style="min-height: 320px;">
-                    ${renderTierHistory(player, firstGamemode)}
-                </div>
-            </div>
-        </div>
-    `;
-    
-    body.querySelectorAll('.gamemode-selector-btn').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            body.querySelectorAll('.gamemode-selector-btn').forEach(b => {
-                b.classList.remove('active');
-                b.style.background = 'rgba(15, 23, 42, 0.8)';
-                b.style.borderColor = 'rgba(71, 85, 105, 0.4)';
-                b.style.boxShadow = 'none';
-            });
-            btn.classList.add('active');
-            btn.style.background = 'linear-gradient(135deg, #1f2a44, #0b1220)';
-            btn.style.borderColor = '#cbd5e1';
-            btn.style.boxShadow = '0 0 18px rgba(203, 213, 225, 0.7)';
-            
-            const selectedGamemode = btn.dataset.gamemode;
-            const chart = body.querySelector('.tier-history-chart');
-            chart.innerHTML = renderTierHistory(player, selectedGamemode);
-        });
-        
-        // Add hover effects
-        btn.addEventListener('mouseenter', () => {
-            if (!btn.classList.contains('active')) {
-                btn.style.background = 'rgba(30, 41, 59, 0.9)';
-                btn.style.borderColor = '#94a3b8';
-            }
-        });
-        btn.addEventListener('mouseleave', () => {
-            if (!btn.classList.contains('active')) {
-                btn.style.background = 'rgba(15, 23, 42, 0.8)';
-                btn.style.borderColor = 'rgba(71, 85, 105, 0.4)';
-            }
-        });
-    });
-    
-    modal.style.display = "flex";
-}
-
-// Add close button event listener
-document.getElementById("closeTierHistory").addEventListener("click", () => {
-    document.getElementById("tierHistoryModal").style.display = "none";
-});
-
+// ---------------------------------------------------------------------------
+// Player profile drawer
+// ---------------------------------------------------------------------------
 class PlayerBioSystem {
-    constructor() {
-        this.bios = new Map();
-        this.loadFromStorage();
-    }
-
-    setBio(playerName, bioData) {
-        this.bios.set(playerName, {
-            ...bioData,
-            lastUpdated: Date.now()
-        });
-        this.saveToStorage();
-    }
-
-    getBio(playerName) {
-        return this.bios.get(playerName) || null;
-    }
-
+    constructor() { this.bios = new Map(); this.loadFromStorage(); }
+    setBio(name, data) { this.bios.set(name, { ...data, lastUpdated: Date.now() }); this.saveToStorage(); }
+    getBio(name) { return this.bios.get(name) || null; }
     saveToStorage() {
-        try {
-            const data = Array.from(this.bios.entries());
-            localStorage.setItem('tierlist_bios', JSON.stringify(data));
-        } catch (e) {
-            console.warn('Could not save bios:', e);
-        }
+        try { localStorage.setItem("tierlist_bios", JSON.stringify(Array.from(this.bios.entries()))); }
+        catch (e) { console.warn("Could not save bios:", e); }
     }
-
     loadFromStorage() {
         try {
-            const stored = localStorage.getItem('tierlist_bios');
-            if (stored) {
-                const data = JSON.parse(stored);
-                this.bios = new Map(data);
-            }
-        } catch (e) {
-            console.warn('Could not load bios:', e);
-        }
+            const stored = localStorage.getItem("tierlist_bios");
+            if (stored) this.bios = new Map(JSON.parse(stored));
+        } catch (e) { console.warn("Could not load bios:", e); }
     }
-
-    renderBio(playerName) {
-        const bio = this.getBio(playerName);
-        
-        if (!bio) {
-            return `
-                <div style="
-                    background: rgba(15, 23, 42, 0.6);
-                    border-radius: 12px;
-                    padding: 16px;
-                    text-align: center;
-                    color: #64748b;
-                    font-style: italic;
-                ">
-                    No bio available
-                </div>
-            `;
-        }
-
-        return `
-            <div style="
-                background: rgba(15, 23, 42, 0.6);
-                border-radius: 12px;
-                padding: 16px;
-                border: 1px solid rgba(71, 85, 105, 0.3);
-            ">
-                ${bio.description ? `
-                    <div style="color: #e2e8f0; margin-bottom: 12px; line-height: 1.6;">
-                        ${esc(bio.description)}
-                    </div>
-                ` : ''}
-                
-                ${bio.socials && Object.keys(bio.socials).length > 0 ? `
-                    <div style="display: flex; gap: 12px; flex-wrap: wrap; margin-top: 12px;">
-                        ${bio.socials.youtube ? `
-                            <a href="${bio.socials.youtube}" target="_blank" style="
-                                background: #ff0000;
-                                color: white;
-                                padding: 6px 12px;
-                                border-radius: 8px;
-                                text-decoration: none;
-                                font-size: 0.85rem;
-                                font-weight: 600;
-                            ">📺 YouTube</a>
-                        ` : ''}
-                        ${bio.socials.twitch ? `
-                            <a href="${bio.socials.twitch}" target="_blank" style="
-                                background: #9146ff;
-                                color: white;
-                                padding: 6px 12px;
-                                border-radius: 8px;
-                                text-decoration: none;
-                                font-size: 0.85rem;
-                                font-weight: 600;
-                            ">📹 Twitch</a>
-                        ` : ''}
-                        ${bio.socials.twitter ? `
-                            <a href="${bio.socials.twitter}" target="_blank" style="
-                                background: #1da1f2;
-                                color: white;
-                                padding: 6px 12px;
-                                border-radius: 8px;
-                                text-decoration: none;
-                                font-size: 0.85rem;
-                                font-weight: 600;
-                            ">🐦 Twitter</a>
-                        ` : ''}
-                        ${bio.socials.discord ? `
-                            <div style="
-                                background: #5865f2;
-                                color: white;
-                                padding: 6px 12px;
-                                border-radius: 8px;
-                                font-size: 0.85rem;
-                                font-weight: 600;
-                            ">💬 ${esc(bio.socials.discord)}</div>
-                        ` : ''}
-                    </div>
-                ` : ''}
-
-                ${bio.favGamemode ? `
-                    <div style="margin-top: 12px; color: #94a3b8; font-size: 0.85rem;">
-                        <strong>Favorite Gamemode:</strong> ${esc(bio.favGamemode)}
-                    </div>
-                ` : ''}
-
-                ${bio.playstyle ? `
-                    <div style="margin-top: 8px; color: #94a3b8; font-size: 0.85rem;">
-                        <strong>Playstyle:</strong> ${esc(bio.playstyle)}
-                    </div>
-                ` : ''}
-            </div>
-        `;
+    renderBio(name) {
+        const bio = this.getBio(name);
+        if (!bio) return `<div class="bio empty">No bio available</div>`;
+        const s = bio.socials || {};
+        const safe = (u) => (/^https?:\/\//i.test(u) ? esc(u) : "#");
+        const socials = [
+            s.youtube ? `<a class="soc yt" href="${safe(s.youtube)}" target="_blank" rel="noopener">YouTube</a>` : "",
+            s.twitch ? `<a class="soc tw" href="${safe(s.twitch)}" target="_blank" rel="noopener">Twitch</a>` : "",
+            s.twitter ? `<a class="soc x" href="${safe(s.twitter)}" target="_blank" rel="noopener">Twitter</a>` : "",
+            s.discord ? `<span class="soc dc">Discord: ${esc(s.discord)}</span>` : ""
+        ].join("");
+        return `<div class="bio">
+            ${bio.description ? `<p>${esc(bio.description)}</p>` : ""}
+            ${socials ? `<div class="socials">${socials}</div>` : ""}
+            ${bio.favGamemode ? `<div class="meta"><strong>Favorite gamemode:</strong> ${esc(bio.favGamemode)}</div>` : ""}
+            ${bio.playstyle ? `<div class="meta"><strong>Playstyle:</strong> ${esc(bio.playstyle)}</div>` : ""}
+        </div>`;
     }
 }
-
 const playerBioSystem = new PlayerBioSystem();
-
-playerBioSystem.setBio('ImApo', {
-    description: 'Creator and developer of the Bunny Tiers. Casual PvP player with an aggressive playstyle.',
-    socials: {
-        youtube: 'https://www.youtube.com/@Im-Apo',
-        discord: 'im_apo_'
-    },
-    favGamemode: 'UHC',
-    playstyle: 'Aggressive'
+playerBioSystem.setBio("ImApo", {
+    description: "Creator and developer of the Bunny Tiers. Casual PvP player with an aggressive playstyle.",
+    socials: { youtube: "https://www.youtube.com/@Im-Apo", discord: "im_apo_" },
+    favGamemode: "UHC", playstyle: "Aggressive"
 });
-playerBioSystem.setBio('Meraliu', {
-    description: 'Owner of the MissMorphs animal castle - I also really like Bunnies. 🦭',
-    socials: {
-        youtube: 'https://www.youtube.com/@ImMeraliu',
-        discord: 'meraliu'
-    },
-    favGamemode: 'Spear Mace',
-    playstyle: 'Bunny'
+playerBioSystem.setBio("Meraliu", {
+    description: "Owner of the MissMorphs animal castle - I also really like Bunnies. 🦭",
+    socials: { youtube: "https://www.youtube.com/@ImMeraliu", discord: "meraliu" },
+    favGamemode: "Spear Mace", playstyle: "Bunny"
 });
+function setPlayerBio(playerName, bio) { playerBioSystem.setBio(playerName, bio); }
 
+function openPlayerModal(player) {
+    const totalPoints = calculatePoints(player);
+    const badge = getBadge(totalPoints);
+    const sortedTiers = Object.entries(player.tiers || {}).filter(([, t]) => t).sort(([, a], [, b]) => (TIER_ORDER[a] ?? 999) - (TIER_ORDER[b] ?? 999));
+    const validRegion = player.region && REGIONS.includes(player.region.toLowerCase());
+    const rank = getPlayerRank(player.name);
+    const rankClass = rank === 1 ? "rank-1-name" : rank === 2 ? "rank-2-name" : rank === 3 ? "rank-3-name" : "";
+    const hasHistory = player.tierHistory && Object.keys(player.tierHistory).some((gm) => player.tierHistory[gm]?.length > 0);
 
-// ============================================================================
-// PLAYER COMPARISON TOOL
-// ============================================================================
-
-class PlayerComparison {
-    compare(player1, player2) {
-        const p1Points = calculatePoints(player1);
-        const p2Points = calculatePoints(player2);
-
-        const comparison = {
-            players: [player1.name, player2.name],
-            totalPoints: [p1Points, p2Points],
-            winner: p1Points > p2Points ? player1.name : player2.name,
-            gamemodes: {}
-        };
-
-        // Compare each gamemode
-        const allGamemodes = new Set([
-            ...Object.keys(player1.tiers || {}),
-            ...Object.keys(player2.tiers || {})
-        ]);
-
-        allGamemodes.forEach(gm => {
-            const t1 = player1.tiers?.[gm];
-            const t2 = player2.tiers?.[gm];
-            
-            comparison.gamemodes[gm] = {
-                player1: t1 || 'N/A',
-                player2: t2 || 'N/A',
-                better: this.compareTiers(t1, t2)
-            };
-        });
-
-        return comparison;
-    }
-
-    compareTiers(tier1, tier2) {
-        if (!tier1 && !tier2) return 'tie';
-        if (!tier1) return 'player2';
-        if (!tier2) return 'player1';
-
-        const tierRank = TIER_ORDER;
-
-        const rank1 = tierRank[tier1] ?? 999;
-        const rank2 = tierRank[tier2] ?? 999;
-
-        if (rank1 < rank2) return 'player1';
-        if (rank2 < rank1) return 'player2';
-        return 'tie';
-    }
-
-    renderComparison(comparison) {
-        const [p1Name, p2Name] = comparison.players;
-        const [p1Points, p2Points] = comparison.totalPoints;
-
-        return `
-            <div style="padding: 20px;">
-                <h2 style="text-align: center; margin-bottom: 24px; color: #e2e8f0;">
-                    Player Comparison
-                </h2>
-
-                <!-- Points Comparison -->
-                <div style="
-                    display: grid;
-                    grid-template-columns: 1fr auto 1fr;
-                    gap: 20px;
-                    margin-bottom: 32px;
-                    align-items: center;
-                ">
-                    <div style="text-align: center;">
-                        <div style="font-size: 1.2rem; font-weight: 700; color: ${p1Points > p2Points ? '#10b981' : '#e2e8f0'};">
-                            ${esc(p1Name)}
-                        </div>
-                        <div style="font-size: 2rem; font-weight: 800; color: ${p1Points > p2Points ? '#10b981' : '#94a3b8'}; margin-top: 8px;">
-                            ${p1Points}
-                        </div>
-                        <div style="font-size: 0.85rem; color: #64748b;">points</div>
-                    </div>
-
-                    <div style="font-size: 1.5rem; color: #64748b;">VS</div>
-
-                    <div style="text-align: center;">
-                        <div style="font-size: 1.2rem; font-weight: 700; color: ${p2Points > p1Points ? '#10b981' : '#e2e8f0'};">
-                            ${esc(p2Name)}
-                        </div>
-                        <div style="font-size: 2rem; font-weight: 800; color: ${p2Points > p1Points ? '#10b981' : '#94a3b8'}; margin-top: 8px;">
-                            ${p2Points}
-                        </div>
-                        <div style="font-size: 0.85rem; color: #64748b;">points</div>
-                    </div>
-                </div>
-
-                <!-- Gamemode Comparison -->
-                <div style="
-                    background: rgba(15, 23, 42, 0.6);
-                    border-radius: 12px;
-                    padding: 20px;
-                    border: 1px solid rgba(71, 85, 105, 0.3);
-                ">
-                    <h3 style="color: #94a3b8; margin-bottom: 16px; font-size: 1rem; text-transform: uppercase;">
-                        Gamemode Breakdown
-                    </h3>
-                    ${Object.entries(comparison.gamemodes).map(([gm, data]) => `
-                        <div style="
-                            display: grid;
-                            grid-template-columns: 1fr auto 1fr;
-                            gap: 12px;
-                            padding: 12px;
-                            margin-bottom: 8px;
-                            background: rgba(15, 23, 42, 0.6);
-                            border-radius: 8px;
-                            align-items: center;
-                        ">
-                            <div style="text-align: right;">
-                                <span class="tier ${data.player1.toLowerCase()}" style="${data.better === 'player1' ? 'box-shadow: 0 0 12px currentColor;' : ''}">
-                                    ${data.player1}
-                                </span>
-                            </div>
-                            <div style="
-                                font-size: 0.85rem;
-                                color: #64748b;
-                                text-transform: uppercase;
-                                font-weight: 600;
-                                min-width: 100px;
-                                text-align: center;
-                            ">
-                                ${gm}
-                            </div>
-                            <div style="text-align: left;">
-                                <span class="tier ${data.player2.toLowerCase()}" style="${data.better === 'player2' ? 'box-shadow: 0 0 12px currentColor;' : ''}">
-                                    ${data.player2}
-                                </span>
-                            </div>
-                        </div>
-                    `).join('')}
-                </div>
+    $("modalBody").innerHTML = `
+        <div class="pl-head">
+            ${avatarImg(player)}
+            <div>
+                <h2><span class="${rankClass}">${esc(player.name)}</span>${validRegion ? regionTag(player.region) : ""}</h2>
+                <div class="pl-pts"><span class="pts ${badge.class}">${totalPoints} points</span><span class="badge ${badge.class}">${badge.label}</span></div>
+                ${rank ? `<div class="rk">Rank #${rank} in ${esc(GM_LABEL[currentGamemode] || "Overall")}</div>` : ""}
             </div>
-        `;
-    }
+        </div>
+        <div class="actions">
+            <button class="btn" id="nameMcBtn"><svg viewBox="0 0 24 24"><path d="M14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7zm5 16H5V5h7V3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7h-2v7z"/></svg>View on NameMC</button>
+            ${hasHistory ? `<button class="btn" id="historyBtn"><svg viewBox="0 0 24 24"><path d="M13.5 8H12v5l4.28 2.54.72-1.21-3.5-2.08V8zM13 3a9 9 0 0 0-9 9H1l3.96 4.03L9 12H6a7 7 0 1 1 2.05 4.95l-1.41 1.41A9 9 0 1 0 13 3z"/></svg>View tier history</button>` : ""}
+            <button class="btn primary" id="openCompareFromProfile">Compare with another player</button>
+        </div>
+        <div class="block"><h3>Tiers</h3>
+            ${sortedTiers.length ? `<div class="tgrid">${sortedTiers.map(([gm, tier]) => `
+                <div class="tcell" data-t="${esc(tierKey(tier))}"><span class="ico">${icoImg(gm)}</span>${pill(tier)}<small>${esc(GM_LABEL[gm] || gm)}</small></div>`).join("")}</div>`
+                : `<div class="bio empty">No tiers yet</div>`}
+        </div>
+        <div class="block"><h3>Player bio</h3>${playerBioSystem.renderBio(player.name)}</div>`;
+
+    $("nameMcBtn").addEventListener("click", () => window.open(`https://namemc.com/profile/${encodeURIComponent(player.name)}`, "_blank"));
+    $("historyBtn")?.addEventListener("click", () => openTierHistoryModal(player));
+    $("openCompareFromProfile").addEventListener("click", () => {
+        closeOverlay("playerModal");
+        populatePlayerDatalist();
+        $("player1Input").value = player.name;
+        $("player2Input").value = "";
+        $("player1Box").classList.add("sel");
+        $("player2Box").classList.remove("sel");
+        $("executeCompare").disabled = true;
+        $("comparisonResult").innerHTML = "";
+        openOverlay("comparisonModal");
+        $("player2Input").focus();
+    });
+    openOverlay("playerModal");
 }
 
+// ---------------------------------------------------------------------------
+// Tier history
+// ---------------------------------------------------------------------------
+function renderTierHistory(player, gamemode) {
+    const history = player.tierHistory?.[gamemode];
+    if (!history || !history.length) return `<div class="no-history">No tier history available for this gamemode</div>`;
+    return `<div class="timeline">${history.map((entry) => {
+        const date = new Date(entry.date).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+        return `<div class="tl" data-t="${esc(tierKey(entry.tier))}" title="${esc(entry.tier)} - ${date}${entry.note ? " (" + esc(entry.note) + ")" : ""}">
+            <span class="dot"></span>${pill(entry.tier)}<span class="date">${date}</span>${entry.note ? `<span class="nt">${esc(entry.note)}</span>` : ""}
+        </div>`;
+    }).join("")}</div>`;
+}
+
+function openTierHistoryModal(player) {
+    const games = Object.keys(player.tierHistory || {}).filter((gm) => player.tierHistory[gm]?.length > 0);
+    if (!games.length) return;
+    const body = $("tierHistoryBody");
+    body.innerHTML = `
+        <div class="pl-head">${avatarImg(player)}<div><h2><span>${esc(player.name)}</span></h2><div class="lede" style="margin:4px 0 0">Tier history</div></div></div>
+        <div class="gm-picker">${games.map((gm, i) => `<button class="gm-pick${i === 0 ? " on" : ""}" data-gm="${gm}" title="${esc(GM_LABEL[gm] || gm)}" aria-label="${esc(GM_LABEL[gm] || gm)}">${icoImg(gm)}</button>`).join("")}</div>
+        <div id="historyChart">${renderTierHistory(player, games[0])}</div>`;
+    body.querySelectorAll(".gm-pick").forEach((btn) => btn.addEventListener("click", () => {
+        body.querySelectorAll(".gm-pick").forEach((b) => b.classList.remove("on"));
+        btn.classList.add("on");
+        $("historyChart").innerHTML = renderTierHistory(player, btn.dataset.gm);
+    }));
+    openOverlay("tierHistoryModal");
+}
+
+// ---------------------------------------------------------------------------
+// Compare players
+// ---------------------------------------------------------------------------
+class PlayerComparison {
+    compare(p1, p2) {
+        const pts = [calculatePoints(p1), calculatePoints(p2)];
+        const gms = new Set([...Object.keys(p1.tiers || {}), ...Object.keys(p2.tiers || {})]);
+        const gamemodes = {};
+        gms.forEach((gm) => {
+            const t1 = p1.tiers?.[gm], t2 = p2.tiers?.[gm];
+            gamemodes[gm] = { player1: t1 || "N/A", player2: t2 || "N/A", better: this.compareTiers(t1, t2) };
+        });
+        return { players: [p1.name, p2.name], totalPoints: pts, winner: pts[0] > pts[1] ? p1.name : p2.name, gamemodes };
+    }
+    compareTiers(a, b) {
+        if (!a && !b) return "tie";
+        if (!a) return "player2";
+        if (!b) return "player1";
+        const r1 = TIER_ORDER[a] ?? 999, r2 = TIER_ORDER[b] ?? 999;
+        return r1 < r2 ? "player1" : r2 < r1 ? "player2" : "tie";
+    }
+    renderComparison(c) {
+        const [n1, n2] = c.players, [a, b] = c.totalPoints;
+        const cell = (t, win) => t === "N/A" ? `<span class="tier" data-t="none">N/A</span>` : `<span class="tier${win ? " win" : ""}" data-t="${esc(tierKey(t))}">${esc(t)}</span>`;
+        return `
+            <div class="vs">
+                <div class="side${a > b ? " win" : ""}"><b>${esc(n1)}</b><div class="big">${a}</div><small>points</small></div>
+                <div class="mid">VS</div>
+                <div class="side${b > a ? " win" : ""}"><b>${esc(n2)}</b><div class="big">${b}</div><small>points</small></div>
+            </div>
+            <div class="block"><h3>Gamemode breakdown</h3>
+            ${Object.entries(c.gamemodes).map(([gm, d]) => `
+                <div class="cmp-row">
+                    <div class="l">${cell(d.player1, d.better === "player1")}</div>
+                    <div class="gm">${esc(GM_LABEL[gm] || gm)}</div>
+                    <div class="r">${cell(d.player2, d.better === "player2")}</div>
+                </div>`).join("")}
+            </div>`;
+    }
+}
 const playerComparison = new PlayerComparison();
 
+function populatePlayerDatalist() {
+    const options = players.map((p) => `<option value="${esc(p.name)}">`).join("");
+    $("playerList1").innerHTML = options;
+    $("playerList2").innerHTML = options;
+}
+["player1Input", "player2Input"].forEach((id) => $(id).addEventListener("input", () => {
+    const a = $("player1Input").value, b = $("player2Input").value;
+    $("executeCompare").disabled = !a || !b;
+    $("player1Box").classList.toggle("sel", !!a);
+    $("player2Box").classList.toggle("sel", !!b);
+}));
+$("executeCompare").addEventListener("click", () => {
+    const p1 = players.find((p) => p.name === $("player1Input").value);
+    const p2 = players.find((p) => p.name === $("player2Input").value);
+    $("comparisonResult").innerHTML = p1 && p2
+        ? playerComparison.renderComparison(playerComparison.compare(p1, p2))
+        : `<div class="err">One or both players were not found. Check the names and try again.</div>`;
+});
 
-// ============================================================================
-// SEARCH BY TIER
-// ============================================================================
-
-// ============================================================================
-// ADVANCED SEARCH SYSTEM
-// ============================================================================
-
+// ---------------------------------------------------------------------------
+// Advanced search
+// ---------------------------------------------------------------------------
 class AdvancedSearch {
-    constructor() {
-        this.searchHistory = this.loadHistory();
-        this.filters = {
-            tier: null,
-            region: null,
-            points: { min: null, max: null },
-            gamemode: null,
-            badge: null
-        };
-    }
-
-    loadHistory() {
-        try {
-            return JSON.parse(localStorage.getItem('search_history') || '[]');
-        } catch {
-            return [];
-        }
-    }
-
+    constructor() { this.searchHistory = this.loadHistory(); }
+    loadHistory() { try { return JSON.parse(localStorage.getItem("search_history") || "[]"); } catch { return []; } }
     saveHistory(query) {
         if (!query.trim()) return;
-        this.searchHistory = [query, ...this.searchHistory.filter(q => q !== query)].slice(0, 10);
-        localStorage.setItem('search_history', JSON.stringify(this.searchHistory));
+        this.searchHistory = [query, ...this.searchHistory.filter((q) => q !== query)].slice(0, 10);
+        try { localStorage.setItem("search_history", JSON.stringify(this.searchHistory)); } catch {}
     }
-
     parseQuery(query) {
         const tokens = query.toLowerCase().trim().split(/\s+/);
         const filters = {};
-        let nameSearch = [];
-
-        tokens.forEach(token => {
-            // Tier filters: #ht, #lt, #rt, #t5, #ht3
-            if (token.startsWith('#')) {
+        const nameSearch = [];
+        tokens.forEach((token) => {
+            if (token.startsWith("#")) {
                 const tierQuery = token.slice(1).toUpperCase();
-                if (/^(HT|LT|RT|RHT|RLT|T\d)/.test(tierQuery)) {
-                    filters.tier = tierQuery;
-                }
-            }
-            // Region filter: @na, @eu, @as, @sa, @me, @au, @af
-            else if (token.startsWith('@')) {
-                filters.region = token.slice(1).toUpperCase();
-            }
-            // Points filter: >100, <500, 100-500
-            else if (token.startsWith('>')) {
-                filters.minPoints = parseInt(token.slice(1));
-            }
-            else if (token.startsWith('<')) {
-                filters.maxPoints = parseInt(token.slice(1));
-            }
-            else if (/^\d+-\d+$/.test(token)) {
-                const [min, max] = token.split('-').map(Number);
-                filters.minPoints = min;
-                filters.maxPoints = max;
-            }
-            // Badge filter: !legendary, !master, !expert
-            else if (token.startsWith('!')) {
-                filters.badge = token.slice(1);
-            }
-            // Gamemode filter: :crystal, :sword, :uhc
-            else if (token.startsWith(':')) {
-                filters.gamemode = token.slice(1);
-            }
-            // Regular name search
-            else {
-                nameSearch.push(token);
-            }
+                if (/^(HT|LT|RT|RHT|RLT|T\d)/.test(tierQuery)) filters.tier = tierQuery;
+            } else if (token.startsWith("@")) filters.region = token.slice(1).toUpperCase();
+            else if (token.startsWith(">")) filters.minPoints = parseInt(token.slice(1));
+            else if (token.startsWith("<")) filters.maxPoints = parseInt(token.slice(1));
+            else if (/^\d+-\d+$/.test(token)) { const [min, max] = token.split("-").map(Number); filters.minPoints = min; filters.maxPoints = max; }
+            else if (token.startsWith("!")) filters.badge = token.slice(1);
+            else if (token.startsWith(":")) filters.gamemode = token.slice(1);
+            else if (token) nameSearch.push(token);
         });
-
-        filters.name = nameSearch.join(' ');
+        filters.name = nameSearch.join(" ");
         return filters;
     }
-
     search(query) {
-        const filters = this.parseQuery(query);
-        
-        return players.filter(player => {
-            // Name filter
-            if (filters.name && !player.name.toLowerCase().includes(filters.name)) {
-                return false;
-            }
-
-            // Tier filter
-            if (filters.tier) {
-                const hasTier = this.matchesTierFilter(player, filters.tier);
-                if (!hasTier) return false;
-            }
-
-            // Region filter
-            if (filters.region && player.region?.toUpperCase() !== filters.region) {
-                return false;
-            }
-
-            // Points filter
+        const f = this.parseQuery(query);
+        return players.filter((player) => {
+            if (f.name && !player.name.toLowerCase().includes(f.name)) return false;
+            if (f.tier && !this.matchesTierFilter(player, f.tier)) return false;
+            if (f.region && player.region?.toUpperCase() !== f.region) return false;
             const points = calculatePoints(player);
-            if (filters.minPoints && points < filters.minPoints) return false;
-            if (filters.maxPoints && points > filters.maxPoints) return false;
-
-            // Badge filter
-            if (filters.badge) {
-                const badge = getBadge(points);
-                if (!badge.class.includes(filters.badge)) return false;
-            }
-
-            // Gamemode filter
-            if (filters.gamemode && !player.tiers?.[filters.gamemode]) {
-                return false;
-            }
-
+            if (f.minPoints && points < f.minPoints) return false;
+            if (f.maxPoints && points > f.maxPoints) return false;
+            if (f.badge && !getBadge(points).class.includes(f.badge)) return false;
+            if (f.gamemode && !player.tiers?.[f.gamemode]) return false;
             return true;
         });
     }
-
-    matchesTierFilter(player, tierQuery) {
-        const checkTier = (tier) => {
-            if (tierQuery === 'HT') return /^HT\d+$/.test(tier);
-            if (tierQuery === 'LT') return /^LT\d+$/.test(tier);
-            if (tierQuery === 'RT') return /^R/.test(tier);
-            if (tierQuery === 'RHT') return /^RHT\d+$/.test(tier);
-            if (tierQuery === 'RLT') return /^RLT\d+$/.test(tier);
-            if (/^T\d+$/.test(tierQuery)) {
-                const num = tierQuery[1];
-                return new RegExp(`^(HT|LT|RHT|RLT)${num}$`).test(tier);
-            }
-            return tier === tierQuery;
+    matchesTierFilter(player, q) {
+        const check = (tier) => {
+            if (q === "HT") return /^HT\d+$/.test(tier);
+            if (q === "LT") return /^LT\d+$/.test(tier);
+            if (q === "RT") return /^R/.test(tier);
+            if (q === "RHT") return /^RHT\d+$/.test(tier);
+            if (q === "RLT") return /^RLT\d+$/.test(tier);
+            if (/^T\d+$/.test(q)) return new RegExp(`^(HT|LT|RHT|RLT)${q[1]}$`).test(tier);
+            return tier === q;
         };
-
-        return Object.values(player.tiers || {}).some(checkTier);
+        return Object.values(player.tiers || {}).some(check);
     }
-
     getSuggestions(query) {
-        if (!query.trim()) return this.searchHistory.map(h => ({
-            type: 'history',
-            value: h,
-            label: h,
-            icon: '🕒'
-        }));
-
-        const suggestions = [];
-        const lowerQuery = query.toLowerCase();
-
-        // Suggest player names
-        players.forEach(p => {
-            if (p.name.toLowerCase().includes(lowerQuery) && suggestions.length < 5) {
-                suggestions.push({
-                    type: 'player',
-                    value: p.name,
-                    label: p.name,
-                    icon: '👤'
-                });
-            }
-        });
-
-        // Suggest filters if typing special characters
-        if (query.includes('#')) {
-            suggestions.push(
-                { type: 'filter', value: '#ht', label: 'High Tiers', icon: '🔍' },
-                { type: 'filter', value: '#lt', label: 'Low Tiers', icon: '🔍' },
-                { type: 'filter', value: '#rt', label: 'Retired', icon: '🔍' },
-                { type: 'filter', value: '#t5', label: 'All Tier 5', icon: '🔍' }
-            );
-        }
-        if (query.includes('@')) {
-            ['NA', 'EU', 'AS', 'SA', 'ME', 'AU', 'AF'].forEach(region => {
-                suggestions.push({
-                    type: 'filter',
-                    value: `@${region.toLowerCase()}`,
-                    label: `Region: ${region}`,
-                    icon: '🌍'
-                });
-            });
-        }
-        if (query.includes(':')) {
-            Object.keys(kitInfo).forEach(gm => {
-                if (suggestions.length < 8) {
-                    suggestions.push({
-                        type: 'filter',
-                        value: `:${gm}`,
-                        label: `Gamemode: ${gm}`,
-                        icon: '🎮'
-                    });
-                }
-            });
-        }
-
-        return suggestions.slice(0, 8);
+        if (!query.trim()) return this.searchHistory.map((h) => ({ type: "history", value: h, label: h, icon: "🕒" }));
+        const out = [];
+        const lq = query.toLowerCase();
+        players.forEach((p) => { if (p.name.toLowerCase().includes(lq) && out.length < 5) out.push({ type: "player", value: p.name, label: p.name, icon: "👤" }); });
+        if (query.includes("#")) out.push(
+            { type: "filter", value: "#ht", label: "High tiers", icon: "🔍" },
+            { type: "filter", value: "#lt", label: "Low tiers", icon: "🔍" },
+            { type: "filter", value: "#rt", label: "Retired", icon: "🔍" },
+            { type: "filter", value: "#t5", label: "All tier 5", icon: "🔍" });
+        if (query.includes("@")) ["NA", "EU", "AS", "SA", "ME", "AU", "AF"].forEach((r) => out.push({ type: "filter", value: `@${r.toLowerCase()}`, label: `Region: ${r}`, icon: "🌍" }));
+        if (query.includes(":")) Object.keys(kitInfo).forEach((gm) => { if (out.length < 8) out.push({ type: "filter", value: `:${gm}`, label: `Gamemode: ${GM_LABEL[gm] || gm}`, icon: "🎮" }); });
+        return out.slice(0, 8);
     }
 }
-
 const advancedSearch = new AdvancedSearch();
 
-
-// ============================================================================
-// USAGE EXAMPLES & INTEGRATION
-// ============================================================================
-
-// Example: Set player bio (admin function)
-function setPlayerBio(playerName, bio) {
-    playerBioSystem.setBio(playerName, bio);
+function renderFilterChips(query) {
+    const box = $("activeFilters");
+    const tokens = query.trim().split(/\s+/).filter((t) => /^([#@:!<>]|\d+-\d+$)/.test(t) && t.length > 1);
+    if (!tokens.length) { box.style.display = "none"; box.innerHTML = ""; return; }
+    box.style.display = "flex";
+    box.innerHTML = tokens.map((t) => `<span class="fchip">${esc(t)}<button data-token="${esc(t)}" aria-label="Remove filter ${esc(t)}">&times;</button></span>`).join("");
 }
-
-// Player comparison modal handlers
-document.getElementById('closeComparison').addEventListener('click', () => {
-    document.getElementById('comparisonModal').classList.remove('active');
+$("activeFilters").addEventListener("click", (e) => {
+    const b = e.target.closest("[data-token]");
+    if (!b) return;
+    const input = $("searchBox");
+    input.value = input.value.split(/\s+/).filter((t) => t && t !== b.dataset.token).join(" ");
+    input.dispatchEvent(new Event("input"));
 });
 
-document.getElementById('comparisonModal').addEventListener('click', (e) => {
-    if (e.target === document.getElementById('comparisonModal')) {
-        document.getElementById('comparisonModal').classList.remove('active');
-    }
-});
+(function initSearch() {
+    const input = $("searchBox"), box = $("searchSuggestions"), clear = $("clearSearchBtn");
+    let timer;
 
-function populatePlayerDatalist() {
-    const datalist1 = document.getElementById('playerList1');
-    const datalist2 = document.getElementById('playerList2');
-    
-    const options = players.map(p => `<option value="${esc(p.name)}">`).join('');
-    datalist1.innerHTML = options;
-    datalist2.innerHTML = options;
-}
-
-// Enable compare button when both players selected
-['player1Input', 'player2Input'].forEach(id => {
-    document.getElementById(id).addEventListener('input', () => {
-        const p1 = document.getElementById('player1Input').value;
-        const p2 = document.getElementById('player2Input').value;
-        const btn = document.getElementById('executeCompare');
-        btn.disabled = !p1 || !p2;
-        
-        // Highlight selected boxes
-        if (p1) {
-            document.getElementById('player1Box').classList.add('selected');
-        } else {
-            document.getElementById('player1Box').classList.remove('selected');
-        }
-        
-        if (p2) {
-            document.getElementById('player2Box').classList.add('selected');
-        } else {
-            document.getElementById('player2Box').classList.remove('selected');
-        }
-    });
-});
-
-// Execute comparison
-document.getElementById('executeCompare').addEventListener('click', () => {
-    const p1Name = document.getElementById('player1Input').value;
-    const p2Name = document.getElementById('player2Input').value;
-    
-    const player1 = players.find(p => p.name === p1Name);
-    const player2 = players.find(p => p.name === p2Name);
-    
-    if (player1 && player2) {
-        const comparison = playerComparison.compare(player1, player2);
-        document.getElementById('comparisonResult').innerHTML = 
-            playerComparison.renderComparison(comparison);
-    } else {
-        document.getElementById('comparisonResult').innerHTML = `
-            <div style="text-align: center; color: #ef4444; padding: 20px;">
-                ❌ One or both players not found. Please check the names.
-            </div>
-        `;
-    }
-});
-
-const originalOpenPlayerModal = typeof openPlayerModal !== 'undefined' ? openPlayerModal : null;
-
-if (originalOpenPlayerModal) {
-    openPlayerModal = function(player) {
-        // Call original function
-        originalOpenPlayerModal(player);
-        
-        // Add enhanced profile section to modal if not already added
-        const modalBody = document.getElementById('modalBody');
-        if (!document.getElementById('enhancedPlayerProfile')) {
-            const enhancedSection = document.createElement('div');
-            enhancedSection.id = 'enhancedPlayerProfile';
-            enhancedSection.innerHTML = `
-
-                <!-- Bio Section -->
-                <div class="bio-section">
-                    <h3 class="bio-section-title">📝 Player Bio</h3>
-                    <div id="playerBio"></div>
-                </div>
-
-                <!-- Comparison Button -->
-                <button class="compare-players-button" id="openCompareFromProfile">
-                    ⚖️ Compare with Another Player
-                </button>
-            `;
-            modalBody.appendChild(enhancedSection);
-            
-            // Add event listener for compare button
-            document.getElementById('openCompareFromProfile').addEventListener('click', () => {
-                document.getElementById('comparisonModal').classList.add('active');
-                document.getElementById('playerModal').style.display = 'none';
-                populatePlayerDatalist();
-                
-                // Pre-fill first player
-                document.getElementById('player1Input').value = player.name;
-                document.getElementById('player1Box').classList.add('selected');
-            });
-        }
-        
-        // Populate bio
-        const bioHtml = playerBioSystem.renderBio(player.name);
-        document.getElementById('playerBio').innerHTML = bioHtml;
-        
-        // Show enhanced profile
-        document.getElementById('enhancedPlayerProfile').style.display = 'block';
-        
-        // Check for new achievements
+    const renderSuggestions = (list) => {
+        if (!list.length) { box.style.display = "none"; return; }
+        box.innerHTML = list.map((s) => `<div class="sugg" data-type="${s.type}" data-value="${esc(s.value)}">
+            <span class="si">${s.icon}</span><div><b>${esc(s.label)}</b>${s.type === "filter" ? "<small>Click to add filter</small>" : ""}</div></div>`).join("");
+        box.style.display = "block";
     };
-}
 
-// ============================================================================
-// INITIALIZE ADVANCED SEARCH
-// ============================================================================
-document.addEventListener('DOMContentLoaded', () => {
-    const searchBox = document.getElementById('searchBox');
-    const suggestionsBox = document.getElementById('searchSuggestions');
-    const clearBtn = document.getElementById('clearSearchBtn');
-    const helpBtn = document.getElementById('searchHelpBtn');
-    const searchWrapper = document.getElementById('searchWrapper');
-    
-    if (!searchBox || !searchWrapper) return;
-    
-    let debounceTimer;
-    
-    // Search input handler
-    searchBox.addEventListener('input', (e) => {
+    input.addEventListener("input", (e) => {
+        if (e.target.value === "/") e.target.value = "";
         const query = e.target.value;
-        
-        // Show/hide clear button
-        clearBtn.style.display = query ? 'block' : 'none';
-        
-        // Debounce search
-        clearTimeout(debounceTimer);
-        debounceTimer = setTimeout(() => {
-            if (query.trim()) {
-                advancedSearch.saveHistory(query);
-                renderSuggestions(advancedSearch.getSuggestions(query));
-            } else if (suggestionsBox) suggestionsBox.style.display = 'none';
+        clear.style.display = query ? "grid" : "none";
+        clearTimeout(timer);
+        timer = setTimeout(() => {
+            if (query.trim()) renderSuggestions(advancedSearch.getSuggestions(query)); else box.style.display = "none";
             currentPage = 1;
             renderPlayers();
             const u = new URL(location.href);
-            query.trim() ? u.searchParams.set('q', query) : u.searchParams.delete('q');
-            history.replaceState(history.state, '', u);
-        }, 300);
+            query.trim() ? u.searchParams.set("q", query) : u.searchParams.delete("q");
+            history.replaceState(history.state, "", u);
+        }, 250);
     });
-    
-    // Focus effects
-    searchBox.addEventListener('focus', () => {
-        if (searchWrapper) {
-            searchWrapper.style.borderColor = '#a8b3c7';
-            searchWrapper.style.boxShadow = '0 0 20px rgba(148, 163, 184, 0.3)';
-        }
-        
-        if (searchBox.value.trim()) {
-            const suggestions = advancedSearch.getSuggestions(searchBox.value);
-            renderSuggestions(suggestions);
-        }
-    });
-    
-    searchBox.addEventListener('blur', () => {
-        if (searchWrapper) {
-            searchWrapper.style.borderColor = 'rgba(71, 85, 105, 0.4)';
-            searchWrapper.style.boxShadow = 'none';
-        }
-        
-        // Delay hiding suggestions to allow clicks
-        setTimeout(() => {
-            if (suggestionsBox) suggestionsBox.style.display = 'none';
-        }, 200);
-    });
-    
-    // Clear button
-    if (clearBtn) {
-        clearBtn.addEventListener('click', () => {
-            searchBox.value = '';
-            clearBtn.style.display = 'none';
-            currentPage = 1;
-            renderPlayers();
-            searchBox.focus();
-        });
-    }
-    
-    // Help button
-    if (helpBtn) {
-        helpBtn.addEventListener('click', () => {
-            const modal = document.getElementById('searchHelpModal');
-            if (modal) modal.style.display = 'flex';
-        });
-    }
-    
-    // Close help modal handlers
-    const closeHelpBtn = document.getElementById('closeSearchHelp');
-    if (closeHelpBtn) {
-        closeHelpBtn.addEventListener('click', () => {
-            const modal = document.getElementById('searchHelpModal');
-            if (modal) modal.style.display = 'none';
-        });
-    }
-    
-    const helpModal = document.getElementById('searchHelpModal');
-    if (helpModal) {
-        helpModal.addEventListener('click', (e) => {
-            if (e.target === helpModal) {
-                helpModal.style.display = 'none';
-            }
-        });
-    }
-    
-    // Render suggestions
-    function renderSuggestions(suggestions) {
-        if (!suggestionsBox || !suggestions.length) {
-            if (suggestionsBox) suggestionsBox.style.display = 'none';
-            return;
-        }
-        
-        suggestionsBox.innerHTML = suggestions.map(s => `
-            <div class="suggestion-item" data-value="${esc(s.value)}" style="
-                padding: 12px;
-                cursor: pointer;
-                border-radius: 8px;
-                transition: background 0.2s;
-                display: flex;
-                align-items: center;
-                gap: 12px;
-            ">
-                <span style="font-size: 1.2rem;">${s.icon}</span>
-                <div style="flex: 1;">
-                    <div style="color: #e2e8f0; font-weight: 600;">${esc(s.label)}</div>
-                    ${s.type === 'filter' ? `<div style="color: #64748b; font-size: 0.85rem;">Click to add filter</div>` : ''}
-                </div>
-            </div>
-        `).join('');
-        
-        suggestionsBox.style.display = 'block';
-        
-        // Add click handlers
-        suggestionsBox.querySelectorAll('.suggestion-item').forEach(item => {
-            item.addEventListener('mouseenter', () => {
-                item.style.background = 'rgba(30, 41, 59, 0.6)';
-            });
-            item.addEventListener('mouseleave', () => {
-                item.style.background = 'transparent';
-            });
-            item.addEventListener('click', () => {
-                const value = item.dataset.value;
-                if (item.querySelector('[style*="Click to add filter"]')) {
-                    searchBox.value = searchBox.value.trim() + ' ' + value;
-                } else {
-                    searchBox.value = value;
-                }
-                searchBox.focus();
-                searchBox.dispatchEvent(new Event('input'));
-            });
-        });
-    }
-});
+    input.addEventListener("keydown", (e) => { if (e.key === "Enter") { advancedSearch.saveHistory(input.value); box.style.display = "none"; } });
+    input.addEventListener("focus", () => { if (input.value.trim()) renderSuggestions(advancedSearch.getSuggestions(input.value)); });
+    input.addEventListener("blur", () => setTimeout(() => (box.style.display = "none"), 200));
 
-// Run milestone check after players load
-const originalLoadPlayers = loadPlayers;
-loadPlayers = async function() {
-    await originalLoadPlayers();
-};
-
-// ============================================
-// ADMIN FUNCTIONS - Use these to set player bios
-// ============================================
-
-// Example: Set a player bio (you'd call this from admin panel or manually)
-function setPlayerBioExample() {
-    // Example usage:
-    playerBioSystem.setBio('ImApo', {
-        description: 'Competitive PvP player specializing in Sword combat. Known for aggressive playstyle and quick reflexes.',
-        socials: {
-            youtube: 'https://youtube.com/@exampleplayer',
-            twitch: 'https://twitch.tv/exampleplayer',
-            twitter: 'https://twitter.com/exampleplayer',
-            discord: 'exampleplayer#1234'
-        },
-        favGamemode: 'Crystal',
-        playstyle: 'Aggressive'
+    box.addEventListener("mousedown", (e) => e.preventDefault());
+    box.addEventListener("click", (e) => {
+        const item = e.target.closest(".sugg");
+        if (!item) return;
+        input.value = item.dataset.type === "filter" ? (input.value.trim() + " " + item.dataset.value) : item.dataset.value;
+        if (item.dataset.type !== "filter") advancedSearch.saveHistory(input.value);
+        input.focus();
+        input.dispatchEvent(new Event("input"));
     });
-    
-    console.log('✅ Bio set for ExamplePlayer');
+
+    clear.addEventListener("click", () => {
+        input.value = "";
+        clear.style.display = "none";
+        input.dispatchEvent(new Event("input"));
+        input.focus();
+    });
+    $("searchHelpBtn").addEventListener("click", () => openOverlay("searchHelpModal"));
+})();
+
+// ---------------------------------------------------------------------------
+// Regions
+// ---------------------------------------------------------------------------
+function updateRegionCheckboxes() {
+    document.querySelectorAll('#regionFilterModal input[type="checkbox"]').forEach((c) => (c.checked = selectedRegions.has(c.value)));
 }
+function openRegionFilter() { updateRegionCheckboxes(); openOverlay("regionFilterModal"); }
+$("regionBtn").addEventListener("click", openRegionFilter);
+document.addEventListener("contextmenu", (e) => {
+    if (e.target.closest('.mode[data-gamemode="overall"]') && currentGamemode === "overall") { e.preventDefault(); openRegionFilter(); }
+});
+$("regionFilterModal").addEventListener("change", (e) => {
+    if (e.target.type !== "checkbox") return;
+    e.target.checked ? selectedRegions.add(e.target.value) : selectedRegions.delete(e.target.value);
+    if (REGIONS.every((r) => selectedRegions.has(r))) { selectedRegions.clear(); updateRegionCheckboxes(); }
+    currentPage = 1;
+    renderPlayers();
+});
+$("clearRegions").addEventListener("click", () => { selectedRegions.clear(); updateRegionCheckboxes(); currentPage = 1; renderPlayers(); });
 
-// =======================
-// Context Menu
-// =======================
-const contextMenu = document.getElementById("playerContextMenu");
-let contextPlayer = null;
+// ---------------------------------------------------------------------------
+// Info dialogs, header buttons
+// ---------------------------------------------------------------------------
+(function buildTierInfo() {
+    const rows = (prefix, nums, kinds) => nums.flatMap((n) => kinds.map((k) => {
+        const t = `${prefix}${k}${n}`;
+        return `<tr data-t="${tierKey(t)}"><td>${pill(t)}</td><td>${tierPoints[t]}</td></tr>`;
+    })).join("");
+    $("tierPointsBody").innerHTML = rows("", [1, 2, 3, 4, 5], ["HT", "LT"]);
+    $("retiredPointsBody").innerHTML = rows("R", [1, 2], ["HT", "LT"]);
+})();
 
-// Show context menu only on player rows
-document.querySelector("#playerList").addEventListener("contextmenu", (e) => {
-    const row = e.target.closest(".player-row");
-    if (row) {
-        e.preventDefault();
-
-        // Get player data stored on the row
-        contextPlayer = {
-            name: row.dataset.username,
-            points: row.dataset.points,
-            tiers: row.dataset.tiers,
-        };
-
-        // Update label dynamically
-        contextMenu.querySelector(
-            ".context-label"
-        ).innerText = `Profile – ${contextPlayer.name}`;
-
-        // Position the menu
-        contextMenu.style.top = `${e.pageY}px`;
-        contextMenu.style.left = `${e.pageX}px`;
-        contextMenu.style.display = "block";
-    }
+$("tierInfoBtn").addEventListener("click", () => openOverlay("tierInfoModal"));
+$("kitInfoBtn").addEventListener("click", () => {
+    const info = kitInfo[currentGamemode];
+    if (!info) return;
+    $("kitInfoTitle").textContent = info.title;
+    $("kitInfoDesc").textContent = info.description;
+    $("kitInfoImage").querySelector("img").src = info.image;
+    openOverlay("kitInfoModal");
+});
+$("copyIpBtn").addEventListener("click", () => toast("Not officially linked with any server"));
+$("discordBtn").addEventListener("click", () => window.open("https://discord.gg/zMqy5QbevP", "_blank"));
+$("apolloBtn").addEventListener("click", () => (window.location.href = "https://im-apo.github.io/ApolloRPG/"));
+$("ronBtn").addEventListener("click", () => (window.location.href = "https://im-apo.github.io/SealTiers/StellarTiers/"));
+$("themeBtn").addEventListener("click", () => {
+    const next = document.documentElement.dataset.theme === "light" ? "dark" : "light";
+    document.documentElement.dataset.theme = next;
+    try { localStorage.setItem("theme", next); } catch {}
 });
 
+// Close buttons + backdrop clicks for every overlay
+[["closeModal", "playerModal"], ["closeTierHistory", "tierHistoryModal"], ["closeTierInfo", "tierInfoModal"], ["closeKitInfo", "kitInfoModal"],
+ ["closeComparison", "comparisonModal"], ["closeSearchHelp", "searchHelpModal"], ["closeActivityFeed", "activityFeedModal"]]
+    .forEach(([btn, id]) => $(btn).addEventListener("click", () => closeOverlay(id)));
+document.querySelector(".close-region-filter").addEventListener("click", () => closeOverlay("regionFilterModal"));
+document.querySelectorAll(".overlay").forEach((o) => o.addEventListener("click", (e) => { if (e.target === o) o.classList.remove("open"); }));
+
+document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") { closeAllOverlays(); return; }
+    const t = e.target;
+    if (e.key === "/" && !/^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName) && !t.isContentEditable) { e.preventDefault(); $("searchBox").focus(); }
+});
+
+// ---------------------------------------------------------------------------
+// Activity feed
+// ---------------------------------------------------------------------------
+$("activityFeedBtn").addEventListener("click", () => {
+    const items = [];
+    players.forEach((p) => Object.entries(p.tierHistory || {}).forEach(([gm, h]) => (h || []).forEach((e) => e && e.date && items.push({ p, gm, e, d: new Date(e.date) }))));
+    items.sort((a, b) => b.d - a.d);
+    $("activityList").innerHTML = items.length ? items.slice(0, 30).map(({ p, gm, e, d }) => `
+        <div class="act">${avatarImg(p)}<div><strong>${esc(p.name)}</strong> reached ${pill(e.tier)} in ${esc(GM_LABEL[gm] || gm)}
+        <small>${d.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}${e.note ? " · " + esc(e.note) : ""}</small></div></div>`).join("")
+        : `<div class="no-history">No recent activity yet</div>`;
+    openOverlay("activityFeedModal");
+});
+
+// ---------------------------------------------------------------------------
+// Context menu (right-click a player)
+// ---------------------------------------------------------------------------
+const contextMenu = $("playerContextMenu");
+let contextPlayer = null;
+$("playerList").addEventListener("contextmenu", (e) => {
+    const row = e.target.closest("[data-name]");
+    if (!row) return;
+    e.preventDefault();
+    contextPlayer = { name: row.dataset.name, points: row.dataset.points, tiers: row.dataset.tiers };
+    contextMenu.querySelector(".lbl").textContent = `Profile - ${contextPlayer.name}`;
+    contextMenu.style.display = "block";
+    const w = contextMenu.offsetWidth, h = contextMenu.offsetHeight;
+    contextMenu.style.left = `${Math.min(e.clientX, innerWidth - w - 8)}px`;
+    contextMenu.style.top = `${Math.min(e.clientY, innerHeight - h - 8)}px`;
+});
 contextMenu.addEventListener("click", (e) => {
     if (!contextPlayer) return;
     const action = e.target.dataset.action;
-    if (action === "username") {
-        navigator.clipboard.writeText(contextPlayer.name);
-    } else if (action === "tiers") {
-        navigator.clipboard.writeText(contextPlayer.tiers);
-    } else if (action === "points") {
-        navigator.clipboard.writeText(contextPlayer.points);
-    }
+    if (action === "username") copyText(contextPlayer.name, "Username copied");
+    else if (action === "tiers") copyText(contextPlayer.tiers, "Tiers copied");
     contextMenu.style.display = "none";
 });
+document.addEventListener("click", (e) => { if (!contextMenu.contains(e.target)) contextMenu.style.display = "none"; });
 
-document.addEventListener("click", (e) => {
-    if (!contextMenu.contains(e.target) && !regionModal.contains(e.target)) {
-        contextMenu.style.display = "none";
-    }
-});
-
-
-let lastScrollTop = 0;
-const navbar = document.getElementById('navbar');
-const scrollThreshold = 30;
-
-if (navbar) {
-    window.addEventListener('scroll', () => {
-        let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-        
-        if (scrollTop > lastScrollTop && scrollTop > scrollThreshold) {
-            navbar.classList.add('hidden');
-        } else {
-            navbar.classList.remove('hidden');
-        }
-        
-        lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
-    }, false);
-}
-
-document.getElementById("kitInfoBtn").addEventListener("click", () => {
-    const info = kitInfo[currentGamemode];
-    if (info) {
-        document.getElementById("kitInfoTitle").textContent = info.title;
-        document.getElementById("kitInfoDesc").textContent = info.description;
-        document.querySelector("#kitInfoImage img").src = info.image;
-        document.getElementById("kitInfoModal").style.display = "flex";
-    }
-});
-
-document.getElementById("closeKitInfo").addEventListener("click", () => {
-    document.getElementById("kitInfoModal").style.display = "none";
-});
-
-document.addEventListener("DOMContentLoaded", () => {
+// ---------------------------------------------------------------------------
+// Start
+// ---------------------------------------------------------------------------
+(function init() {
     window.loadStartTime = Date.now();
-    
-    initializeFromURL();
+    const fromURL = getGamemodeFromURL();
+    if (location.pathname.startsWith(BASE_PATH + "rankings") && !VALID_GAMEMODES.includes(fromURL)) history.replaceState(null, "", BASE_PATH + "rankings/overall");
+    if (VALID_GAMEMODES.includes(fromURL)) applyGamemode(fromURL); else { updateURL("overall"); applyGamemode("overall"); }
     const q = new URLSearchParams(location.search).get("q");
-    if (q) { document.getElementById("searchBox").value = q; document.getElementById("clearSearchBtn").style.display = "block"; }
-    // Then load players
+    if (q) { $("searchBox").value = q; $("clearSearchBtn").style.display = "grid"; }
+    syncModeUI();
     loadPlayers();
-});
+})();
 
 console.log(`MIT License
 
@@ -2589,73 +965,28 @@ console.log(`-------------------------------------------------------------------
 If Website appears to be Down Contact ImApo Immediately
 discord: cxnine._ Bunny Discord Server: https://discord.gg/zMqy5QbevP
 -----------------------------------------------------------------------------------`);
-// ============================================================================
-// PROTECTION SYSTEM
-// ============================================================================
 
-// Disable right-click EXCEPT on player rows and the overall tab
-document.addEventListener('contextmenu', function(e) { 
-    const isPlayerRow = e.target.closest('.player-row');
-    const isOverallTab = e.target.closest('.gamemode-tab[data-gamemode="overall"]');
-    
-    // If it's NOT a player row and NOT the overall tab, block the right click
-    if (!isPlayerRow && !isOverallTab && !e.target.closest('input, textarea')) {
-        e.preventDefault(); 
-    }
+// ---------------------------------------------------------------------------
+// Protection system (kept from the original site)
+// ---------------------------------------------------------------------------
+document.addEventListener("contextmenu", (e) => {
+    const allowed = e.target.closest("[data-name]") || e.target.closest('.mode[data-gamemode="overall"]') || e.target.closest("input, textarea");
+    if (!allowed) e.preventDefault();
 });
-
-// Block F12, Ctrl+Shift+I/J/C, Ctrl+U, Ctrl+S, Ctrl+A, Ctrl+P
-document.addEventListener('keydown', function(e) {
-    var blocked = false;
+document.addEventListener("keydown", (e) => {
     if (IS_LOCAL || /^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName)) return;
-    if (e.key === 'F12') blocked = true;
-    if (e.ctrlKey && e.shiftKey && ['I','J','C','i','j','c'].includes(e.key)) blocked = true;
-    if (e.ctrlKey && ['u','U','s','S','a','A','p','P'].includes(e.key)) blocked = true;
-    
-    if (blocked) { 
-        e.preventDefault(); 
-        e.stopPropagation(); 
-        return false; 
-    }
+    let blocked = false;
+    if (e.key === "F12") blocked = true;
+    if (e.ctrlKey && e.shiftKey && ["I", "J", "C", "i", "j", "c"].includes(e.key)) blocked = true;
+    if (e.ctrlKey && ["u", "U", "s", "S", "a", "A", "p", "P"].includes(e.key)) blocked = true;
+    if (blocked) { e.preventDefault(); e.stopPropagation(); return false; }
 }, true);
-
-// Clear console periodically to deter inspection
-if (!IS_LOCAL) setInterval(function() {
+if (!IS_LOCAL) setInterval(() => {
     console.clear();
-    console.log('%c🔒 Bunny Tiers — All Rights Reserved', 'color:#ff003c;font-size:14px;font-weight:bold;');
+    console.log("%c🔒 Bunny Tiers — All Rights Reserved", "color:#ff003c;font-size:14px;font-weight:bold;");
 }, 1500);
-
-// Disable drag-select on entire page
-document.addEventListener('selectstart', function(e) {
+document.addEventListener("selectstart", (e) => {
     const el = e.target.nodeType === 1 ? e.target : e.target.parentElement;
-    if (el && el.closest('input, textarea')) return;
-    e.preventDefault(); 
-    return false; 
+    if (el && el.closest("input, textarea")) return;
+    e.preventDefault();
 });
-
-// ---- Backdrop clicks, keyboard tabs, activity feed ----
-["playerModal", "tierInfoModal", "kitInfoModal"].forEach((id) => {
-    const el = document.getElementById(id);
-    el?.addEventListener("click", (e) => { if (e.target === el) el.style.display = "none"; });
-});
-document.querySelectorAll(".gamemode-tab").forEach((tab) => {
-    tab.tabIndex = 0; tab.setAttribute("role", "button");
-    tab.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); tab.click(); } });
-});
-(function () {
-    const btn = document.getElementById("activityFeedBtn"), modal = document.getElementById("activityFeedModal"), list = document.getElementById("activityList");
-    if (!btn || !modal || !list) return;
-    const build = () => {
-        const items = [];
-        players.forEach((p) => Object.entries(p.tierHistory || {}).forEach(([gm, h]) => (h || []).forEach((e) => e && e.date && items.push({ p, gm, e, d: new Date(e.date) }))));
-        items.sort((a, b) => b.d - a.d);
-        list.innerHTML = items.length ? items.slice(0, 30).map(({ p, gm, e, d }) => `
-            <div class="activity-item"><img src="${esc(p.avatar)}" alt="" onerror="this.style.display='none'">
-            <div><strong>${esc(p.name)}</strong> reached <span class="tier ${esc(String(e.tier).toLowerCase())}">${esc(e.tier)}</span> in ${esc(gm)}
-            <div style="color:#94a3b8;font-size:.8rem">${d.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}${e.note ? " · " + esc(e.note) : ""}</div></div></div>`).join("")
-            : '<div class="no-history">No recent activity yet</div>';
-    };
-    btn.addEventListener("click", () => { build(); modal.classList.add("active"); });
-    document.getElementById("closeActivityFeed")?.addEventListener("click", () => modal.classList.remove("active"));
-    modal.addEventListener("click", (e) => { if (e.target === modal) modal.classList.remove("active"); });
-})();
