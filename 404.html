@@ -2,23 +2,56 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <title>Redirecting...</title>
-
-  <script>
-    // Only run redirect logic on GitHub Pages
-    const isGitHubPages = location.hostname.endsWith("github.io");
-
-    if (isGitHubPages) {
-      // Store the original request path so SPA routers can restore it
-      sessionStorage.setItem("redirect", location.pathname + location.search);
-
-      // Replace with your repo base path
-      location.replace(location.origin + "/SealTiers/");
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <meta name="color-scheme" content="dark">
+  <title>Page not found - Bunny Tiers</title>
+  <style>
+    html, body { height: 100%; margin: 0; }
+    body {
+      display: flex; align-items: center; justify-content: center; text-align: center;
+      background: linear-gradient(135deg, #020617, #0f172a 60%, #16233f);
+      color: #e2e8f0; font-family: Inter, system-ui, sans-serif; padding: 20px;
     }
+    h1 { font-size: clamp(2rem, 6vw, 3rem); margin: 0 0 8px; }
+    p { color: #94a3b8; margin: 0 0 24px; font-size: 1.1rem; }
+    a {
+      display: inline-block; padding: 12px 24px; border-radius: 14px; font-weight: 600;
+      color: #e2e8f0; text-decoration: none; background: rgba(15, 23, 42, .85);
+      border: 1px solid rgba(127, 161, 195, .4);
+    }
+    a:hover, a:focus-visible { border-color: #cbd5e1; outline: none; box-shadow: 0 0 18px rgba(127, 161, 195, .4); }
+    [hidden] { display: none; }
+  </style>
+  <script>
+    // Same base-path rule as main.js: project site under /SealTiers/, or the domain root otherwise.
+    (function () {
+      var BASE = location.pathname.indexOf("/SealTiers/") === 0 ? "/SealTiers/" : "/";
+      var isAppRoute = location.pathname.indexOf(BASE + "rankings") === 0;
+      if (isAppRoute) {
+        try { sessionStorage.setItem("redirect", location.pathname + location.search + location.hash); } catch (e) {}
+        location.replace(location.origin + BASE);
+        return;
+      }
+      document.addEventListener("DOMContentLoaded", function () {
+        document.getElementById("home").href = BASE;
+        document.getElementById("notFound").hidden = false;
+      });
+    })();
   </script>
-
 </head>
 <body>
+  <main id="notFound" hidden>
+    <h1>Page not found</h1>
+    <p>That page doesn't exist, or it has moved.</p>
+    <a id="home" href="./">Back to the leaderboard</a>
+  </main>
+  <noscript>
+    <main>
+      <h1>Page not found</h1>
+      <p>That page doesn't exist, or it has moved.</p>
+      <a href="./">Back to the leaderboard</a>
+    </main>
+  </noscript>
 </body>
 </html>
-
