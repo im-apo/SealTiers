@@ -1,4 +1,4 @@
-const BASE_PATH = location.pathname.startsWith("/SealTiers/") ? "/SealTiers/" : "/";
+const BASE_PATH = new URL(".", document.baseURI).pathname;
 const IS_LOCAL = ["localhost", "127.0.0.1"].includes(location.hostname);
 if (sessionStorage.redirect) {
   const redirectPath = sessionStorage.redirect;
@@ -257,13 +257,14 @@ function calculatePeakTier(currentTier, peakTier) {
 }
 
 function getGamemodeFromURL() {
+    if (IS_LOCAL && location.hash.length > 1) return location.hash.slice(1);
     const path = window.location.pathname;
     const match = path.match(/\/rankings\/([^\/]+)/);
     return match ? match[1] : 'overall';
 }
 
 function updateURL(gamemode) {
-    const newPath = `${BASE_PATH}rankings/${gamemode}`;
+    const newPath = IS_LOCAL ? `${location.pathname.replace(/\/rankings\/.*$/, '/')}#${gamemode}` : `${BASE_PATH}rankings/${gamemode}`;
     window.history.pushState({ gamemode }, '', newPath);
 }
 
