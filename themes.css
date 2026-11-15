@@ -1,0 +1,196 @@
+/* ==========================================================================
+   Bunny Tiers - themes
+   Each theme sets --bt-* tokens (used by home.css) and the common generic
+   names (--bg, --card, --text, --accent ...) so the rest of the site can pick
+   them up if it reads those variables.
+   ========================================================================== */
+
+:root {
+    --bt-bg: #0b1220;
+    --bt-bg2: #111a2e;
+    --bt-card: #141f36;
+    --bt-card2: #1a2744;
+    --bt-line: #243352;
+    --bt-text: #e2e8f0;
+    --bt-muted: #8aa0bd;
+    --bt-accent: #7fa1c3;
+    --bt-accent2: #a9c4e0;
+    --bt-on-accent: #0b1220;
+    --hm-display: "Bricolage Grotesque", Inter, system-ui, sans-serif;
+}
+
+html[data-theme="light"] {
+    --bt-bg: #eef2f7; --bt-bg2: #ffffff; --bt-card: #ffffff; --bt-card2: #e6ebf3; --bt-line: #d3dbe7;
+    --bt-text: #0b1220; --bt-muted: #4b5f78; --bt-accent: #4f74a0; --bt-accent2: #6f93be; --bt-on-accent: #ffffff;
+}
+
+/* Void: true black, silver accent (the "darker dark") */
+html[data-theme="void"] {
+    --bt-bg: #000000; --bt-bg2: #050506; --bt-card: #0a0a0c; --bt-card2: #121215; --bt-line: #1d1d22;
+    --bt-text: #ededf0; --bt-muted: #7b7b86; --bt-accent: #c9c9d4; --bt-accent2: #ffffff; --bt-on-accent: #000000;
+}
+
+html[data-theme="fire"] {
+    --bt-bg: #0d0402; --bt-bg2: #170804; --bt-card: #1e0b05; --bt-card2: #2a1008; --bt-line: #43200f;
+    --bt-text: #ffeede; --bt-muted: #c49477; --bt-accent: #ff5a1f; --bt-accent2: #ffb02e; --bt-on-accent: #1a0600;
+}
+
+html[data-theme="galaxy"] {
+    --bt-bg: #05030f; --bt-bg2: #0b0720; --bt-card: #120c2c; --bt-card2: #1a1240; --bt-line: #2e2260;
+    --bt-text: #ece8ff; --bt-muted: #9d93cf; --bt-accent: #a78bfa; --bt-accent2: #f0abfc; --bt-on-accent: #12062e;
+}
+
+html[data-theme="ocean"] {
+    --bt-bg: #03111a; --bt-bg2: #082030; --bt-card: #0b2a3d; --bt-card2: #103650; --bt-line: #17506f;
+    --bt-text: #e4f6ff; --bt-muted: #86b6cf; --bt-accent: #22d3ee; --bt-accent2: #60a5fa; --bt-on-accent: #03111a;
+}
+
+html[data-theme="forest"] {
+    --bt-bg: #07110b; --bt-bg2: #0d1b12; --bt-card: #12251a; --bt-card2: #183222; --bt-line: #234733;
+    --bt-text: #e6f4ea; --bt-muted: #8fb39b; --bt-accent: #4ade80; --bt-accent2: #bef264; --bt-on-accent: #07110b;
+}
+
+html[data-theme="sakura"] {
+    --bt-bg: #fff4f8; --bt-bg2: #ffffff; --bt-card: #ffffff; --bt-card2: #ffe8f0; --bt-line: #f6cfdd;
+    --bt-text: #3a1626; --bt-muted: #94607a; --bt-accent: #e5588b; --bt-accent2: #ff8fb1; --bt-on-accent: #ffffff;
+}
+
+/* Generic names for the rest of the site, applied to the new themes only
+   (dark and light keep whatever styles.css already does). */
+html[data-theme="void"], html[data-theme="fire"], html[data-theme="galaxy"],
+html[data-theme="ocean"], html[data-theme="forest"], html[data-theme="sakura"] {
+    --bg: var(--bt-bg); --bg-2: var(--bt-bg2); --surface: var(--bt-card); --card: var(--bt-card);
+    --card-2: var(--bt-card2); --line: var(--bt-line); --border: var(--bt-line);
+    --text: var(--bt-text); --text-color: var(--bt-text); --fg: var(--bt-text);
+    --muted: var(--bt-muted); --accent: var(--bt-accent);
+    background: var(--bt-bg);
+    color: var(--bt-text);
+}
+html[data-theme="void"], html[data-theme="fire"], html[data-theme="galaxy"],
+html[data-theme="ocean"], html[data-theme="forest"] { color-scheme: dark; }
+html[data-theme="sakura"] { color-scheme: light; }
+
+html[data-theme="void"] body, html[data-theme="fire"] body, html[data-theme="galaxy"] body,
+html[data-theme="ocean"] body, html[data-theme="forest"] body, html[data-theme="sakura"] body {
+    background: transparent !important;
+    color: var(--bt-text);
+}
+
+/* ---------- animated backgrounds ---------- */
+#themeFx { position: fixed; inset: 0; z-index: -1; pointer-events: none; display: none; overflow: hidden; }
+#themeFx::before, #themeFx::after { content: ""; position: absolute; inset: 0; }
+
+html[data-theme="fire"] #themeFx, html[data-theme="galaxy"] #themeFx,
+html[data-theme="ocean"] #themeFx, html[data-theme="forest"] #themeFx,
+html[data-theme="sakura"] #themeFx { display: block; }
+
+/* Galaxy: nebula glow + two star layers (one twinkles, one drifts) */
+html[data-theme="galaxy"] #themeFx {
+    background:
+        radial-gradient(60% 50% at 15% 10%, rgb(124 58 237 / .35), transparent 70%),
+        radial-gradient(50% 45% at 90% 20%, rgb(236 72 153 / .22), transparent 70%),
+        radial-gradient(70% 60% at 60% 105%, rgb(56 189 248 / .18), transparent 70%),
+        linear-gradient(180deg, #05030f, #0a0620 60%, #07041a);
+}
+html[data-theme="galaxy"] #themeFx::before {
+    background-image:
+        radial-gradient(circle 1px at 20px 30px, #fff, transparent),
+        radial-gradient(circle 1px at 90px 140px, #dcd0ff, transparent),
+        radial-gradient(circle 1.5px at 150px 60px, #fff, transparent),
+        radial-gradient(circle 1px at 210px 210px, #cfe8ff, transparent),
+        radial-gradient(circle 1px at 270px 100px, #fff, transparent),
+        radial-gradient(circle 1.5px at 60px 260px, #f5d0fe, transparent),
+        radial-gradient(circle 1px at 300px 290px, #fff, transparent);
+    background-size: 320px 320px;
+    animation: bt-twinkle 5s ease-in-out infinite alternate;
+}
+html[data-theme="galaxy"] #themeFx::after {
+    background-image:
+        radial-gradient(circle 2px at 80px 90px, #fff, transparent),
+        radial-gradient(circle 1.5px at 330px 200px, #c4b5fd, transparent),
+        radial-gradient(circle 2px at 200px 400px, #fff, transparent),
+        radial-gradient(circle 1.5px at 450px 460px, #a5f3fc, transparent);
+    background-size: 530px 530px;
+    opacity: .85;
+    animation: bt-drift 180s linear infinite;
+}
+@keyframes bt-twinkle { from { opacity: .35; } to { opacity: 1; } }
+@keyframes bt-drift { to { background-position: 530px 530px; } }
+
+/* Fire: ember glow along the bottom with rising sparks */
+html[data-theme="fire"] #themeFx {
+    background:
+        radial-gradient(90% 55% at 50% 115%, rgb(255 90 31 / .5), transparent 65%),
+        radial-gradient(60% 40% at 15% 110%, rgb(255 176 46 / .28), transparent 70%),
+        radial-gradient(60% 40% at 85% 110%, rgb(220 38 38 / .3), transparent 70%),
+        linear-gradient(180deg, #0d0402, #150603 70%, #220a04);
+    animation: bt-flicker 3.2s ease-in-out infinite alternate;
+}
+html[data-theme="fire"] #themeFx::before, html[data-theme="fire"] #themeFx::after {
+    -webkit-mask-image: linear-gradient(to top, #000, transparent 80%);
+    mask-image: linear-gradient(to top, #000, transparent 80%);
+}
+html[data-theme="fire"] #themeFx::before {
+    background-image:
+        radial-gradient(circle 2px at 40px 90px, #ffb02e, transparent),
+        radial-gradient(circle 1.5px at 130px 300px, #ff7a2f, transparent),
+        radial-gradient(circle 2px at 230px 480px, #ffd27a, transparent),
+        radial-gradient(circle 1.5px at 90px 560px, #ff5a1f, transparent);
+    background-size: 300px 600px;
+    animation: bt-rise 16s linear infinite;
+}
+html[data-theme="fire"] #themeFx::after {
+    background-image:
+        radial-gradient(circle 1.5px at 60px 150px, #ffb02e, transparent),
+        radial-gradient(circle 2px at 260px 380px, #ff5a1f, transparent),
+        radial-gradient(circle 1.5px at 350px 600px, #ffd27a, transparent);
+    background-size: 420px 700px;
+    animation: bt-rise 26s linear infinite;
+}
+@keyframes bt-rise { to { background-position: 0 -600px; } }
+@keyframes bt-flicker { from { filter: brightness(.92); } to { filter: brightness(1.15); } }
+
+html[data-theme="ocean"] #themeFx {
+    background:
+        radial-gradient(70% 50% at 20% 0%, rgb(34 211 238 / .22), transparent 70%),
+        radial-gradient(60% 50% at 90% 100%, rgb(37 99 235 / .25), transparent 70%),
+        linear-gradient(180deg, #03111a, #062033 70%, #04182a);
+}
+html[data-theme="forest"] #themeFx {
+    background:
+        radial-gradient(70% 50% at 85% 0%, rgb(74 222 128 / .18), transparent 70%),
+        radial-gradient(60% 50% at 10% 100%, rgb(190 242 100 / .12), transparent 70%),
+        linear-gradient(180deg, #07110b, #0b1a10 70%, #08150d);
+}
+html[data-theme="sakura"] #themeFx {
+    background:
+        radial-gradient(60% 50% at 10% 0%, rgb(255 143 177 / .35), transparent 70%),
+        radial-gradient(60% 50% at 95% 90%, rgb(196 181 253 / .3), transparent 70%),
+        linear-gradient(180deg, #fff4f8, #fff0f6);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    #themeFx, #themeFx::before, #themeFx::after { animation: none !important; }
+}
+
+/* ---------- theme picker ---------- */
+.theme-menu {
+    position: fixed; z-index: 10001; width: min(300px, calc(100vw - 24px));
+    padding: 10px; border-radius: 16px;
+    background: var(--bt-card); color: var(--bt-text);
+    border: 1px solid var(--bt-line);
+    box-shadow: 0 24px 60px rgb(0 0 0 / .45);
+    display: grid; grid-template-columns: 1fr 1fr; gap: 6px;
+}
+.theme-menu[hidden] { display: none; }
+.theme-opt {
+    display: flex; align-items: center; gap: 10px; padding: 9px 10px;
+    border-radius: 10px; border: 1px solid transparent; background: transparent;
+    color: inherit; font: 600 .88rem Inter, system-ui, sans-serif; text-align: left; cursor: pointer;
+}
+.theme-opt:hover, .theme-opt:focus-visible { background: var(--bt-card2); outline: none; }
+.theme-opt[aria-pressed="true"] { border-color: var(--bt-accent); background: var(--bt-card2); }
+.theme-sw {
+    width: 26px; height: 26px; border-radius: 50%; flex: none;
+    border: 2px solid var(--bt-line);
+}

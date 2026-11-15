@@ -22,7 +22,7 @@ const esc = (v) => String(v ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "
 const byPoints = (a, b) => b.points - a.points || String(a.name).localeCompare(String(b.name));
 
 const VALID_GAMEMODES = [
-    "overall", "crystal", "smp", "diasmp", "sword", "axe", "uhc", "potion", "nethpot", "mace",
+    "home", "overall", "crystal", "smp", "diasmp", "sword", "axe", "uhc", "potion", "nethpot", "mace",
     "speed", "elytra", "cart", "ogvanilla", "nethuhc", "nethsword", "moddia", "ltm"
 ];
 
@@ -199,7 +199,7 @@ function chip(gm, tier, peakTier) {
 function getGamemodeFromURL() {
     if (IS_LOCAL && location.hash.length > 1) return location.hash.slice(1);
     const match = location.pathname.match(/\/rankings\/([^\/]+)/);
-    return match ? match[1] : "overall";
+    return match ? match[1] : "home";
 }
 
 function updateURL(gamemode) {
@@ -209,7 +209,7 @@ function updateURL(gamemode) {
 
 function applyGamemode(gm) {
     currentGamemode = VALID_GAMEMODES.includes(gm) ? gm : "overall";
-    if (currentGamemode !== "overall") currentGroup = groupOf(currentGamemode);
+    if (currentGamemode !== "overall" && currentGamemode !== "home") currentGroup = groupOf(currentGamemode);
     currentPage = 1;
 }
 
@@ -234,6 +234,7 @@ function syncModeUI() {
     buildModeBar();
     const overall = $("overallTab");
     overall.classList.toggle("active", currentGamemode === "overall");
+    $("homeTab")?.classList.toggle("active", currentGamemode === "home");
     overall.classList.toggle("filtered", selectedRegions.size > 0);
     overall.querySelector("span").textContent = selectedRegions.size
         ? `Overall (${[...selectedRegions].map((r) => r.toUpperCase()).join(", ")})`
@@ -264,7 +265,7 @@ function resetToOverall() {
     $("clearSearchBtn").style.display = "none";
     currentGroup = "main";
     const u = new URL(location.href); u.searchParams.delete("q"); history.replaceState(history.state, "", u);
-    setGamemode("overall");
+    setGamemode("home");
 }
 $("logoBtn").addEventListener("click", resetToOverall);
 $("logoBtn").addEventListener("keydown", (e) => { if (e.key === "Enter") resetToOverall(); });
@@ -420,6 +421,9 @@ function setHead(title, sub) {
 
 function renderPlayers() {
     syncModeUI();
+    const isHome = currentGamemode === "home";
+    document.body.classList.toggle("is-home", isHome);
+    if (isHome) { if (typeof window.renderHome === "function") window.renderHome(); return; }
     const box = $("playerList");
     const query = $("searchBox").value;
     renderFilterChips(query);
@@ -867,11 +871,7 @@ $("copyIpBtn").addEventListener("click", () => toast("Not officially linked with
 $("discordBtn").addEventListener("click", () => window.open("https://discord.gg/zMqy5QbevP", "_blank"));
 $("apolloBtn").addEventListener("click", () => (window.location.href = "https://im-apo.github.io/ApolloRPG/"));
 $("ronBtn").addEventListener("click", () => (window.location.href = "https://im-apo.github.io/SealTiers/StellarTiers/"));
-$("themeBtn").addEventListener("click", () => {
-    const next = document.documentElement.dataset.theme === "light" ? "dark" : "light";
-    document.documentElement.dataset.theme = next;
-    try { localStorage.setItem("theme", next); } catch {}
-});
+// Theme picker lives in home.js
 
 // Close buttons + backdrop clicks for every overlay
 [["closeModal", "playerModal"], ["closeTierHistory", "tierHistoryModal"], ["closeTierInfo", "tierInfoModal"], ["closeKitInfo", "kitInfoModal"],
@@ -932,7 +932,7 @@ document.addEventListener("click", (e) => { if (!contextMenu.contains(e.target))
     window.loadStartTime = Date.now();
     const fromURL = getGamemodeFromURL();
     if (location.pathname.startsWith(BASE_PATH + "rankings") && !VALID_GAMEMODES.includes(fromURL)) history.replaceState(null, "", BASE_PATH + "rankings/overall");
-    if (VALID_GAMEMODES.includes(fromURL)) applyGamemode(fromURL); else { updateURL("overall"); applyGamemode("overall"); }
+    if (VALID_GAMEMODES.includes(fromURL)) applyGamemode(fromURL); else { updateURL("home"); applyGamemode("home"); }
     const q = new URLSearchParams(location.search).get("q");
     if (q) { $("searchBox").value = q; $("clearSearchBtn").style.display = "grid"; }
     syncModeUI();
