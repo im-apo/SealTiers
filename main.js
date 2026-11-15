@@ -5,10 +5,10 @@ if (sessionStorage.redirect) {
 }
 
 if (
-  location.pathname.startsWith('/SealTiers/rankings') &&
-  !/^\/SealTiers\/rankings\/(overall|crystal|smp|diasmp|sword|axe|uhc|potion|nethpot|mace|speed|elytra|cart|ogvanilla|nethuhc|nethsword|ltm)?\/?$/.test(location.pathname)
+  location.pathname.startsWith('/StellarTiers/rankings') &&
+  !/^\/StellarTiers\/rankings\/(overall|crystal|smp|diasmp|sword|axe|uhc|potion|nethpot|mace|speed|elytra|cart|ogvanilla|nethuhc|nethsword|ltm)?\/?$/.test(location.pathname)
 ) {
-  location.replace('/SealTiers/rankings/overall');
+  location.replace('/StellarTiers/rankings/overall');
 }
 
 
@@ -33,19 +33,33 @@ document.addEventListener("DOMContentLoaded", () => {
     'nethuhc', 'nethsword', 'moddia', 'ltm'
   ];
 
-  const match = path.match(/\/SealTiers\/rankings\/([^\/]+)/);
+  const match = path.match(/\/StellarTiers\/rankings\/([^\/]+)/);
   const gamemode = match ? match[1] : null;
 
 
-  if (path.startsWith('/SealTiers/rankings') && !validGamemodes.includes(gamemode)) {
-    history.replaceState(null, '', '/SealTiers/rankings/overall');
+  if (path.startsWith('/StellarTiers/rankings') && !validGamemodes.includes(gamemode)) {
+    history.replaceState(null, '', '/StellarTiers/rankings/overall');
   }
 
   initializeFromURL();
 });
 
-const ASSET_BASE = "/SealTiers/";
+const ASSET_BASE = "/StellarTiers/";
 const fixAssetPath = (path) => path.startsWith("assets/") ? ASSET_BASE + path : path;
+
+const esc = (v) => String(v ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const byPoints = (a, b) => b.points - a.points || String(a.name).localeCompare(String(b.name));
+const ICON_FILES = { crystal: "Crystal", sword: "Sword", uhc: "Uhc", potion: "Potion", nethpot: "Nethpot", nethsword: "NethSword", smp: "Smp", axe: "Axe", mace: "Mace", diasmp: "Diasmp", speed: "Speed", elytra: "Elytra", trident: "Trident", cart: "Cart", bed: "Bed", bow: "Bow", creeper: "Creeper", debuff: "DeBuff", diasurv: "DiaSurv", manhunt: "Manhunt", ogvanilla: "OgVanilla", nethuhc: "NethUhc", ltm: "LTM" };
+const GAMEMODE_ICONS = Object.fromEntries(Object.entries(ICON_FILES).map(([k, f]) => [k, fixAssetPath(`assets/gamemode-icons/${f}.svg`)]));
+const TIER_ORDER = {};
+for (let n = 0; n <= 6; n++) for (const p of ["", "R"]) { TIER_ORDER[`${p}HT${n}`] = n * 2; TIER_ORDER[`${p}LT${n}`] = n * 2 + 1; }
+const EXTERNAL_LINKS = { stellartiers: "", extiers: "" }; // fill in URLs to show these buttons
+function closeAllOverlays() {
+    document.querySelectorAll(".modal").forEach((m) => (m.style.display = "none"));
+    const h = document.getElementById("searchHelpModal"); if (h) h.style.display = "none";
+    document.querySelectorAll(".context-menu").forEach((m) => (m.style.display = "none"));
+    document.querySelectorAll(".activity-feed-modal, .comparison-modal").forEach((m) => m.classList.remove("active"));
+}
 
 
 const tierPoints = {
@@ -233,15 +247,7 @@ const kitInfo = {
 function calculatePeakTier(currentTier, peakTier) {
     if (!peakTier || !currentTier) return null;
     
-    const tierRank = {
-        'HT0': 0, 'LT0': 1, 'RHT0': 0, 'RLT0': 1,
-        'HT1': 2, 'LT1': 3, 'RHT1': 2, 'RLT1': 3,
-        'HT2': 4, 'LT2': 5, 'RHT2': 4, 'RLT2': 5,
-        'HT3': 6, 'LT3': 7, 'RHT3': 6, 'RLT3': 7,
-        'HT4': 8, 'LT4': 9, 'RHT4': 8, 'RLT4': 9,
-        'HT5': 10, 'LT5': 11, 'RHT5': 10, 'RLT5': 11,
-        'HT6': 12, 'LT6': 13, 'RHT6': 12, 'RLT6': 13,
-    };
+    const tierRank = TIER_ORDER;
     
     const currentRank = tierRank[currentTier] ?? 999;
     const peakRank = tierRank[peakTier] ?? 999;
@@ -259,7 +265,7 @@ function getGamemodeFromURL() {
 }
 
 function updateURL(gamemode) {
-    const newPath = `/SealTiers/rankings/${gamemode}`;
+    const newPath = `/StellarTiers/rankings/${gamemode}`;
     window.history.pushState({ gamemode }, '', newPath);
 }
 
@@ -400,77 +406,53 @@ let allPlayersRanking = []; // Store the complete ranking for reference
 
 let isInitialLoad = true;
 
+const PLAYERS_URL = "https://stellartiersbot.onrender.com/players.json";
+const CACHE_KEY = "players_cache_v1";
+let retryDelay = 3000;
+function hideLoader() {
+    const l = document.getElementById("loadingScreen");
+    if (!l || l.classList.contains("hidden")) return;
+    l.classList.add("hidden");
+    setTimeout(() => (l.style.display = "none"), 500);
+}
 async function loadPlayers() {
-    const loadingScreen = document.getElementById("loadingScreen");
-    const loadingSubtext = document.getElementById("loadingSubtext");
-
+    const sub = document.getElementById("loadingSubtext");
+    if (isInitialLoad) {
+        isInitialLoad = false;
+        try {
+            const c = JSON.parse(localStorage.getItem(CACHE_KEY) || "null");
+            if (Array.isArray(c) && c.length) { players = c; hideLoader(); renderPlayers(); }
+        } catch {}
+    }
     try {
-        const res = await fetch(
-            "https://stellartiersbot.onrender.com/players.json"
-        );
-
-        if (!res.ok) {
-            throw new Error("Network response was not ok");
-        }
-
+        const ctrl = new AbortController();
+        const t = setTimeout(() => ctrl.abort(), 60000);
+        const res = await fetch(PLAYERS_URL, { signal: ctrl.signal });
+        clearTimeout(t);
+        if (!res.ok) throw new Error("Network response was not ok");
         players = await res.json();
-
-        // Show loading screen for minimum 0.75 seconds on initial load
-        if (isInitialLoad) {
-            const minLoadTime = 750;
-            const startTime = window.loadStartTime || Date.now();
-            const elapsedTime = Date.now() - startTime;
-            const remainingTime = Math.max(0, minLoadTime - elapsedTime);
-
-            setTimeout(() => {
-                if (loadingScreen) {
-                    loadingScreen.classList.add("hidden");
-                    // Remove from DOM after fade completes
-                    setTimeout(() => {
-                        loadingScreen.style.display = "none";
-                    }, 500); // Match the CSS transition duration
-                }
-                isInitialLoad = false;
-            }, remainingTime);
-        } else {
-            if (loadingScreen) {
-                loadingScreen.classList.add("hidden");
-                setTimeout(() => {
-                    loadingScreen.style.display = "none";
-                }, 500);
-            }
-        }
-
+        try { localStorage.setItem(CACHE_KEY, JSON.stringify(players)); } catch {}
+        retryDelay = 3000;
+        hideLoader();
         renderPlayers();
     } catch (error) {
         console.error("Failed to load players:", error);
-        if (loadingSubtext) {
-            loadingSubtext.textContent =
-                "Connection failed. Please check your internet connection.";
-            loadingSubtext.style.color = "#ef4444";
-        }
-
-        // Retry after 3 seconds
-        setTimeout(() => {
-            if (loadingSubtext) {
-                loadingSubtext.textContent = "Retrying...";
-                loadingSubtext.style.color = "#94a3b8";
-            }
-            loadPlayers();
-        }, 3000);
+        if (!players.length && sub) { sub.textContent = "Server is waking up. Retrying..."; sub.style.color = "#f59e0b"; }
+        setTimeout(loadPlayers, retryDelay);
+        retryDelay = Math.min(retryDelay * 2, 30000);
     }
 }
 
 function calculatePoints(player) {
     let total = 0;
-    for (const mode in player.tiers) {
+    for (const mode in (player.tiers || {})) {
         total += tierPoints[player.tiers[mode]] || 0;
     }
     return total;
 }
 
 document.getElementById("copyIpBtn").addEventListener("click", () => {
-    navigator.clipboard.writeText("We Are Not Officially linked with any server.");
+    document.getElementById("copyPopup").textContent = "Not officially linked with any server";
     const popup = document.getElementById("copyPopup");
     popup.style.display = "block";
     setTimeout(() => (popup.style.display = "none"), 2000);
@@ -478,11 +460,11 @@ document.getElementById("copyIpBtn").addEventListener("click", () => {
 document.getElementById("discordBtn").addEventListener("click", () => {
     window.open("https://discord.gg/zMqy5QbevP", "_blank");
 });
-document.getElementById("apolloBtn").addEventListener("click", () => {
-    window.location.href = "https://im-apo.github.io/ApolloRPG/";
-});
-document.getElementById("ronBtn").addEventListener("click", () => {
-    window.location.href = "https://im-apo.github.io/SealTiers/StellarTiers/";
+[["stellarTiersBtn", "stellartiers"], ["extiersBtn", "extiers"]].forEach(([id, key]) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    if (!EXTERNAL_LINKS[key]) { el.style.display = "none"; return; }
+    el.addEventListener("click", () => window.open(EXTERNAL_LINKS[key], "_blank", "noopener"));
 });
 
 function getBadge(points) {
@@ -916,12 +898,12 @@ function renderTierColumns(filteredPlayers, container) {
                     : `<img src="${fixAssetPath("assets/icons/lt_icon.svg")}" class="tier-indicator-icon" alt="LT" onerror="this.style.display='none';">`;
 
                 playerDiv.innerHTML = `
-                    <img src="${player.avatar}" alt="${player.name}" class="player-avatar-small" onerror="this.style.display='none';">
+                    <img src="${esc(player.avatar)}" alt="${esc(player.name)}" class="player-avatar-small" onerror="this.style.display='none';">
                     <div class="tier-column-player-info">
                         <span class="tier-column-player-name ${isHighTier ? "high-tier" : "low-tier"}">
-                            ${player.name}
-                            <span class="player-region ${player.region ? player.region.toLowerCase() : "unknown"}">
-                                ${player.region ? player.region.toUpperCase() : "UNKNOWN"}
+                            ${esc(player.name)}
+                            <span class="player-region ${esc(player.region ? player.region.toLowerCase() : "unknown")}">
+                                ${esc(player.region ? player.region.toUpperCase() : "UNKNOWN")}
                             </span>
                         </span>
                     </div>
@@ -946,12 +928,7 @@ function renderTierColumns(filteredPlayers, container) {
 
 
 function renderPlayers() {
-    const searchValue = document
-        .getElementById("searchBox")
-        .value.toLowerCase();
-    let filtered = players.filter((p) =>
-        p.name.toLowerCase().includes(searchValue)
-    );
+    let filtered = advancedSearch.search(document.getElementById("searchBox").value);
 
     // Special case: LTM gamemode shows announcement instead of leaderboard
     if (currentGamemode === "ltm") {
@@ -974,7 +951,7 @@ function renderPlayers() {
         // Create complete ranking of all players
         allPlayersRanking = [...players];
         allPlayersRanking.forEach((p) => (p.points = calculatePoints(p)));
-        allPlayersRanking.sort((a, b) => b.points - a.points);
+        allPlayersRanking.sort(byPoints);
 
         // Apply region filter if any regions are selected
         if (selectedRegions.size > 0) {
@@ -984,12 +961,12 @@ function renderPlayers() {
         }
 
         filtered.forEach((p) => (p.points = calculatePoints(p)));
-        filtered.sort((a, b) => b.points - a.points);
+        filtered.sort(byPoints);
     } else {
         filtered.forEach(
-            (p) => (p.points = tierPoints[p.tiers[currentGamemode]] || 0)
+            (p) => (p.points = tierPoints[p.tiers?.[currentGamemode]] || 0)
         );
-        filtered.sort((a, b) => b.points - a.points);
+        filtered.sort(byPoints);
     }
 
     const container = document.getElementById("playerList");
@@ -1027,63 +1004,10 @@ function renderPlayers() {
         }
 
         // Create gamemode icons mapping
-        const gamemodeIcons = {
-            crystal: fixAssetPath("assets/gamemode-icons/Crystal.svg"),
-            sword: fixAssetPath("assets/gamemode-icons/Sword.svg"),
-            uhc: fixAssetPath("assets/gamemode-icons/Uhc.svg"),
-            potion: fixAssetPath("assets/gamemode-icons/Potion.svg"),
-            nethpot: fixAssetPath("assets/gamemode-icons/Nethpot.svg"),
-            nethsword: fixAssetPath("assets/gamemode-icons/NethSword.svg"),
-            smp: fixAssetPath("assets/gamemode-icons/Smp.svg"),
-            axe: fixAssetPath("assets/gamemode-icons/Axe.svg"),
-            mace: fixAssetPath("assets/gamemode-icons/Mace.svg"),
-            diasmp: fixAssetPath("assets/gamemode-icons/Diasmp.svg"),
-            speed: fixAssetPath("assets/gamemode-icons/Speed.svg"),
-            elytra: fixAssetPath("assets/gamemode-icons/Elytra.svg"),
-            trident: fixAssetPath("assets/gamemode-icons/Trident.svg"),
-            cart: fixAssetPath("assets/gamemode-icons/Cart.svg"),
-            bed: fixAssetPath("assets/gamemode-icons/Bed.svg"),
-            bow: fixAssetPath("assets/gamemode-icons/Bow.svg"),
-            creeper: fixAssetPath("assets/gamemode-icons/Creeper.svg"),
-            debuff: fixAssetPath("assets/gamemode-icons/DeBuff.svg"),
-            diasurv: fixAssetPath("assets/gamemode-icons/DiaSurv.svg"),
-            manhunt: fixAssetPath("assets/gamemode-icons/Manhunt.svg"),
-            ogvanilla: fixAssetPath("assets/gamemode-icons/OgVanilla.svg"),
-            nethuhc: fixAssetPath("assets/gamemode-icons/NethUhc.svg"),
-            ltm: fixAssetPath("assets/gamemode-icons/LTM.svg"),
-        };
+        const gamemodeIcons = GAMEMODE_ICONS;
 
         // Define tier hierarchy for sorting (higher tiers first)
-        const tierHierarchy = {
-            HT0: 0,
-            LT0: 1,
-            RHT0: 0,
-            RLT0: 1,
-            HT1: 2,
-            LT1: 3,
-            RHT1: 2,
-            RLT1: 3,
-            HT2: 4,
-            LT2: 5,
-            RHT2: 4,
-            RLT2: 5,
-            HT3: 6,
-            LT3: 7,
-            RHT3: 6,
-            RLT3: 7,
-            HT4: 8,
-            LT4: 9,
-            RHT4: 8,
-            RLT4: 9,
-            HT5: 10,
-            LT5: 11,
-            RHT5: 10,
-            RLT5: 11,
-            HT6: 12,
-            LT6: 13,
-            RHT6: 12,
-            RLT6: 13,
-        };
+        const tierHierarchy = TIER_ORDER;
 
         // Define tier organization
         const mainTiers = [
@@ -1251,20 +1175,20 @@ let gamemodeDisplay = (() => {
     <span style="${rankStyle}">${displayRank}</span>
   </div>
   <div class="player-info">
-    <img class="player-avatar" src="${p.avatar}" alt="${p.name}">
+    <img class="player-avatar" src="${esc(p.avatar)}" alt="${esc(p.name)}">
     <div class="player-details">
       <span class="player-name">
-      ${p.name}
-         <span class="player-region ${String(p.region || "").toLowerCase()}">${
-            p.region
-        }</span>
+      ${esc(p.name)}
+         <span class="player-region ${esc(String(p.region || "").toLowerCase())}">${esc(p.region)}</span>
       </span>
       <span class="player-points"><span class="points-number">${p.points} pts</span> <span class="points-badge ${badge.class}">${badge.label}</span></span>
     </div>
   </div>
   <div class="gamemode-tiers">${gamemodeDisplay}</div>
 `;
+        row.tabIndex = 0; row.setAttribute("role", "button");
         row.addEventListener("click", () => openPlayerModal(p));
+        row.addEventListener("keydown", (e) => { if (e.key === "Enter") openPlayerModal(p); });
 
         // Store player data for context menu
         row.dataset.username = p.name;
@@ -1284,67 +1208,14 @@ function openPlayerModal(player) {
     const badge = getBadge(totalPoints);
 
     // Create tier icons mapping
-    const gamemodeIcons = {
-        crystal: fixAssetPath("assets/gamemode-icons/Crystal.svg"),
-        sword: fixAssetPath("assets/gamemode-icons/Sword.svg"),
-        uhc: fixAssetPath("assets/gamemode-icons/Uhc.svg"),
-        potion: fixAssetPath("assets/gamemode-icons/Potion.svg"),
-        nethpot: fixAssetPath("assets/gamemode-icons/Nethpot.svg"),
-        nethsword: fixAssetPath("assets/gamemode-icons/NethSword.svg"),
-        smp: fixAssetPath("assets/gamemode-icons/Smp.svg"),
-        axe: fixAssetPath("assets/gamemode-icons/Axe.svg"),
-        mace: fixAssetPath("assets/gamemode-icons/Mace.svg"),
-        diasmp: fixAssetPath("assets/gamemode-icons/Diasmp.svg"),
-        speed: fixAssetPath("assets/gamemode-icons/Speed.svg"),
-        elytra: fixAssetPath("assets/gamemode-icons/Elytra.svg"),
-        trident: fixAssetPath("assets/gamemode-icons/Trident.svg"),
-        cart: fixAssetPath("assets/gamemode-icons/Cart.svg"),
-        bed: fixAssetPath("assets/gamemode-icons/Bed.svg"),
-        bow: fixAssetPath("assets/gamemode-icons/Bow.svg"),
-        creeper: fixAssetPath("assets/gamemode-icons/Creeper.svg"),
-        debuff: fixAssetPath("assets/gamemode-icons/DeBuff.svg"),
-        diasurv: fixAssetPath("assets/gamemode-icons/DiaSurv.svg"),
-        manhunt: fixAssetPath("assets/gamemode-icons/Manhunt.svg"),
-        ogvanilla: fixAssetPath("assets/gamemode-icons/OgVanilla.svg"),
-        ltm: fixAssetPath("assets/gamemode-icons/LTM.svg"),
-        nethuhc: fixAssetPath("assets/gamemode-icons/NethUhc.svg"),
-    };
+    const gamemodeIcons = GAMEMODE_ICONS;
 
     // Define tier hierarchy for sorting (higher tiers first)
     // Retired tiers have same priority as normal tiers
-    const tierHierarchy = {
-        HT0: 0,
-        LT0: 1,
-        RHT0: 0,
-        RLT0: 1,
-        HT1: 2,
-        LT1: 3,
-        RHT1: 2,
-        RLT1: 3,
-        HT2: 4,
-        LT2: 5,
-        RHT2: 4,
-        RLT2: 5,
-        HT3: 6,
-        LT3: 7,
-        RHT3: 6,
-        RLT3: 7,
-        HT4: 8,
-        LT4: 9,
-        RHT4: 8,
-        RLT4: 9,
-        HT5: 10,
-        LT5: 11,
-        RHT5: 10,
-        RLT5: 11,
-        HT6: 12,
-        LT6: 13,
-        RHT6: 12,
-        RLT6: 13,
-    };
+    const tierHierarchy = TIER_ORDER;
 
     // Sort tiers by hierarchy (highest first)
-    const sortedTiers = Object.entries(player.tiers).sort(
+    const sortedTiers = Object.entries(player.tiers || {}).sort(
         ([, tierA], [, tierB]) => {
             const rankA = tierHierarchy[tierA] ?? 999;
             const rankB = tierHierarchy[tierB] ?? 999;
@@ -1366,11 +1237,9 @@ function openPlayerModal(player) {
 
     body.innerHTML = `
     <div class="player-modal-header">
-      <img class="player-modal-avatar" src="${player.avatar}" alt="${
-        player.name
-    }">
+      <img class="player-modal-avatar" src="${esc(player.avatar)}" alt="${esc(player.name)}">
       <h2 class="player-modal-name">
-        <span class="${rankClass}">${player.name}</span>
+        <span class="${rankClass}">${esc(player.name)}</span>
         ${
             isValidRegion
                 ? `<span class="player-region ${player.region.toLowerCase()}">${player.region.toUpperCase()}</span>`
@@ -1409,7 +1278,7 @@ function openPlayerModal(player) {
   View on NameMC
 `;
     nameMcBtn.addEventListener("click", () => {
-        window.open(`https://namemc.com/profile/${player.name}`, "_blank");
+        window.open(`https://namemc.com/profile/${esc(player.name)}`, "_blank");
     });
     nameMcBtn.addEventListener("mouseenter", () => {
         nameMcBtn.style.background = "#0b1220";
@@ -1537,12 +1406,12 @@ function getPlayerRank(playerName) {
 
     if (currentGamemode === "overall") {
         sortedPlayers.forEach((p) => (p.points = calculatePoints(p)));
-        sortedPlayers.sort((a, b) => b.points - a.points);
+        sortedPlayers.sort(byPoints);
     } else {
         sortedPlayers.forEach(
-            (p) => (p.points = tierPoints[p.tiers[currentGamemode]] || 0)
+            (p) => (p.points = tierPoints[p.tiers?.[currentGamemode]] || 0)
         );
-        sortedPlayers.sort((a, b) => b.points - a.points);
+        sortedPlayers.sort(byPoints);
     }
 
     // Find the player's position (1-based ranking)
@@ -1586,57 +1455,12 @@ document.addEventListener("DOMContentLoaded", () => {
 document.addEventListener("DOMContentLoaded", () => {
     const selector = document.getElementById("pageSizeSelector");
     document.addEventListener("keydown", (e) => {
-        // Handle Escape key
-        document.addEventListener("keydown", (e) => {
-            // Handle Escape key
-            if (e.key === "Escape") {
-                e.preventDefault(); // Stop the event from bubbling
-                e.stopPropagation(); // Additional stop
-
-                const contextMenu = document.getElementById(
-                    "playerContextMenu"
-                );
-                const regionModal = document.getElementById(
-                    "regionFilterModal"
-                );
-                const playerModal = document.getElementById("playerModal"); // Add this too
-                const tierInfoModal = document.getElementById("tierInfoModal"); // Add this too
-                const kitInfoModal = document.getElementById("kitInfoModal");
-
-                // Hide all modals
-                if (contextMenu && contextMenu.style.display !== "none") {
-                    contextMenu.style.display = "none";
-                }
-                if (kitInfoModal && kitInfoModal.style.display !== "none") {
-                    kitInfoModal.style.display = "none";
-                }
-                if (regionModal && regionModal.style.display !== "none") {
-                    regionModal.style.display = "none";
-                }
-                if (playerModal && playerModal.style.display !== "none") {
-                    playerModal.style.display = "none";
-                }
-                if (tierInfoModal && tierInfoModal.style.display !== "none") {
-                    tierInfoModal.style.display = "none";
-                }
-                return; // Exit early after handling escape
-            }
-
-            // Handle "/" key for search focus
-            if (
-                e.target.tagName !== "INPUT" &&
-                e.target.tagName !== "TEXTAREA" &&
-                !e.target.isContentEditable
-            ) {
-                if (e.key === "/") {
-                    e.preventDefault();
-                    const searchBox = document.getElementById("searchBox");
-                    if (searchBox) {
-                        searchBox.focus();
-                    }
-                }
-            }
-        });
+        if (e.key === "Escape") { closeAllOverlays(); return; }
+        const t = e.target;
+        if (e.key === "/" && !/^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName) && !t.isContentEditable) {
+            e.preventDefault();
+            document.getElementById("searchBox")?.focus();
+        }
     });
     if (selector) {
         selector.addEventListener("change", (e) => {
@@ -1653,8 +1477,7 @@ document.getElementById("searchBox").addEventListener("input", (e) => {
     if (e.target.value === "/") {
         e.target.value = "";
     }
-    currentPage = 1;
-    renderPlayers();
+
 });
 
 document.querySelectorAll(".gamemode-tab").forEach((tab) => {
@@ -1761,31 +1584,7 @@ function openTierHistoryModal(player) {
     const modal = document.getElementById("tierHistoryModal");
     const body = document.getElementById("tierHistoryBody");
     
-    const gamemodeIcons = {
-        crystal: fixAssetPath("assets/gamemode-icons/Crystal.svg"),
-        sword: fixAssetPath("assets/gamemode-icons/Sword.svg"),
-        uhc: fixAssetPath("assets/gamemode-icons/Uhc.svg"),
-        potion: fixAssetPath("assets/gamemode-icons/Potion.svg"),
-        nethpot: fixAssetPath("assets/gamemode-icons/Nethpot.svg"),
-        nethsword: fixAssetPath("assets/gamemode-icons/NethSword.svg"),
-        smp: fixAssetPath("assets/gamemode-icons/Smp.svg"),
-        axe: fixAssetPath("assets/gamemode-icons/Axe.svg"),
-        mace: fixAssetPath("assets/gamemode-icons/Mace.svg"),
-        diasmp: fixAssetPath("assets/gamemode-icons/Diasmp.svg"),
-        speed: fixAssetPath("assets/gamemode-icons/Speed.svg"),
-        elytra: fixAssetPath("assets/gamemode-icons/Elytra.svg"),
-        trident: fixAssetPath("assets/gamemode-icons/Trident.svg"),
-        cart: fixAssetPath("assets/gamemode-icons/Cart.svg"),
-        bed: fixAssetPath("assets/gamemode-icons/Bed.svg"),
-        bow: fixAssetPath("assets/gamemode-icons/Bow.svg"),
-        creeper: fixAssetPath("assets/gamemode-icons/Creeper.svg"),
-        debuff: fixAssetPath("assets/gamemode-icons/DeBuff.svg"),
-        diasurv: fixAssetPath("assets/gamemode-icons/DiaSurv.svg"),
-        manhunt: fixAssetPath("assets/gamemode-icons/Manhunt.svg"),
-        ogvanilla: fixAssetPath("assets/gamemode-icons/OgVanilla.svg"),
-        ltm: fixAssetPath("assets/gamemode-icons/LTM.svg"),
-        nethuhc: fixAssetPath("assets/gamemode-icons/NethUhc.svg"),
-    };
+    const gamemodeIcons = GAMEMODE_ICONS;
 
     const gamesWithHistory = Object.keys(player.tierHistory || {}).filter(
         gm => player.tierHistory[gm] && player.tierHistory[gm].length > 0
@@ -1798,9 +1597,9 @@ function openTierHistoryModal(player) {
     body.innerHTML = `
         <div style="display: flex; flex-direction: column; align-items: center; width: 100%;">
             <div class="player-modal-header" style="margin-bottom: 32px;">
-                <img class="player-modal-avatar" src="${player.avatar}" alt="${player.name}">
+                <img class="player-modal-avatar" src="${esc(player.avatar)}" alt="${esc(player.name)}">
                 <h2 class="player-modal-name" style="margin-bottom: 8px;">
-                    <span>${player.name}</span>
+                    <span>${esc(player.name)}</span>
                 </h2>
                 <div style="font-size: 1.2rem; color: #94a3b8; font-weight: 600;">Tier History</div>
             </div>
@@ -1940,7 +1739,7 @@ class PlayerBioSystem {
             ">
                 ${bio.description ? `
                     <div style="color: #e2e8f0; margin-bottom: 12px; line-height: 1.6;">
-                        ${bio.description}
+                        ${esc(bio.description)}
                     </div>
                 ` : ''}
                 
@@ -1987,20 +1786,20 @@ class PlayerBioSystem {
                                 border-radius: 8px;
                                 font-size: 0.85rem;
                                 font-weight: 600;
-                            ">💬 ${bio.socials.discord}</div>
+                            ">💬 ${esc(bio.socials.discord)}</div>
                         ` : ''}
                     </div>
                 ` : ''}
 
                 ${bio.favGamemode ? `
                     <div style="margin-top: 12px; color: #94a3b8; font-size: 0.85rem;">
-                        <strong>Favorite Gamemode:</strong> ${bio.favGamemode}
+                        <strong>Favorite Gamemode:</strong> ${esc(bio.favGamemode)}
                     </div>
                 ` : ''}
 
                 ${bio.playstyle ? `
                     <div style="margin-top: 8px; color: #94a3b8; font-size: 0.85rem;">
-                        <strong>Playstyle:</strong> ${bio.playstyle}
+                        <strong>Playstyle:</strong> ${esc(bio.playstyle)}
                     </div>
                 ` : ''}
             </div>
@@ -2011,7 +1810,7 @@ class PlayerBioSystem {
 const playerBioSystem = new PlayerBioSystem();
 
 playerBioSystem.setBio('ImApo', {
-    description: 'Creator and developer of the Bunny Tiers. Casual PvP player with an aggressive playstyle.',
+    description: 'Creator and developer of the Axis Tierlist. Casual PvP player with an aggressive playstyle.',
     socials: {
         youtube: 'https://www.youtube.com/@Im-Apo',
         discord: 'im_apo_'
@@ -2020,13 +1819,13 @@ playerBioSystem.setBio('ImApo', {
     playstyle: 'Aggressive'
 });
 playerBioSystem.setBio('Meraliu', {
-    description: 'Owner of the MissMorphs animal castle - I also really like Bunnies. 🦭',
+    description: 'Owner of the SAT discord server/team (seals and cats) - I also really like seals. 🦭',
     socials: {
         youtube: 'https://www.youtube.com/@ImMeraliu',
         discord: 'meraliu'
     },
-    favGamemode: 'Spear Mace',
-    playstyle: 'Bunny'
+    favGamemode: 'Diamond SMP',
+    playstyle: 'Seal'
 });
 
 
@@ -2071,15 +1870,7 @@ class PlayerComparison {
         if (!tier1) return 'player2';
         if (!tier2) return 'player1';
 
-        const tierRank = {
-            'HT0': 0, 'LT0': 1, 'RHT0': 0, 'RLT0': 1,
-            'HT1': 2, 'LT1': 3, 'RHT1': 2, 'RLT1': 3,
-            'HT2': 4, 'LT2': 5, 'RHT2': 4, 'RLT2': 5,
-            'HT3': 6, 'LT3': 7, 'RHT3': 6, 'RLT3': 7,
-            'HT4': 8, 'LT4': 9, 'RHT4': 8, 'RLT4': 9,
-            'HT5': 10, 'LT5': 11, 'RHT5': 10, 'RLT5': 11,
-            'HT6': 12, 'LT6': 13, 'RHT6': 12, 'RLT6': 13,
-        };
+        const tierRank = TIER_ORDER;
 
         const rank1 = tierRank[tier1] ?? 999;
         const rank2 = tierRank[tier2] ?? 999;
@@ -2109,7 +1900,7 @@ class PlayerComparison {
                 ">
                     <div style="text-align: center;">
                         <div style="font-size: 1.2rem; font-weight: 700; color: ${p1Points > p2Points ? '#10b981' : '#e2e8f0'};">
-                            ${p1Name}
+                            ${esc(p1Name)}
                         </div>
                         <div style="font-size: 2rem; font-weight: 800; color: ${p1Points > p2Points ? '#10b981' : '#94a3b8'}; margin-top: 8px;">
                             ${p1Points}
@@ -2121,7 +1912,7 @@ class PlayerComparison {
 
                     <div style="text-align: center;">
                         <div style="font-size: 1.2rem; font-weight: 700; color: ${p2Points > p1Points ? '#10b981' : '#e2e8f0'};">
-                            ${p2Name}
+                            ${esc(p2Name)}
                         </div>
                         <div style="font-size: 2rem; font-weight: 800; color: ${p2Points > p1Points ? '#10b981' : '#94a3b8'}; margin-top: 8px;">
                             ${p2Points}
@@ -2382,189 +2173,6 @@ class AdvancedSearch {
 const advancedSearch = new AdvancedSearch();
 
 
-// Helper function to render with custom filter
-function renderPlayersWithFilter(filteredList) {
-    const container = document.getElementById('playerList');
-    container.innerHTML = '';
-    
-    if (!filteredList.length) {
-        container.innerHTML = `<div class="no-results">No players found</div>`;
-        return;
-    }
-    
-    // Sort by points
-    filteredList.forEach(p => p.points = calculatePoints(p));
-    filteredList.sort((a, b) => b.points - a.points);
-    
-    // Calculate pagination
-    const totalPlayers = filteredList.length;
-    const totalPages = Math.ceil(totalPlayers / playersPerPage);
-    const startIndex = (currentPage - 1) * playersPerPage;
-    const endIndex = startIndex + playersPerPage;
-    const playersToShow = filteredList.slice(startIndex, endIndex);
-    
-    playersToShow.forEach((p, idx) => {
-        const badge = getBadge(p.points);
-        const displayRank = startIndex + idx + 1;
-        
-        const gamemodeIcons = {
-            crystal: fixAssetPath("assets/gamemode-icons/Crystal.svg"),
-            sword: fixAssetPath("assets/gamemode-icons/Sword.svg"),
-            uhc: fixAssetPath("assets/gamemode-icons/Uhc.svg"),
-            potion: fixAssetPath("assets/gamemode-icons/Potion.svg"),
-            nethpot: fixAssetPath("assets/gamemode-icons/Nethpot.svg"),
-            nethsword: fixAssetPath("assets/gamemode-icons/NethSword.svg"),
-            smp: fixAssetPath("assets/gamemode-icons/Smp.svg"),
-            axe: fixAssetPath("assets/gamemode-icons/Axe.svg"),
-            mace: fixAssetPath("assets/gamemode-icons/Mace.svg"),
-            diasmp: fixAssetPath("assets/gamemode-icons/Diasmp.svg"),
-            speed: fixAssetPath("assets/gamemode-icons/Speed.svg"),
-            elytra: fixAssetPath("assets/gamemode-icons/Elytra.svg"),
-            cart: fixAssetPath("assets/gamemode-icons/Cart.svg"),
-            ogvanilla: fixAssetPath("assets/gamemode-icons/OgVanilla.svg"),
-            nethuhc: fixAssetPath("assets/gamemode-icons/NethUhc.svg"),
-        };
-        
-        const tierHierarchy = {
-            HT0: 0, LT0: 1, RHT0: 0, RLT0: 1,
-            HT1: 2, LT1: 3, RHT1: 2, RLT1: 3,
-            HT2: 4, LT2: 5, RHT2: 4, RLT2: 5,
-            HT3: 6, LT3: 7, RHT3: 6, RLT3: 7,
-            HT4: 8, LT4: 9, RHT4: 8, RLT4: 9,
-            HT5: 10, LT5: 11, RHT5: 10, RLT5: 11,
-            HT6: 12, LT6: 13, RHT6: 12, RLT6: 13,
-        };
-        
-        const playerMainTiers = [];
-        const playerSubTiers = [];
-        const playerLimitedTiers = [];
-        
-        ALL_GAMEMODES.main.forEach((gm) => {
-            const tier = p.tiers?.[gm];
-            const peakTier = p.peakTiers?.[gm];
-            playerMainTiers.push([gm, tier || null, peakTier]);
-        });
-        
-        ALL_GAMEMODES.sub.forEach((gm) => {
-            const tier = p.tiers?.[gm];
-            const peakTier = p.peakTiers?.[gm];
-            playerSubTiers.push([gm, tier || null, peakTier]);
-        });
-        
-        ALL_GAMEMODES.limited.forEach((gm) => {
-            const tier = p.tiers?.[gm];
-            const peakTier = p.peakTiers?.[gm];
-            playerLimitedTiers.push([gm, tier || null, peakTier]);
-        });
-        
-        const sortByTierHierarchy = (a, b) => {
-            const rankA = tierHierarchy[a[1]] ?? 999;
-            const rankB = tierHierarchy[b[1]] ?? 999;
-            return rankA - rankB;
-        };
-        
-        playerMainTiers.sort(sortByTierHierarchy);
-        playerSubTiers.sort(sortByTierHierarchy);
-        playerLimitedTiers.sort(sortByTierHierarchy);
-        
-        const createTierItem = ([gm, tier, peakTier]) => {
-            const iconSrc = gamemodeIcons[gm] || 'assets/gamemode-icons/Overall.svg';
-            
-            if (!tier && STANDBY_TIER_CONFIG.enabled) {
-                return `
-                    <div class="tier-wrapper">
-                        <div class="gamemode-tier-item standby-tier" style="opacity: ${STANDBY_TIER_CONFIG.opacity};">
-                            <div class="gamemode-tier-icon-container" style="border-color: #26324d; border-style: dashed;">
-                                <img class="gamemode-tier-icon" src="${iconSrc}" alt="${gm}" onerror="this.style.display='none';">
-                            </div>
-                            <span class="tier" style="background: #1f2a44; color: #64748b; box-shadow: none;">
-                                ${STANDBY_TIER_CONFIG.label}
-                            </span>
-                        </div>
-                    </div>
-                `;
-            }
-            
-            return createTierWithTooltip(gm, tier, peakTier, iconSrc);
-        };
-        
-        let gamemodeDisplay = '';
-        
-        if (playerMainTiers.length > 0) {
-            gamemodeDisplay += '<div class="tier-row-wrapper">';
-            gamemodeDisplay += '<span class="tier-row-label">Main Tiers:</span>';
-            gamemodeDisplay += '<div class="tier-row">';
-            gamemodeDisplay += playerMainTiers.map(createTierItem).join('');
-            gamemodeDisplay += '</div>';
-            gamemodeDisplay += '</div>';
-        }
-        
-        if (playerSubTiers.length > 0) {
-            gamemodeDisplay += '<div class="tier-row-wrapper">';
-            gamemodeDisplay += '<span class="tier-row-label">SubTiers:</span>';
-            gamemodeDisplay += '<div class="tier-row">';
-            gamemodeDisplay += playerSubTiers.map(createTierItem).join('');
-            gamemodeDisplay += '</div>';
-            gamemodeDisplay += '</div>';
-        }
-        
-        if (playerLimitedTiers.length > 0) {
-            gamemodeDisplay += '<div class="tier-row-wrapper">';
-            gamemodeDisplay += '<span class="tier-row-label">Limited Tiers:</span>';
-            gamemodeDisplay += '<div class="tier-row">';
-            gamemodeDisplay += playerLimitedTiers.map(createTierItem).join('');
-            gamemodeDisplay += '</div>';
-            gamemodeDisplay += '</div>';
-        }
-        
-        const rankClass = displayRank === 1 ? "gold" : displayRank === 2 ? "silver" : displayRank === 3 ? "bronze" : "";
-        let placementBadge = "";
-        
-        if (displayRank === 1) {
-            placementBadge = `<img src="${fixAssetPath('assets/icons/Placement1.svg')}" alt="1st Place" style="position: absolute; width: 80px; height: 40px; z-index: 1; left: 50%; top: 50%; transform: translate(-50%, -50%);" />`;
-        } else if (displayRank === 2) {
-            placementBadge = `<img src="${fixAssetPath('assets/icons/Placement2.svg')}" alt="2nd Place" style="position: absolute; width: 80px; height: 40px; z-index: 1; left: 50%; top: 50%; transform: translate(-50%, -50%);" />`;
-        } else if (displayRank === 3) {
-            placementBadge = `<img src="${fixAssetPath('assets/icons/Placement3.svg')}" alt="3rd Place" style="position: absolute; width: 80px; height: 40px; z-index: 1; left: 50%; top: 50%; transform: translate(-50%, -50%);" />`;
-        } else {
-            placementBadge = `<img src="${fixAssetPath('assets/icons/PlacementOther.svg')}" alt="Rank" style="position: absolute; width: 80px; height: 40px; z-index: 1; left: 50%; top: 50%; transform: translate(-50%, -50%);" />`;
-        }
-        
-        const row = document.createElement('div');
-        row.className = 'player-row';
-        row.innerHTML = `
-            <div class="rank ${rankClass}" style="position: relative; display: flex; align-items: center; justify-content: center;">
-                ${placementBadge}
-                <span style="position: relative; z-index: 2;">${displayRank}</span>
-            </div>
-            <div class="player-info">
-                <img class="player-avatar" src="${p.avatar}" alt="${p.name}">
-                <div class="player-details">
-                    <span class="player-name">
-                        ${p.name}
-                        <span class="player-region ${String(p.region || "").toLowerCase()}">${p.region || ''}</span>
-                    </span>
-                    <span class="player-points">
-                        <span class="points-number">${p.points} pts</span>
-                        <span class="points-badge ${badge.class}">${badge.label}</span>
-                    </span>
-                </div>
-            </div>
-            <div class="gamemode-tiers">${gamemodeDisplay}</div>
-        `;
-        
-        row.addEventListener('click', () => openPlayerModal(p));
-        row.dataset.username = p.name;
-        row.dataset.tiers = JSON.stringify(p.tiers);
-        row.dataset.points = p.points;
-        
-        container.appendChild(row);
-    });
-    
-    updatePaginationControls(totalPages, totalPlayers);
-}
-
-
 // ============================================================================
 // USAGE EXAMPLES & INTEGRATION
 // ============================================================================
@@ -2589,7 +2197,7 @@ function populatePlayerDatalist() {
     const datalist1 = document.getElementById('playerList1');
     const datalist2 = document.getElementById('playerList2');
     
-    const options = players.map(p => `<option value="${p.name}">`).join('');
+    const options = players.map(p => `<option value="${esc(p.name)}">`).join('');
     datalist1.innerHTML = options;
     datalist2.innerHTML = options;
 }
@@ -2713,18 +2321,14 @@ document.addEventListener('DOMContentLoaded', () => {
         clearTimeout(debounceTimer);
         debounceTimer = setTimeout(() => {
             if (query.trim()) {
-                const results = advancedSearch.search(query);
                 advancedSearch.saveHistory(query);
-                currentPage = 1;
-                renderPlayersWithFilter(results);
-                
-                // Show suggestions
-                const suggestions = advancedSearch.getSuggestions(query);
-                renderSuggestions(suggestions);
-            } else {
-                renderPlayers();
-                if (suggestionsBox) suggestionsBox.style.display = 'none';
-            }
+                renderSuggestions(advancedSearch.getSuggestions(query));
+            } else if (suggestionsBox) suggestionsBox.style.display = 'none';
+            currentPage = 1;
+            renderPlayers();
+            const u = new URL(location.href);
+            query.trim() ? u.searchParams.set('q', query) : u.searchParams.delete('q');
+            history.replaceState(history.state, '', u);
         }, 300);
     });
     
@@ -2798,7 +2402,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         
         suggestionsBox.innerHTML = suggestions.map(s => `
-            <div class="suggestion-item" data-value="${s.value}" style="
+            <div class="suggestion-item" data-value="${esc(s.value)}" style="
                 padding: 12px;
                 cursor: pointer;
                 border-radius: 8px;
@@ -2809,7 +2413,7 @@ document.addEventListener('DOMContentLoaded', () => {
             ">
                 <span style="font-size: 1.2rem;">${s.icon}</span>
                 <div style="flex: 1;">
-                    <div style="color: #e2e8f0; font-weight: 600;">${s.label}</div>
+                    <div style="color: #e2e8f0; font-weight: 600;">${esc(s.label)}</div>
                     ${s.type === 'filter' ? `<div style="color: #64748b; font-size: 0.85rem;">Click to add filter</div>` : ''}
                 </div>
             </div>
@@ -2953,8 +2557,9 @@ document.getElementById("closeKitInfo").addEventListener("click", () => {
 document.addEventListener("DOMContentLoaded", () => {
     window.loadStartTime = Date.now();
     
-    // Initialize from URL first
     initializeFromURL();
+    const q = new URLSearchParams(location.search).get("q");
+    if (q) { document.getElementById("searchBox").value = q; document.getElementById("clearSearchBtn").style.display = "block"; }
     // Then load players
     loadPlayers();
 });
@@ -2985,43 +2590,30 @@ console.log(`-------------------------------------------------------------------
 If Website appears to be Down Contact ImApo Immediately
 discord: cxnine._ Axis Discord Server: https://discord.gg/zMqy5QbevP
 -----------------------------------------------------------------------------------`);
-// ============================================================================
-// PROTECTION SYSTEM
-// ============================================================================
 
-// Disable right-click EXCEPT on player rows and the overall tab
-document.addEventListener('contextmenu', function(e) { 
-    const isPlayerRow = e.target.closest('.player-row');
-    const isOverallTab = e.target.closest('.gamemode-tab[data-gamemode="overall"]');
-    
-    // If it's NOT a player row and NOT the overall tab, block the right click
-    if (!isPlayerRow && !isOverallTab) {
-        e.preventDefault(); 
-    }
+// ---- Backdrop clicks, keyboard tabs, activity feed ----
+["playerModal", "tierInfoModal", "kitInfoModal"].forEach((id) => {
+    const el = document.getElementById(id);
+    el?.addEventListener("click", (e) => { if (e.target === el) el.style.display = "none"; });
 });
-
-// Block F12, Ctrl+Shift+I/J/C, Ctrl+U, Ctrl+S, Ctrl+A, Ctrl+P
-document.addEventListener('keydown', function(e) {
-    var blocked = false;
-    if (e.key === 'F12') blocked = true;
-    if (e.ctrlKey && e.shiftKey && ['I','J','C','i','j','c'].includes(e.key)) blocked = true;
-    if (e.ctrlKey && ['u','U','s','S','a','A','p','P'].includes(e.key)) blocked = true;
-    
-    if (blocked) { 
-        e.preventDefault(); 
-        e.stopPropagation(); 
-        return false; 
-    }
-}, true);
-
-// Clear console periodically to deter inspection
-setInterval(function() {
-    console.clear();
-    console.log('%c🔒 ApolloMC — Protected & All Rights Reserved', 'color:#ff003c;font-size:14px;font-weight:bold;');
-}, 1500);
-
-// Disable drag-select on entire page
-document.addEventListener('selectstart', function(e) { 
-    e.preventDefault(); 
-    return false; 
+document.querySelectorAll(".gamemode-tab").forEach((tab) => {
+    tab.tabIndex = 0; tab.setAttribute("role", "button");
+    tab.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); tab.click(); } });
 });
+(function () {
+    const btn = document.getElementById("activityFeedBtn"), modal = document.getElementById("activityFeedModal"), list = document.getElementById("activityList");
+    if (!btn || !modal || !list) return;
+    const build = () => {
+        const items = [];
+        players.forEach((p) => Object.entries(p.tierHistory || {}).forEach(([gm, h]) => (h || []).forEach((e) => e && e.date && items.push({ p, gm, e, d: new Date(e.date) }))));
+        items.sort((a, b) => b.d - a.d);
+        list.innerHTML = items.length ? items.slice(0, 30).map(({ p, gm, e, d }) => `
+            <div class="activity-item"><img src="${esc(p.avatar)}" alt="" onerror="this.style.display='none'">
+            <div><strong>${esc(p.name)}</strong> reached <span class="tier ${esc(String(e.tier).toLowerCase())}">${esc(e.tier)}</span> in ${esc(gm)}
+            <div style="color:#94a3b8;font-size:.8rem">${d.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}${e.note ? " · " + esc(e.note) : ""}</div></div></div>`).join("")
+            : '<div class="no-history">No recent activity yet</div>';
+    };
+    btn.addEventListener("click", () => { build(); modal.classList.add("active"); });
+    document.getElementById("closeActivityFeed")?.addEventListener("click", () => modal.classList.remove("active"));
+    modal.addEventListener("click", (e) => { if (e.target === modal) modal.classList.remove("active"); });
+})();
